@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model JobPost {
+  id               String   @id @unique @default(cuid())
+  jobTitle         String
+  jobDescription   String
+  organisationName String
+  modeOfWork       mode     @default(Work_From_Office)
+  minExperience    Int      @default(0)
+  maxExperience    Int
+  minSalary        Int      @default(0)
+  maxSalary        Int
+  skills           Skill[]
+  perks            Perk[]
+  jobType          JobType
+  postedAt         DateTime @default(now())
+  whoCanApply      String?
+  applicants       User[]   @relation("AppliedJobs")
+  postedBy         User     @relation("PostedJobs", fields: [userId], references: [id])
+  userId           String
+}
+
+model Skill {
+  id        String   @unique @default(cuid())
+  name      String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  JobPost   JobPost? @relation(fields: [jobPostId], references: [id])
+  jobPostId String?
+}
+
+model Perk {
+  id        String   @unique @default(cuid())
+  name      String
+  JobPost   JobPost? @relation(fields: [jobPostId], references: [id])
+  jobPostId String?
+}
+
+model User {
+  id             String    @id @unique @default(cuid())
+  username       String
+  firstName      String
+  secondName     String
+  email          String    @unique
+  hashedPassword String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  role           Role?     @default(USER)
+  skills         Skill[]
+  locationId     String?
+  address        Location? @relation(fields: [locationId], references: [id])
+  postedJobs     JobPost[] @relation("PostedJobs")
+  appliedJobs    JobPost[] @relation("AppliedJobs")
+  sessions       Session[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+
+  user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+}
+
+model Location {
+  id         String  @unique @default(cuid())
+  address    String?
+  postalCode Int
+  cityId     String
+  User       User[]
+  city       City    @relation(fields: [cityId], references: [id])
+}
+
+model City {
+  id       String     @unique @default(cuid())
+  name     String
+  state    String
+  location Location[]
+}
+
+model JobProfile {
+  id             String @unique @default(cuid())
+  jobProfileName String
+}
+
+enum mode {
+  Work_From_Home
+  Work_From_Office
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum JobType {
+  Full_Time
+  Part_Time
+  InternShip
+  Project_Work
+  Volunteering
+}
