@@ -18,14 +18,14 @@ model JobPost {
   jobTitle         String
   jobDescription   String
   organisationName String
-  modeOfWork       mode     @default(Work_From_Office)
+  modeOfWork       mode?    @default(Work_From_Office)
   minExperience    Int      @default(0)
   maxExperience    Int
   minSalary        Int      @default(0)
   maxSalary        Int
   skills           Skill[]
   perks            Perk[]
-  jobType          JobType
+  jobType          JobType?
   postedAt         DateTime @default(now())
   whoCanApply      String?
   applicants       User[]   @relation("AppliedJobs")
@@ -68,7 +68,7 @@ model User {
 }
 
 model Session {
-  id        String   @id
+  id        String   @id @unique @default(cuid())
   userId    String
   expiresAt DateTime
 

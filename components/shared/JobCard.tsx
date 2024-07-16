@@ -11,8 +11,9 @@ import Image from "next/image";
 import { Badge } from "../ui/badge";
 import { Clock } from "lucide-react";
 import Link from "next/link";
-// type PostType = typeof prismaClient.jobPost.fields;
-const JobCard = ({ details }: { details: any }) => {
+import { JobPost } from "@prisma/client";
+
+const JobCard = ({ details }: { details: JobPost }) => {
   return (
     <Link href={`jobs/${details.id}`}>
       <Card className="-space-y-3    cursor-pointer  border-solid border-[1px] border-black transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px]  p-0">
@@ -26,7 +27,7 @@ const JobCard = ({ details }: { details: any }) => {
             alt="company logo"
             className="h-12 w-12 rounded-lg pb-2"
           />
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-wrap">
             <CardTitle className=" line-clamp-1 text-base font-bold tracking-wide ">
               FullStack Developer
             </CardTitle>

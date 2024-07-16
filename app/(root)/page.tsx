@@ -1,11 +1,7 @@
-import React from "react";
-import { getUser } from "../[...authenticate]/lucia";
-import { redirect } from "next/navigation";
+import React, { useActionState } from "react";
+import { checkUser, signIn } from "../actions/auth.action";
 
 export default async function Page() {
-  const user = await getUser();
-  if (!user) {
-    redirect("/authenticate/signin");
-  }
+  await checkUser();
   return <div>HomePage</div>;
 }

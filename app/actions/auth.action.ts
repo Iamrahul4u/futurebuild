@@ -1,20 +1,21 @@
 "use server";
 
 import { z } from "zod";
-import { signUpSchema } from "./Signup";
+import { signUpSchema } from "../[...authenticate]/Signup";
 import prisma from "@/prisma";
 import { Argon2id } from "oslo/password";
-import { getUser, lucia } from "./lucia";
+import { getUser, lucia } from "../[...authenticate]/lucia";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { signInSchema } from "./SignIn";
-import { revalidatePath } from "next/cache";
+import { signInSchema } from "../[...authenticate]/SignIn";
+import { createServerActionProcedure } from "zsa";
 
 export async function signup({
   values,
 }: {
   values: z.infer<typeof signUpSchema>;
 }) {
+  await checkUser();
   try {
     const user = await prisma.user.findFirst({
       where: {

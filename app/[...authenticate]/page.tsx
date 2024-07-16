@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import SignIn from "./SignIn";
 import SignUp from "./Signup";
 import { getUser } from "./lucia";
-import { checkUser } from "./auth.action";
+import { checkUser } from "../actions/auth.action";
 
 export default function Page() {
   const pathname = usePathname();
@@ -18,7 +18,7 @@ export default function Page() {
     }
   }, [pathname, router]);
   return (
-    <div className="bg-red-200">
+    <div className=" h-full overflow-hidden ">
       {pathname.includes("signin") ? (
         <SignIn />
       ) : pathname.includes("signup") ? (

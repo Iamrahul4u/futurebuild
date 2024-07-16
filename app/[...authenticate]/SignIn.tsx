@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { signIn } from "./auth.action";
+import { signIn } from "../actions/auth.action";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 

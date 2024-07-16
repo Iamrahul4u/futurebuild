@@ -7,7 +7,7 @@ import { sidebarLinks } from "../../_constants/constants";
 
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
-import { signout } from "@/app/[...authenticate]/auth.action";
+import { signout } from "@/app/actions/auth.action";
 export function NavBar() {
   const pathname = usePathname();
   return (
@@ -21,7 +21,7 @@ export function NavBar() {
         <Label className="text-2xl italic cursor-pointer text-gray-800 font-bold border-2 border-black hover:bg-black  duration-300 transition-colors hover:text-orange-400 hover:border-orange-500 px-2 py-1 bg-orange-400 font-mono ">
           FutureBuild
         </Label>
-      </Link>
+      </Link>      
 
       <ul
         className="flex gap-4 items-center

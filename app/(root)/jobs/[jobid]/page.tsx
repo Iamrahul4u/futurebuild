@@ -1,67 +1,19 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-// { params }: { params: { jobid: string } }
-export default async function Page() {
+import RecentJobs from "@/components/shared/RecentJobs";
+import LoadingJobsCard from "@/components/loaders/LoadingJobsCard";
+import { generateFakeData } from "@/_utils/utils";
+import { ApplySheet } from "@/components/shared/ApplySheet";
+//
+export default async function Page({ params }: { params: { jobid: string } }) {
   return (
-    <div className="grid grid-cols-[240px_1fr_240px] overflow-y-scroll pb-32 gap-6 w-full min-h-screen bg-muted/40 p-6">
-      <div className="flex flex-col gap-4">
-        <div className="sticky top-6 bg-background rounded-lg shadow-sm p-4">
-          <h3 className="text-lg font-semibold">Recent Jobs</h3>
-          <div className="mt-4 space-y-2">
-            <Link
-              href="#"
-              className="flex items-center gap-3 text-sm"
-              prefetch={false}
-            >
-              <div className="flex-1 truncate">Software Engineer</div>
-              <Badge variant="outline" className="shrink-0">
-                Full-time
-              </Badge>
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-3 text-sm"
-              prefetch={false}
-            >
-              <div className="flex-1 truncate">Product Designer</div>
-              <Badge variant="outline" className="shrink-0">
-                Part-time
-              </Badge>
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-3 text-sm"
-              prefetch={false}
-            >
-              <div className="flex-1 truncate">DevOps Engineer</div>
-              <Badge variant="outline" className="shrink-0">
-                Contract
-              </Badge>
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-3 text-sm"
-              prefetch={false}
-            >
-              <div className="flex-1 truncate">Data Analyst</div>
-              <Badge variant="outline" className="shrink-0">
-                Internship
-              </Badge>
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-3 text-sm"
-              prefetch={false}
-            >
-              <div className="flex-1 truncate">Frontend Developer</div>
-              <Badge variant="outline" className="shrink-0">
-                Full-time
-              </Badge>
-            </Link>
-          </div>
-        </div>
+    <div className="grid grid-cols-[260px_1fr_240px] overflow-y-scroll pb-32 gap-6 w-full min-h-screen bg-muted/40 p-6">
+      <div className="flex flex-col gap-4 overflow-y-scroll pr-4 mx-auto">
+        <Suspense fallback={<LoadingJobsCard columns={1} />}>
+          <RecentJobs />
+        </Suspense>
       </div>
       <div className="flex flex-col gap-6">
         <div className="bg-background rounded-lg shadow-sm p-6">
@@ -176,7 +128,7 @@ export default async function Page() {
             </div>
           </div>
           <div className="mt-4 space-y-2">
-            <Button className="w-full">Apply Now</Button>
+            <Link href={`/jobs/apply/${params.jobid}`}>Apply Now</Link>
           </div>
         </div>
       </div>
