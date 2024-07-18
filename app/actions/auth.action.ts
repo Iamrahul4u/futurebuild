@@ -8,14 +8,12 @@ import { getUser, lucia } from "../[...authenticate]/lucia";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { signInSchema } from "../[...authenticate]/SignIn";
-import { createServerActionProcedure } from "zsa";
 
 export async function signup({
   values,
 }: {
   values: z.infer<typeof signUpSchema>;
 }) {
-  await checkUser();
   try {
     const user = await prisma.user.findFirst({
       where: {
@@ -59,11 +57,12 @@ export async function signIn({
   values: z.infer<typeof signInSchema>;
 }) {
   try {
+    const users = await prisma.user.findMany({});
+    console.log(users);
     const user = await prisma.user.findFirst({
       where: {
         email: values.email,
       },
-
       select: {
         id: true,
       },
@@ -89,7 +88,7 @@ export async function signIn({
 export const signout = async () => {
   const session = lucia.createBlankSessionCookie();
   cookies().set(session.name, session.value, session.attributes);
-  redirect("/authentication");
+  redirect("/authenticate/signin");
 };
 
 export const checkUser = async () => {

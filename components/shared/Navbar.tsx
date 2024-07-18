@@ -8,6 +8,7 @@ import { sidebarLinks } from "../../_constants/constants";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { signout } from "@/app/actions/auth.action";
+import { ThemeModeToggle } from "./ThemeModeToggle";
 export function NavBar() {
   const pathname = usePathname();
   return (
@@ -21,7 +22,7 @@ export function NavBar() {
         <Label className="text-2xl italic cursor-pointer text-gray-800 font-bold border-2 border-black hover:bg-black  duration-300 transition-colors hover:text-orange-400 hover:border-orange-500 px-2 py-1 bg-orange-400 font-mono ">
           FutureBuild
         </Label>
-      </Link>      
+      </Link>
 
       <ul
         className="flex gap-4 items-center
@@ -33,11 +34,13 @@ export function NavBar() {
           return (
             <li
               key={item.route}
-              className={` hover:bg-black rounded-xl px-3 py-2 hover:text-white hover:duration-300 transition-colors ease-in-out  ${
-                isActive ? "bg-black text-white rounded-xl " : ""
+              className={` hover:bg-black rounded-xl px-3 py-2 hover:text-white dark:text-white  text-black dark:hover:text-black dark:hover:bg-white hover:duration-300 transition-colors ease-in-out  ${
+                isActive
+                  ? " text-white bg-black dark:!text-black dark:bg-white rounded-xl "
+                  : ""
               }`}
             >
-              <Link href={item.route} className="text-xl">
+              <Link href={item.route} className="text-xl font-semibold ">
                 {item.label}
               </Link>
             </li>
@@ -45,6 +48,9 @@ export function NavBar() {
         })}
         <li className="flex flex-1 gap-2" key={1}>
           <Button onClick={() => signout()}>Logout</Button>
+        </li>
+        <li className="flex flex-1 gap-2" key={2}>
+          <ThemeModeToggle />
         </li>
       </ul>
     </nav>

@@ -16,19 +16,19 @@ import { JobPost } from "@prisma/client";
 const JobCard = ({ details }: { details: JobPost }) => {
   return (
     <Link href={`jobs/${details.id}`}>
-      <Card className="-space-y-3    cursor-pointer  border-solid border-[1px] border-black transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px]  p-0">
+      <Card className="-space-y-3    cursor-pointer  border-solid border-[1px] border-black dark:hover:shadow-[4px_4px_0px_gray] transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px]  p-0">
         <CardHeader className="flex flex-row  gap-4  items-center  ">
           <Image
             src={
               "https://i.pinimg.com/736x/f6/97/4e/f6974e017d3f6196c4cbe284ee3eaf4e.jpg"
             }
-            height={35}
-            width={35}
+            height={40}
+            width={40}
             alt="company logo"
-            className="h-12 w-12 rounded-lg pb-2"
+            className="h-12 w-12 object-cover rounded-full mb-2 "
           />
           <div className="flex flex-col flex-wrap">
-            <CardTitle className=" line-clamp-1 text-base font-bold tracking-wide ">
+            <CardTitle className=" line-clamp-1 text-base font-bold tracking-wide text-black dark:text-white">
               FullStack Developer
             </CardTitle>
             <div className="flex-row flex gap-2  ">

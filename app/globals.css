@@ -6,6 +6,7 @@ body {
   height: 100%;
   margin: 0;
 }
+
 /* Specific class for custom scrollbar (if needed) */
 /* width */
 ::-webkit-scrollbar {

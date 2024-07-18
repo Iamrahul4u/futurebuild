@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { NextRequest, NextResponse } from "next/server";
+import { ThemeProvider } from "./ThemeProvider";
 export const metadata: Metadata = {
   title: "FutureBuild",
 };
@@ -25,8 +26,15 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        {children}
-        <Toaster richColors />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

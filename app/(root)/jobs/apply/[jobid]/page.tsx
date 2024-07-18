@@ -1,6 +1,6 @@
 "use client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,13 +13,19 @@ import {
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import DatePicker from "@/components/shared/DatePicker";
 import InputText from "@/components/shared/InputText";
+import { getUrl } from "@/app/actions/jobs.action";
+import { toast } from "sonner";
+import { InputTextArea } from "@/components/shared/InputTextArea";
+import UploadFile from "@/components/shared/UploadFile";
+import { redirect } from "next/navigation";
+import { checkUser } from "@/app/actions/auth.action";
 const applyJob = z.object({
   coverLetter: z
     .string()
@@ -46,6 +52,14 @@ const applyJob = z.object({
 export default function Page({ params }: { params: { jobid: string } }) {
   const [pending, setPending] = useState<boolean>(false);
   const [availability, setAvailability] = useState<string>("");
+  const [uploading, setUploading] = useState<boolean>(false);
+  useEffect(() => {
+    async function getUser() {
+      await checkUser();
+    }
+    getUser();
+  }, []);
+
   const form = useForm<z.infer<typeof applyJob>>({
     resolver: zodResolver(applyJob),
     defaultValues: {
@@ -67,42 +81,57 @@ export default function Page({ params }: { params: { jobid: string } }) {
       values.joiningDate = undefined;
       values.servingPeriod = undefined;
     }
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    try {
+      if (values.resume) {
+        console.log(values.resume);
+        const signedUrl = await getUrl(values.resume.size, values.resume.type);
+        if (signedUrl.error) {
+          toast.error(signedUrl.error);
+          throw new Error(signedUrl.error);
+        } else if (!signedUrl.error && signedUrl.success) {
+          const url = signedUrl.success.url;
+
+          await fetch(url, {
+            method: "PUT",
+            body: values.resume,
+            headers: {
+              "Content-Type": values.resume.type,
+            },
+          });
+          toast.success("Applied Successfully!!");
+          redirect("/jobs");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
     console.log(values);
     console.log(availability);
     setPending(false);
   }
   return (
     <ScrollArea className="w-4/5 py-8 px-12 mx-auto h-full ">
-      <h1 className="text-6xl mb-6">Applying for ~jobname~</h1>
-      <Form {...form}>
+      <h1 className="text-6xl mb-6 text-black dark:text-white">
+        Applying for ~jobname~
+      </h1>
+      <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-2">
-          <FormField
-            control={form.control}
+          <InputTextArea
+            placeholder="Most of the Recruiters Read your coverLetter before Reading Resume."
             name="coverLetter"
-            render={({ field }) => (
-              <FormItem>
-                <h3>Cover Letter</h3>
-                <FormLabel>Why should you be hired for this role?</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Most of the Recruiters Read your coverLetter before Reading Resume.  "
-                    {...field}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  />
-                </FormControl>
-                <br />
-                <FormMessage />
-              </FormItem>
-            )}
           />
           <FormField
             control={form.control}
             name="availability"
             render={({ field }) => (
               <FormItem>
-                <h3>Your availability</h3>
-                <FormLabel>Confirm your availability</FormLabel>
+                <h3 className="text-black dark:text-white">
+                  Your availability
+                </h3>
+                <FormLabel className="text-black dark:text-white">
+                  Confirm your availability
+                </FormLabel>
                 <FormControl>
                   <RadioGroup
                     onValueChange={(value: string) => {
@@ -116,7 +145,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
                       <FormControl>
                         <RadioGroupItem value="Yes" />
                       </FormControl>
-                      <FormLabel className="font-normal">
+                      <FormLabel className="font-normal  text-black dark:text-white">
                         Yes, I am available to join immediately
                       </FormLabel>
                     </FormItem>
@@ -125,7 +154,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
                       <FormControl>
                         <RadioGroupItem value="currentlyServing" />
                       </FormControl>
-                      <FormLabel className="font-normal">
+                      <FormLabel className="font-normal text-black dark:text-white">
                         No, I am currently on notice period
                       </FormLabel>
                     </FormItem>
@@ -136,13 +165,12 @@ export default function Page({ params }: { params: { jobid: string } }) {
                       <FormControl>
                         <RadioGroupItem value="haveToServe" />
                       </FormControl>
-                      <FormLabel className="font-normal">
+                      <FormLabel className="font-normal text-black dark:text-white">
                         No, I will have to serve notice period
                       </FormLabel>
                     </FormItem>
                     {availability === "haveToServe" && (
                       <InputText
-                        form={form}
                         placeholder="Period in Months"
                         name="servingPeriod"
                       />
@@ -151,7 +179,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
                       <FormControl>
                         <RadioGroupItem value="other" />
                       </FormControl>
-                      <FormLabel className="font-normal">
+                      <FormLabel className="font-normal text-black dark:text-white">
                         Other
                         <span className="text-gray-400">
                           (Please specify your availability)
@@ -159,11 +187,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
                       </FormLabel>
                     </FormItem>
                     {availability === "other" && (
-                      <InputText
-                        placeholder="Other Reason"
-                        form={form}
-                        name="other"
-                      />
+                      <InputText placeholder="Other Reason" name="other" />
                     )}
                   </RadioGroup>
                 </FormControl>
@@ -173,36 +197,12 @@ export default function Page({ params }: { params: { jobid: string } }) {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="resume"
-            render={({ field }) => (
-              <FormItem>
-                <h3>Resume</h3>
-                <FormLabel>Upload Your Resume Seperately?</FormLabel>
-                <br />
-                <FormControl>
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        field.onChange(file);
-                      }
-                    }}
-                  />
-                </FormControl>
-                <br />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <UploadFile name="resume" />
           <Button type="submit" disabled={pending}>
             {pending ? "Submitting... " : "Submit"}
           </Button>
         </form>
-      </Form>
+      </FormProvider>
     </ScrollArea>
   );
 }

@@ -19,19 +19,19 @@ const RecentJobs = async () => {
     <div className="flex flex-col gap-4 overflow-y-scroll pr-4 mx-auto">
       {jobs.map((job) => (
         <Link key={job.id} href={`/jobs/${job.id}`}>
-          <Card className="-space-y-2 cursor-pointer border-solid border-[1px] border-black transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px] p-0">
-            <CardHeader className="flex flex-row items-center">
+          <Card className="-space-y-2 cursor-pointer border-solid border-[1px] border-black transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] dark:hover:shadow-[4px_4px_0px_gray]  active:translate-x-[0px] active:translate-y-[0px] p-0">
+            <CardHeader className="flex flex-row items-center gap-2">
               <Image
                 src={
                   "https://i.pinimg.com/736x/f6/97/4e/f6974e017d3f6196c4cbe284ee3eaf4e.jpg"
                 }
-                height={35}
-                width={35}
+                height={20}
+                width={20}
                 alt="company logo"
-                className="h-12 w-12 rounded-lg pb-2"
+                className="h-10 w-10 object-cover rounded-full mb-2 "
               />
               <div className="flex flex-col flex-wrap">
-                <CardTitle className="line-clamp-1 text-base font-bold tracking-wide">
+                <CardTitle className="line-clamp-1 text-base font-bold text-black dark:text-white tracking-wide">
                   {job.jobTitle}
                 </CardTitle>
                 <div className="flex-row flex gap-1">

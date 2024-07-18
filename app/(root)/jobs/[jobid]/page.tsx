@@ -48,8 +48,8 @@ export default async function Page({ params }: { params: { jobid: string } }) {
               </li>
               <li>
                 Participate in code reviews, pair programming, and knowledge
-                sharing sessions to continuously improve the codebase and team's
-                skills.
+                sharing sessions to continuously improve the codebase and
+                team&apos;'s skills.
               </li>
               <li>
                 Identify and address performance bottlenecks, security
@@ -91,9 +91,9 @@ export default async function Page({ params }: { params: { jobid: string } }) {
               </li>
             </ul>
             <p>
-              If you're passionate about building innovative software solutions
-              and want to join a dynamic and collaborative team, we'd love to
-              hear from you.
+              If you&apos;'re passionate about building innovative software
+              solutions and want to join a dynamic and collaborative team,
+              we&apos;'d love to hear from you.
             </p>
           </div>
         </div>
@@ -120,7 +120,7 @@ export default async function Page({ params }: { params: { jobid: string } }) {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Education:</span>
-              <span>Bachelor's degree</span>
+              <span>Bachelor&apos;'s degree</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Posted:</span>

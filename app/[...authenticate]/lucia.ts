@@ -1,14 +1,14 @@
 import prisma from "@/prisma";
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
-import { Lucia } from "lucia";
+import { Lucia, TimeSpan } from "lucia";
 import { cookies } from "next/headers";
 import { cache } from "react";
 
 const adapter = new PrismaAdapter(prisma.session, prisma.user);
 export const lucia = new Lucia(adapter, {
+  sessionExpiresIn: new TimeSpan(1, "w"),
   sessionCookie: {
     name: "session",
-    expires: false,
     attributes: {
       secure: process.env.NODE_ENV === "production",
     },
@@ -17,7 +17,9 @@ export const lucia = new Lucia(adapter, {
 
 export const getUser = cache(async () => {
   const sessionId = cookies().get(lucia.sessionCookieName)?.value || null;
-  if (!sessionId) return null;
+  if (!sessionId) {
+    return null;
+  }
   const { user, session } = await lucia.validateSession(sessionId);
   try {
     if (session && session.fresh) {
@@ -28,6 +30,7 @@ export const getUser = cache(async () => {
         sessionCookie.attributes,
       );
     }
+
     if (!session) {
       const session = lucia.createBlankSessionCookie();
       cookies().set(session.name, session.value, session.attributes);

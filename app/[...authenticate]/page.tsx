@@ -10,9 +10,10 @@ import { checkUser } from "../actions/auth.action";
 export default function Page() {
   const pathname = usePathname();
   const router = useRouter();
+
   useEffect(() => {
     // You can conditionally replace the URL here
-    if (pathname === "/authenticate") {
+    if (pathname.includes("/authenticate")) {
       router.push("/authenticate/signin");
       checkUser();
     }

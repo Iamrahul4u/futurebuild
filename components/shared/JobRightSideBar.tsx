@@ -7,6 +7,7 @@ const JobRightSideBar = async () => {
   return (
     <div className="h-full grid grid-cols-3  overflow-y-scroll rounded-md border px-8 py-4 gap-4">
       {jobs?.map((job) => (
+        // @ts-ignore
         <JobCard details={job} key={job.id} />
       ))}
     </div>

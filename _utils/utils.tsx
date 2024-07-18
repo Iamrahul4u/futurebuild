@@ -1,4 +1,12 @@
 import { faker } from "@faker-js/faker";
+const modeOfWorkOptions = ["Work_From_Home", "Work_From_Office"];
+const jobTypeOptions = [
+  "Full_Time",
+  "Part_Time",
+  "InternShip",
+  "Project_Work",
+  "Volunteering",
+];
 
 export const generateFakeData = async () => {
   const fakeJobs = [];
@@ -15,6 +23,8 @@ export const generateFakeData = async () => {
       maxSalary: faker.number.int({ min: 50001, max: 200000 }),
       skills: [faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
       perks: [faker.lorem.sentence(), faker.lorem.sentence()],
+      modeOfWork: faker.helpers.arrayElement(modeOfWorkOptions),
+      jobType: faker.helpers.arrayElement(jobTypeOptions),
 
       postedAt: faker.date.recent(),
       whoCanApply: faker.lorem.sentence(),
@@ -26,3 +36,18 @@ export const generateFakeData = async () => {
   });
   return fakeJobs;
 };
+
+export function generateRandomName(length = 20) {
+  if (typeof window === "undefined") {
+    // Node.js environment
+    const crypto = require("crypto");
+    return crypto.randomBytes(length).toString("hex").substring(0, length);
+  } else {
+    // Edge environment or browser
+    const array = new Uint8Array(length);
+    crypto.getRandomValues(array);
+    return Array.from(array, (byte) => ("0" + byte.toString(16)).slice(-2))
+      .join("")
+      .substring(0, length);
+  }
+}
