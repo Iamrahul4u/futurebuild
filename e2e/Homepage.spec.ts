@@ -6,7 +6,7 @@ test.describe("Authentication Checks", () => {
     await page.goto("http://localhost:3000/");
     await expect(page).toHaveURL("http://localhost:3000/authenticate/signin");
     // @ts-ignore
-    await page.getByLabel("email").fill(process.env.USERNAME);
+    await page.getByLabel("email").fill(process.env.USER_NAME);
     // @ts-ignore
     await page.getByLabel("Password").fill(process.env.PASSWORD);
     await page.getByRole("button", { name: "Submit" }).click();
