@@ -5,8 +5,10 @@ test.describe("Authentication Checks", () => {
     // Start from the index page (the baseURL is set via the webServer in the playwright.config.ts)
     await page.goto("http://localhost:3000/");
     await expect(page).toHaveURL("http://localhost:3000/authenticate/signin");
-    await page.getByLabel("email").fill("iamrahulgupta4u@gmail.com");
-    await page.getByLabel("Password").fill("rahul123@1");
+    // @ts-ignore
+    await page.getByLabel("email").fill(process.env.USERNAME);
+    // @ts-ignore
+    await page.getByLabel("Password").fill(process.env.PASSWORD);
     await page.getByRole("button", { name: "Submit" }).click();
     await page.waitForURL("http://localhost:3000/jobs");
     await page.getByText("Software");
