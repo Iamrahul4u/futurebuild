@@ -1,35 +1,73 @@
+"use client";
 import React from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import RangeSlider from "./RangeSlider";
+import { FormProvider, useForm } from "react-hook-form";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { InputTextArea } from "./InputTextArea";
+import InputText from "./InputText";
+import StateButton from "./StateButton";
+import InputNumber from "./InputNumber";
+import { CheckboxGroup } from "@radix-ui/themes";
+
+const filterProps = z.object({
+  title: z
+    .string()
+    .min(2, "Type more than 2 Letters")
+    .max(30, "Length shouldn't be more than 30 letters"),
+  minSalary: z
+    .string()
+    .min(2, "Type more than 2 Letters")
+    .max(30, "Length shouldn't be more than 30 letters"),
+  maxSalary: z
+    .string()
+    .min(2, "Type more than 2 Letters")
+    .max(30, "Length shouldn't be more than 30 letters"),
+});
 const JobLeftSideBar = () => {
+  const form = useForm<z.infer<typeof filterProps>>({
+    resolver: zodResolver(filterProps),
+  });
+  async function handleSubmit(values: z.infer<typeof filterProps>) {
+    console.log(values);
+  }
   return (
     <div className="min-w-[25%]  px-8 py-6 custom-scrollbar h-full overflow-y-scroll pb-24">
       <div className="flex justify-between">
-        <p className="font-bold text-lg text-gray-500">Filters</p>
+        <p className="font-bold text-lg  text-black dark:text-white">Filters</p>
         <p className="font-semibold">Clear All</p>
       </div>
       {/* Search Description Component */}
-      <div>
-        <h4 className="mt-4 mb-2">Search Description</h4>
-        <Input type="text" placeholder="Eg. Software Developer" />
-      </div>
-      {/* Price Range */}
-      <h4 className="mt-4 mb-2">Price Range</h4>
-      <div className="flex gap-2">
-        <Input type="text" placeholder="Min" />
-        <Input type="text" placeholder="Max" />
-      </div>
-      <h4 className="mt-4 mb-2">Annual Expectations</h4>
-      <div className="flex gap-2">
-        <RangeSlider />
-      </div>
-      <div className="flex gap-2  mt-4 mb-2">
-        <input type="checkbox" id="wfh" aria-label="Work from home" />
-        <Label htmlFor="wfh"> Work From Home</Label>
-        <input id="wfo" type="checkbox" aria-label="Work from office" />
-        <Label htmlFor="wfo"> Work From Office</Label>
-      </div>
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
+          <div>
+            <InputText
+              name="title"
+              placeholder="Eg. Software Developer"
+              label="Search Description"
+            />
+          </div>
+          {/* Price Range */}
+          <h4 className="mt-4 mb-2 text-black dark:text-white">
+            Annuhal Expectations
+          </h4>
+          <div className="flex gap-2">
+            <InputNumber name="minSalary" placeholder="Min" />
+            <InputNumber name="maxSalary" placeholder="Max" />
+          </div>
+
+          <div className="flex gap-2  mt-4 mb-2">
+            <CheckboxGroup.Root defaultValue={["1"]} name="example">
+              <CheckboxGroup.Item value="1">Fun</CheckboxGroup.Item>
+              <CheckboxGroup.Item value="2">Serious</CheckboxGroup.Item>
+              <CheckboxGroup.Item value="3">Smart</CheckboxGroup.Item>
+            </CheckboxGroup.Root>
+          </div>
+          <StateButton content="Apply Filters" />
+        </form>
+      </FormProvider>
     </div>
   );
 };

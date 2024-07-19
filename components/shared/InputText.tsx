@@ -28,7 +28,7 @@ const InputText = ({
           {label && (
             <FormLabel
               htmlFor={name}
-              className="text-black mb-2 dark:text-white"
+              className="mt-4 mb-2 text-black dark:text-white font-semibold text-base"
             >
               {label}
             </FormLabel>
@@ -36,7 +36,7 @@ const InputText = ({
           <FormControl>
             <Input placeholder={placeholder} {...field} />
           </FormControl>
-          <FormMessage />
+          <FormMessage className="pt-2" />
         </FormItem>
       )}
     />

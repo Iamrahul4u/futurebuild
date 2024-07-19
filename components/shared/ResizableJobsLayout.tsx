@@ -17,7 +17,7 @@ export default async function ResizablePageLayout({
       <ResizablePanel minSize={20} defaultSize={25} maxSize={35}>
         {JobLeftSideBar}
       </ResizablePanel>
-      <ResizableHandle withHandle />
+      <ResizableHandle withHandle className="bg-slate-700 " />
       <ResizablePanel defaultSize={70}>
         <Suspense fallback={<LoadingJobsCard columns={3} />}>
           {JobRightSideBar}

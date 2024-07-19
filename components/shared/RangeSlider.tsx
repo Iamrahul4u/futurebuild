@@ -5,8 +5,8 @@ const RangeSlider = () => {
   const [range, setRange] = useState({ min: 1, max: 20 });
   return (
     <div className="card-conteiner">
-      <div className="card-content">
-        <small className="current-range !text-black ">
+      <div className="card-content dark:bg-black">
+        <small className="current-range text-black dark:text-white ">
           Current Range:&nbsp;
           <div>
             <span id="third">

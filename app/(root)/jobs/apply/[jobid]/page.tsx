@@ -1,21 +1,18 @@
 "use client";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import React, { useEffect, useState } from "react";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "../../../../../components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { FormProvider, useForm } from "react-hook-form";
 
-import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import DatePicker from "@/components/shared/DatePicker";
@@ -24,11 +21,11 @@ import { applyToJob, getUrl } from "@/app/actions/jobs.action";
 import { toast } from "sonner";
 import { InputTextArea } from "@/components/shared/InputTextArea";
 import UploadFile from "@/components/shared/UploadFile";
-import { redirect } from "next/navigation";
 import { checkUser } from "@/app/actions/auth.action";
 import StateButton from "@/components/shared/StateButton";
 import { MediaNameSchema } from "@/prisma/generated/zod";
 import { useRouter } from "next/navigation";
+
 const applyJob = z.object({
   coverLetter: z
     .string()
@@ -213,7 +210,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
                   </RadioGroup>
                 </FormControl>
 
-                <FormMessage />
+                <FormMessage className="pt-2" />
               </FormItem>
             )}
           />

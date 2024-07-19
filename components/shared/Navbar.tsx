@@ -16,7 +16,7 @@ export function NavBar() {
       role="navigation"
       aria-label="navigation-menu"
       about="Navigation Menu"
-      className="w-full hidden md:visible h-32  rounded-t-sm md:flex items-center justify-between px-6 drop-shadow-xl  border-b  border-black  py-2"
+      className="w-full hidden md:visible h-32  rounded-t-sm md:flex items-center justify-between px-6 drop-shadow-xl  border-b dark:border-gray-600  border-black  py-2"
     >
       <Link href={"/"}>
         <Label className="text-2xl italic cursor-pointer text-gray-800 font-bold border-2 border-black hover:bg-black  duration-300 transition-colors hover:text-orange-400 hover:border-orange-500 px-2 py-1 bg-orange-400 font-mono ">

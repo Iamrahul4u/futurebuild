@@ -47,7 +47,6 @@
 
 .card-content .current-range {
   display: block;
-  color: var(--color-text);
   margin-top: 8px;
   font-size: 14px;
 }
@@ -57,7 +56,6 @@
   justify-content: space-between;
   margin-top: 20px;
   font-size: 0.6em;
-  color: var(--color-text);
 }
 
 /* Range Slider */

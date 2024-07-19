@@ -36,7 +36,7 @@ const UploadFile = ({ name }: { name: string }) => {
             />
           </FormControl>
           <br />
-          <FormMessage />
+          <FormMessage className="pt-2" />
         </FormItem>
       )}
     />

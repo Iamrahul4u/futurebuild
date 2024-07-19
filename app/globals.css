@@ -73,16 +73,6 @@ img {
   height: auto; /* Maintain aspect ratio */
 }
 
-/* Forms */
-input,
-textarea,
-select,
-button {
-  font-family: inherit; /* Inherit font settings */
-  font-size: 1rem; /* Consistent font size */
-  margin: 0; /* Remove margin */
-}
-
 /* Tables */
 
 @layer base {

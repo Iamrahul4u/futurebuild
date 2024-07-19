@@ -1,7 +1,6 @@
 import React from "react";
 // eslint-disable-next-line camelcase
 import { Metadata } from "next";
-
 export const metadata: Metadata = {
   title: "FutureBuild",
 };

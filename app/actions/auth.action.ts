@@ -94,6 +94,7 @@ export const checkUser = async () => {
   if (!user) {
     redirect("/authenticate/signin");
   }
+  return { success: true };
 };
 
 export const clientCheckUser = async () => {

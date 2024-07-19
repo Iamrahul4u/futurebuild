@@ -15,6 +15,9 @@ export default function Page() {
     async function handleAuth() {
       const isAuthenticated = await clientCheckUser();
       if (!isAuthenticated) {
+        if (pathname === "/authenticate") {
+          router.push("/authenticate/signin");
+        }
         if (!pathname.includes("signin") && !pathname.includes("signup"))
           router.push("/authenticate/signin");
       } else {

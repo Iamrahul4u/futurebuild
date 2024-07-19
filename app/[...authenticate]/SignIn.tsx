@@ -32,15 +32,7 @@ export const signInSchema = z.object({
 
 export default function SignIn() {
   const router = useRouter();
-  useEffect(() => {
-    async function handleAuth() {
-      const isAuthenticated = await clientCheckUser();
-      if (isAuthenticated) {
-        redirect("/");
-      }
-    }
-    handleAuth();
-  }, [router]);
+
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -85,7 +77,7 @@ export default function SignIn() {
                         />
                       </FormControl>
 
-                      <FormMessage />
+                      <FormMessage className="pt-2" />
                     </FormItem>
                   )}
                 />
@@ -103,7 +95,7 @@ export default function SignIn() {
                         />
                       </FormControl>
 
-                      <FormMessage />
+                      <FormMessage className="pt-2" />
                     </FormItem>
                   )}
                 />
@@ -113,7 +105,7 @@ export default function SignIn() {
             </Form>
             <button
               type="submit"
-              className="w-full text-white dark:text-black bg-black bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+              className="w-full text-white dark:text-white bg-black bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             >
               <Link href={"/authenticate/signup"}>Create an account</Link>
             </button>
