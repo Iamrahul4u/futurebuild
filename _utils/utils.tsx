@@ -51,3 +51,53 @@ export function generateRandomName(length = 20) {
       .substring(0, length);
   }
 }
+
+export function formatNumberToLakh(number: number): string {
+  if (number < 100000) {
+    return number.toString(); // Return as is if less than 1 lakh
+  } else {
+    const lakh = number / 100000; // Convert number to lakh
+    if (Number.isInteger(lakh)) {
+      return lakh.toFixed(0); // Return as integer lakh
+    } else {
+      return lakh.toFixed(1); // Return with one decimal place
+    }
+  }
+}
+
+export function formatTimeAgo(isoDateString?: string): string {
+  if (!isoDateString) {
+    return "Unknown";
+  }
+
+  const date = new Date(isoDateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  const intervals = {
+    year: 31536000,
+    month: 2592000,
+    week: 604800,
+    day: 86400,
+    hour: 3600,
+    minute: 60,
+  };
+
+  let secondsAgo = diffInSeconds;
+  let unit = "";
+
+  for (const [interval, seconds] of Object.entries(intervals)) {
+    const count = Math.floor(secondsAgo / seconds);
+    if (count > 0) {
+      unit = interval;
+      secondsAgo = count;
+      break;
+    }
+  }
+
+  if (unit === "minute") {
+    return `${secondsAgo} ${unit}${secondsAgo !== 1 ? "s" : ""} ago`;
+  } else {
+    return `${secondsAgo} ${unit}${secondsAgo !== 1 ? "s" : ""} ago`;
+  }
+}

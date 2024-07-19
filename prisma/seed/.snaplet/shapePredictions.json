@@ -1,0 +1,286 @@
+[
+  {
+    "schemaName": "public",
+    "tableName": "Applicant",
+    "predictions": [
+      {
+        "input": "public applicant availability",
+        "column": "availability",
+        "shape": "SYSTEM_FILE_PATH",
+        "confidence": 0.2421031594276428,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public applicant cover_letter",
+        "column": "coverLetter",
+        "shape": "COMMERCE_PRODUCT_NAME",
+        "confidence": 0.309345543384552,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public applicant id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9983401298522949,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "City",
+    "predictions": [
+      {
+        "input": "public city id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9891136884689331,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public city name",
+        "column": "name",
+        "shape": "CITY",
+        "confidence": 0.9949359893798828,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public city state",
+        "column": "state",
+        "shape": "STATE",
+        "confidence": 0.9926009774208069,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "JobPost",
+    "predictions": [
+      {
+        "input": "public job_post id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9469060897827148,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public job_post job_description",
+        "column": "jobDescription",
+        "shape": "PERSON_JOB_DESCRIPTOR",
+        "confidence": 0.8797268271446228,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public job_post job_title",
+        "column": "jobTitle",
+        "shape": "PERSON_JOB_TITLE",
+        "confidence": 0.8931881785392761,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public job_post organisation_name",
+        "column": "organisationName",
+        "shape": "PERSON_JOB_DESCRIPTOR",
+        "confidence": 0.3332871794700623,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "JobProfile",
+    "predictions": [
+      {
+        "input": "public job_profile id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.988884687423706,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public job_profile job_profile_name",
+        "column": "jobProfileName",
+        "shape": "PERSON_JOB_TITLE",
+        "confidence": 0.6915060877799988,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "Location",
+    "predictions": [
+      {
+        "input": "public location address",
+        "column": "address",
+        "shape": "FULL_ADDRESS",
+        "confidence": 0.969276487827301,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public location id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9867264032363892,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "Media",
+    "predictions": [
+      {
+        "input": "public media id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9852170348167419,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public media media_type",
+        "column": "mediaType",
+        "shape": "SYSTEM_MIME_TYPE",
+        "confidence": 0.3057012856006622,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public media url",
+        "column": "url",
+        "shape": "IMAGE_URL",
+        "confidence": 0.9267058372497559,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "Perk",
+    "predictions": [
+      {
+        "input": "public perk id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9984790682792664,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public perk name",
+        "column": "name",
+        "shape": "INTERNET_DISPLAY_NAME",
+        "confidence": 0.4473237693309784,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "Session",
+    "predictions": [
+      {
+        "input": "public session id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9865543842315674,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "Skill",
+    "predictions": [
+      {
+        "input": "public skill id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9966322779655457,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public skill name",
+        "column": "name",
+        "shape": "PERSON_JOB_TITLE",
+        "confidence": 0.5050916075706482,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  },
+  {
+    "schemaName": "public",
+    "tableName": "User",
+    "predictions": [
+      {
+        "input": "public user email",
+        "column": "email",
+        "shape": "EMAIL",
+        "confidence": 0.99404376745224,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public user first_name",
+        "column": "firstName",
+        "shape": "PERSON_FIRST_NAME",
+        "confidence": 0.9833793044090271,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public user hashed_password",
+        "column": "hashedPassword",
+        "shape": "HASH",
+        "confidence": 0.9745243191719055,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public user id",
+        "column": "id",
+        "shape": "UUID",
+        "confidence": 0.9964122176170349,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public user second_name",
+        "column": "secondName",
+        "shape": "USERNAME",
+        "confidence": 0.5729891657829285,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      },
+      {
+        "input": "public user username",
+        "column": "username",
+        "shape": "USERNAME",
+        "confidence": 0.9716823697090149,
+        "context": "GENERAL",
+        "confidenceContext": 0
+      }
+    ]
+  }
+]

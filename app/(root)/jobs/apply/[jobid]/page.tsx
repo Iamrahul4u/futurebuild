@@ -20,12 +20,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import DatePicker from "@/components/shared/DatePicker";
 import InputText from "@/components/shared/InputText";
-import { getUrl } from "@/app/actions/jobs.action";
+import { applyToJob, getUrl } from "@/app/actions/jobs.action";
 import { toast } from "sonner";
 import { InputTextArea } from "@/components/shared/InputTextArea";
 import UploadFile from "@/components/shared/UploadFile";
 import { redirect } from "next/navigation";
 import { checkUser } from "@/app/actions/auth.action";
+import StateButton from "@/components/shared/StateButton";
+import { MediaNameSchema } from "@/prisma/generated/zod";
+import { useRouter } from "next/navigation";
 const applyJob = z.object({
   coverLetter: z
     .string()
@@ -53,6 +56,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
   const [pending, setPending] = useState<boolean>(false);
   const [availability, setAvailability] = useState<string>("");
   const [uploading, setUploading] = useState<boolean>(false);
+  const router = useRouter();
   useEffect(() => {
     async function getUser() {
       await checkUser();
@@ -84,14 +88,16 @@ export default function Page({ params }: { params: { jobid: string } }) {
 
     try {
       if (values.resume) {
-        console.log(values.resume);
-        const signedUrl = await getUrl(values.resume.size, values.resume.type);
+        const signedUrl = await getUrl(
+          values.resume.size,
+          values.resume.type,
+          MediaNameSchema.options[0],
+        );
         if (signedUrl.error) {
           toast.error(signedUrl.error);
           throw new Error(signedUrl.error);
         } else if (!signedUrl.error && signedUrl.success) {
           const url = signedUrl.success.url;
-
           await fetch(url, {
             method: "PUT",
             body: values.resume,
@@ -99,15 +105,24 @@ export default function Page({ params }: { params: { jobid: string } }) {
               "Content-Type": values.resume.type,
             },
           });
+
+          const applyJob = await applyToJob(params.jobid);
+          if (applyJob.error) {
+            await fetch(url, {
+              method: "DELETE",
+              body: values.resume,
+              headers: {
+                "Content-Type": values.resume.type,
+              },
+            });
+          }
           toast.success("Applied Successfully!!");
-          redirect("/jobs");
+          router.push("/jobs");
         }
       }
     } catch (error) {
       console.log(error);
     }
-    console.log(values);
-    console.log(availability);
     setPending(false);
   }
   return (
@@ -117,9 +132,12 @@ export default function Page({ params }: { params: { jobid: string } }) {
       </h1>
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-2">
+          <h3 className="text-black dark:text-white">Cover Letter</h3>
+
           <InputTextArea
             placeholder="Most of the Recruiters Read your coverLetter before Reading Resume."
             name="coverLetter"
+            label="Why should you be hired for this role?"
           />
           <FormField
             control={form.control}
@@ -159,7 +177,10 @@ export default function Page({ params }: { params: { jobid: string } }) {
                       </FormLabel>
                     </FormItem>
                     {availability === "currentlyServing" && (
-                      <DatePicker form={form} name="joiningDate" />
+                      <DatePicker
+                        name="joiningDate"
+                        placeHolder="When is the latest you can join?"
+                      />
                     )}
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
@@ -198,9 +219,11 @@ export default function Page({ params }: { params: { jobid: string } }) {
           />
 
           <UploadFile name="resume" />
-          <Button type="submit" disabled={pending}>
-            {pending ? "Submitting... " : "Submit"}
-          </Button>
+          <StateButton
+            content="Submit"
+            processingWord="Submitting..."
+            pending={pending}
+          />
         </form>
       </FormProvider>
     </ScrollArea>

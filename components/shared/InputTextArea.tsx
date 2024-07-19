@@ -13,9 +13,11 @@ import { Textarea } from "../ui/textarea";
 export const InputTextArea = ({
   name,
   placeholder,
+  label,
 }: {
   name: string;
   placeholder: string;
+  label?: string;
 }) => {
   const { control } = useFormContext();
   return (
@@ -24,18 +26,17 @@ export const InputTextArea = ({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <h3 className="text-black dark:text-white">Cover Letter</h3>
-          <FormLabel className="text-black dark:text-white">
-            Why should you be hired for this role?
-          </FormLabel>
+          {label && (
+            <FormLabel
+              htmlFor={name}
+              className="text-black mb-2 dark:text-white"
+            >
+              {label}
+            </FormLabel>
+          )}
           <FormControl>
-            <Textarea
-              placeholder={placeholder}
-              {...field}
-              className="bg-gray-50 border border-gray-300 text-black dark:text-white  text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            />
+            <Textarea placeholder={placeholder} {...field} />
           </FormControl>
-          <br />
           <FormMessage />
         </FormItem>
       )}

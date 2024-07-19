@@ -84,22 +84,6 @@ button {
 }
 
 /* Tables */
-table {
-  width: 100%; /* Full width tables */
-  border-collapse: collapse; /* Remove spacing between cells */
-}
-
-th,
-td {
-  padding: 0.75rem; /* Padding for cells */
-  border: 1px solid #e2e8f0; /* Light border color */
-  text-align: left; /* Left align text */
-}
-
-th {
-  background-color: #edf2f7; /* Light background for headers */
-  font-weight: 600; /* Bold headers */
-}
 
 @layer base {
   :root {

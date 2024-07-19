@@ -6,6 +6,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 
@@ -18,20 +19,32 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { useFormContext } from "react-hook-form";
 
 export default function DatePicker({
-  form,
+  label,
   name,
+  placeHolder,
 }: {
-  form: any;
+  label?: string;
   name: string;
+  placeHolder: string;
 }) {
+  const { control } = useFormContext();
   return (
     <FormField
-      control={form.control}
+      control={control}
       name={name}
       render={({ field }) => (
         <FormItem className="flex flex-col">
+          {label && (
+            <FormLabel
+              htmlFor={name}
+              className="text-black mb-2 dark:text-white"
+            >
+              {label}
+            </FormLabel>
+          )}
           <Popover>
             <PopoverTrigger asChild>
               <FormControl>
@@ -45,7 +58,7 @@ export default function DatePicker({
                   {field.value ? (
                     format(field.value, "PPP")
                   ) : (
-                    <span>When is the latest you can join?</span>
+                    <span>{placeHolder}</span>
                   )}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </Button>
@@ -61,7 +74,6 @@ export default function DatePicker({
               />
             </PopoverContent>
           </Popover>
-
           <FormMessage />
         </FormItem>
       )}

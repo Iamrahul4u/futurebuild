@@ -5,10 +5,15 @@
   "scripts": {
     "prisma-migrate": "prisma db push --skip-generate",
     "prisma-generate": "npx prisma generate",
+    "migrate": "prisma migrate dev",
+    "postmigrate": "npx @snaplet/seed sync",
     "dev": "npm run prisma-generate  && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.614.0",
@@ -67,11 +72,14 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.1",
     "zod": "^3.23.8",
+    "zod-prisma-types": "^3.1.8",
     "zsa": "^0.5.0",
     "zsa-react": "^0.2.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
+    "@snaplet/copycat": "^5.0.0",
+    "@snaplet/seed": "^0.97.20",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -80,6 +88,10 @@
     "eslint-config-next": "14.2.4",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.4",
+    "tsx": "^4.16.2",
     "typescript": "^5"
+  },
+  "@snaplet/seed": {
+    "config": "prisma\\seed\\seed.config.ts"
   }
 }

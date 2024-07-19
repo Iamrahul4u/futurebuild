@@ -5,18 +5,25 @@ import { usePathname, useRouter } from "next/navigation";
 import SignIn from "./SignIn";
 import SignUp from "./Signup";
 import { getUser } from "./lucia";
-import { checkUser } from "../actions/auth.action";
+import { checkUser, clientCheckUser } from "../actions/auth.action";
 
 export default function Page() {
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
-    // You can conditionally replace the URL here
-    if (pathname.includes("/authenticate")) {
-      router.push("/authenticate/signin");
-      checkUser();
+    async function handleAuth() {
+      const isAuthenticated = await clientCheckUser();
+      if (!isAuthenticated) {
+        if (!pathname.includes("signin") && !pathname.includes("signup"))
+          router.push("/authenticate/signin");
+      } else {
+        if (pathname.includes("signin") || pathname.includes("signup")) {
+          router.push("/");
+        }
+      }
     }
+    handleAuth();
   }, [pathname, router]);
   return (
     <div className=" h-full overflow-hidden ">

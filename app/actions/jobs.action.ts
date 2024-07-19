@@ -18,11 +18,12 @@ const s3 = new S3Client({
 
 const fileName = generateRandomName();
 const MAX_FILE_SIZE = 1024 * 1024 * 1;
-interface getUrlProps {
-  fileSize: number;
-  fileType: string;
-}
-export async function getUrl(fileSize: number, fileType: string) {
+
+export async function getUrl(
+  fileSize: number,
+  mediaType: string,
+  mediaName: string,
+) {
   const user = await getUser();
   if (!user) {
     return { error: "User not authenticated" };
@@ -31,7 +32,7 @@ export async function getUrl(fileSize: number, fileType: string) {
   if (fileSize > MAX_FILE_SIZE) {
     return { error: "File Size Exceeds Limit 10mb" };
   }
-  if (!fileType) {
+  if (!mediaType) {
     return { error: "Invalid File Type" };
   }
   // @ts-ignore
@@ -45,6 +46,58 @@ export async function getUrl(fileSize: number, fileType: string) {
     expiresIn: 60,
   });
   const url = presigned.split("?")[0];
-  await prismaMedia({ fileType, url, userId });
+  await prismaMedia({ mediaType, mediaName, url, userId });
   return { success: { url: presigned } };
+}
+
+export async function applyToJob(jobId: string) {
+  const user = await getUser();
+  if (!user || "error" in user) {
+    return { error: "User not authenticated" };
+  }
+
+  try {
+    // Ensure the user exists in the database
+    const existingUser = await prisma.user.findUnique({
+      where: { id: user.id },
+    });
+    if (!existingUser) {
+      return { error: "User not found in database" };
+    }
+
+    // Ensure the job post exists in the database
+    const existingJobPost = await prisma.jobPost.findUnique({
+      where: { id: jobId },
+    });
+    if (!existingJobPost) {
+      return { error: "Job post not found in database" };
+    }
+
+    // Check if the user has already applied to this job
+    const existingApplicant = await prisma.applicant.findFirst({
+      where: {
+        userId: user.id,
+        jobId: jobId,
+      },
+    });
+
+    if (existingApplicant) {
+      return { error: "User has already applied to this job" };
+    }
+
+    // Create a new applicant record linking the user to the job post
+    await prisma.applicant.create({
+      data: {
+        userId: user.id,
+        jobId: jobId,
+        coverLetter: "Default cover letter", // Replace with actual cover letter data
+        availability: "Immediate", // Replace with actual availability data
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error applying to job:", error);
+    return { error: "Failed to apply to job" };
+  }
 }

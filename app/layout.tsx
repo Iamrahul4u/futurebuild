@@ -22,7 +22,7 @@ export default function RootLayout({
       <body
         suppressHydrationWarning={true}
         className={cn(
-          "bg-background font-sans antialiased  bg-orange-400 max-w-full  relative max-h-screen overflow-x-hidden p-2",
+          "bg-background font-sans antialiased  max-w-full  relative min-h-screen overflow-x-hidden  ",
           fontSans.variable,
         )}
       >

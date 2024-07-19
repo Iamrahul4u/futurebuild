@@ -10,14 +10,14 @@ import {
 } from "../../components/ui/card";
 import Image from "next/image";
 import { Clock } from "lucide-react";
-import { generateFakeData } from "@/_utils/utils";
+import prisma from "@/prisma";
 
 const RecentJobs = async () => {
-  const jobs = await generateFakeData();
+  const res = await prisma.jobPost.findMany({});
 
   return (
     <div className="flex flex-col gap-4 overflow-y-scroll pr-4 mx-auto">
-      {jobs.map((job) => (
+      {res.map((job) => (
         <Link key={job.id} href={`/jobs/${job.id}`}>
           <Card className="-space-y-2 cursor-pointer border-solid border-[1px] border-black transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] dark:hover:shadow-[4px_4px_0px_gray]  active:translate-x-[0px] active:translate-y-[0px] p-0">
             <CardHeader className="flex flex-row items-center gap-2">

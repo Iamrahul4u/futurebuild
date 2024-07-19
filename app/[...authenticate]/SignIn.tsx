@@ -16,9 +16,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { signIn } from "../actions/auth.action";
-import { useRouter } from "next/navigation";
+import { clientCheckUser, signIn } from "../actions/auth.action";
+import { redirect, useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 export const signInSchema = z.object({
   email: z.string().min(2, {
@@ -31,6 +32,15 @@ export const signInSchema = z.object({
 
 export default function SignIn() {
   const router = useRouter();
+  useEffect(() => {
+    async function handleAuth() {
+      const isAuthenticated = await clientCheckUser();
+      if (isAuthenticated) {
+        redirect("/");
+      }
+    }
+    handleAuth();
+  }, [router]);
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {

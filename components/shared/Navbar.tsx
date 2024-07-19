@@ -8,7 +8,7 @@ import { sidebarLinks } from "../../_constants/constants";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { signout } from "@/app/actions/auth.action";
-import { ThemeModeToggle } from "./ThemeModeToggle";
+import { ModeToggle } from "./ThemeModeToggle";
 export function NavBar() {
   const pathname = usePathname();
   return (
@@ -50,7 +50,7 @@ export function NavBar() {
           <Button onClick={() => signout()}>Logout</Button>
         </li>
         <li className="flex flex-1 gap-2" key={2}>
-          <ThemeModeToggle />
+          <ModeToggle />
         </li>
       </ul>
     </nav>

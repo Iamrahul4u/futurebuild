@@ -31,9 +31,9 @@ const LoadingJobsCard = ({ columns }: { columns: number }) => {
             <Skeleton className="h-6 w-16" />
           </CardContent>
           <CardContent>
-            <Skeleton className="h-32 w-full" />
+            <Skeleton className={`w-full ${columns < 3 ? "h-24" : "h-32"}`} />
           </CardContent>
-          <CardFooter className="pb-2 text-xs flex justify-between">
+          <CardFooter className="pb-4 text-xs flex gap-2 justify-between">
             <Skeleton className="h-4 w-20" />
             <Skeleton className="h-4 w-32" />
           </CardFooter>

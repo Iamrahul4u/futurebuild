@@ -9,14 +9,16 @@ import {
 import { Input } from "../ui/input";
 import { useFormContext } from "react-hook-form";
 
-const InputText = ({
+const InputNumber = ({
   name,
   placeholder,
   label,
+  max,
 }: {
   name: string;
   placeholder: string;
   label?: string;
+  max?: number;
 }) => {
   const { control } = useFormContext();
   return (
@@ -34,7 +36,13 @@ const InputText = ({
             </FormLabel>
           )}
           <FormControl>
-            <Input placeholder={placeholder} {...field} />
+            <Input
+              type="number"
+              min={0}
+              max={max}
+              placeholder={placeholder}
+              {...field}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -43,4 +51,4 @@ const InputText = ({
   );
 };
 
-export default InputText;
+export default InputNumber;

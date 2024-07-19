@@ -8,63 +8,45 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator zod {
+  provider                         = "zod-prisma-types"
+  output                           = "./generated/zod" // default is ./generated/zod
+  createOptionalDefaultValuesTypes = true
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model JobPost {
-  id               String      @id @unique @default(cuid())
+  id               String         @id @unique @default(cuid())
   jobTitle         String
   jobDescription   String
   organisationName String
-  modeOfWork       mode?       @default(Work_From_Office)
-  minExperience    Int         @default(0)
-  maxExperience    Int
-  minSalary        Int         @default(0)
-  maxSalary        Int
+  modeOfWork       mode?
+  minExperience    Int            @default(0) ///@zod.custom.use(z.coerce.number())
+  maxExperience    Int ///@zod.custom.use(z.coerce.number())
+  minSalary        Int            @default(0) ///@zod.custom.use(z.coerce.number())
+  maxSalary        Int ///@zod.custom.use(z.coerce.number())
   skills           Skill[]
   perks            Perk[]
   jobType          JobType?
-  postedAt         DateTime    @default(now())
-  whoCanApply      String?
+  postedAt         DateTime       @default(now())
+  whoCanApply      ExperienceEnum @default(Anyone)
   applicants       Applicant[]
-  postedBy         User        @relation("PostedJobs", fields: [userId], references: [id])
+  postedBy         User           @relation("PostedJobs", fields: [userId], references: [id])
   userId           String
 }
 
 model Applicant {
-  id           String  @unique @default(cuid())
+  id           String  @id @unique @default(cuid())
   userId       String
   coverLetter  String
   availability String
   user         User    @relation(fields: [userId], references: [id])
   jobId        String
   jobPost      JobPost @relation(fields: [jobId], references: [id])
-}
-
-model Skill {
-  id        String   @unique @default(cuid())
-  name      String
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  JobPost   JobPost? @relation(fields: [jobPostId], references: [id])
-  jobPostId String?
-}
-
-model Perk {
-  id        String   @unique @default(cuid())
-  name      String
-  JobPost   JobPost? @relation(fields: [jobPostId], references: [id])
-  jobPostId String?
-}
-
-model Media {
-  id        String @id @unique @default(cuid())
-  mediaType String
-  url       String
-  userId    String @unique
-  user      User   @relation(fields: [userId], references: [id])
 }
 
 model User {
@@ -79,11 +61,36 @@ model User {
   role           Role?       @default(USER)
   skills         Skill[]
   locationId     String?
-  resume         Media?
+  media          Media[]
   address        Location?   @relation(fields: [locationId], references: [id])
   postedJobs     JobPost[]   @relation("PostedJobs")
   appliedJobs    Applicant[]
   sessions       Session[]
+}
+
+model Skill {
+  id        String   @id @unique @default(cuid())
+  name      String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  JobPost   JobPost? @relation(fields: [jobPostId], references: [id])
+  jobPostId String?
+}
+
+model Perk {
+  id        String   @id @unique @default(cuid())
+  name      String
+  JobPost   JobPost? @relation(fields: [jobPostId], references: [id])
+  jobPostId String?
+}
+
+model Media {
+  id        String @id @unique @default(cuid())
+  mediaType String
+  url       String
+  mediaName String
+  userId    String
+  user      User   @relation(fields: [userId], references: [id])
 }
 
 model Session {
@@ -95,7 +102,7 @@ model Session {
 }
 
 model Location {
-  id         String  @unique @default(cuid())
+  id         String  @id @unique @default(cuid())
   address    String?
   postalCode Int
   cityId     String
@@ -104,25 +111,32 @@ model Location {
 }
 
 model City {
-  id       String     @unique @default(cuid())
+  id       String     @id @unique @default(cuid())
   name     String
   state    String
   location Location[]
 }
 
 model JobProfile {
-  id             String @unique @default(cuid())
+  id             String @id @unique @default(cuid())
   jobProfileName String
 }
 
 enum mode {
-  Work_From_Home
-  Work_From_Office
+  Remote
+  Hybrid
 }
 
 enum Role {
   ADMIN
   USER
+}
+
+enum ExperienceEnum {
+  Anyone
+  Fresher
+  Intermediate
+  Experienced
 }
 
 enum JobType {
@@ -131,4 +145,9 @@ enum JobType {
   InternShip
   Project_Work
   Volunteering
+}
+
+enum MediaName {
+  Resume
+  Profile_Img
 }

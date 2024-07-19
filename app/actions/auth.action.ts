@@ -57,8 +57,6 @@ export async function signIn({
   values: z.infer<typeof signInSchema>;
 }) {
   try {
-    const users = await prisma.user.findMany({});
-    console.log(users);
     const user = await prisma.user.findFirst({
       where: {
         email: values.email,
@@ -96,4 +94,9 @@ export const checkUser = async () => {
   if (!user) {
     redirect("/authenticate/signin");
   }
+};
+
+export const clientCheckUser = async () => {
+  const user = await getUser();
+  return !!user;
 };
