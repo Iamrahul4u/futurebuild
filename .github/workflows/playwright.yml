@@ -20,6 +20,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+      - name: Print DATABASE_URL
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" # Debugging step
       - name: Install dependencies
         run: npm ci
       - name: Build Next.js app
