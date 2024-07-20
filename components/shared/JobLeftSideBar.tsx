@@ -59,11 +59,8 @@ const JobLeftSideBar = () => {
           </div>
 
           <div className="flex gap-2  mt-4 mb-2">
-            <CheckboxGroup.Root defaultValue={["1"]} name="example">
-              <CheckboxGroup.Item value="1">Fun</CheckboxGroup.Item>
-              <CheckboxGroup.Item value="2">Serious</CheckboxGroup.Item>
-              <CheckboxGroup.Item value="3">Smart</CheckboxGroup.Item>
-            </CheckboxGroup.Root>
+            <input type="checkbox" value={"remote"} placeholder="Remote" />
+            <label>Remote</label>
           </div>
           <StateButton content="Apply Filters" />
         </form>

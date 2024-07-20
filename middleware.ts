@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { redirecttest } from "./app/actions/jobs.action";
 
-const protectedRoutes = [
-  "/jobs",
-  "/authenticate/signin",
-  "/authenticate/signup",
-  "/profile/[id]",
-];
-
-const isProtected = (url: string): boolean => {
-  return protectedRoutes.some((route) => {
-    // Convert route to a regular expression
-    const regex = new RegExp(`^${route.replace(/\[.*?\]/g, "[^/]+")}$`);
-    return regex.test(url);
-  });
+export async function middleware(request: NextRequest) {
+  // Get the IP address of the user
+}
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+  ],
 };
-
-export default async function middleware(request: NextRequest) {}

@@ -29,7 +29,7 @@ export default function Page() {
     handleAuth();
   }, [pathname, router]);
   return (
-    <div className=" h-full overflow-hidden ">
+    <div className=" overflow-y-scroll ">
       {pathname.includes("signin") ? (
         <SignIn />
       ) : pathname.includes("signup") ? (

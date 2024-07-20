@@ -1,8 +1,7 @@
 import { ThemeProvider } from "./ThemeProvider";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import "@radix-ui/themes/styles.css";
-import { Theme, ThemePanel } from "@radix-ui/themes";
+import { Toaster } from "sonner";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -19,6 +18,7 @@ export default function RootLayout({
         <body>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             {children}
+            <Toaster richColors />
           </ThemeProvider>
         </body>
       </html>

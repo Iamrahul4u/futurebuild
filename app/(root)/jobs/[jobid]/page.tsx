@@ -9,17 +9,32 @@ import { ApplySheet } from "@/components/shared/ApplySheet";
 import prisma from "@/prisma";
 import { getUser } from "@/app/[...authenticate]/lucia";
 import { redirect } from "next/navigation";
+import { CircleCheck } from "lucide-react";
+import { ApplicantOptionalDefaults } from "@/prisma/generated/zod";
+import { User } from "lucia";
+import { error } from "console";
 //
 export default async function Page({ params }: { params: { jobid: string } }) {
-  const user = await getUser();
-  if (!user || "error" in user) {
-    redirect("/authenticate/signin");
-  }
+  const user: User | { error: string } | null = await getUser();
   const jobData = await prisma.jobPost.findFirst({
     where: {
       id: params.jobid,
     },
   });
+  let applied = false;
+  let application: { userId: string } | null = null;
+  if (!user || !("error" in user)) {
+    application = await prisma.applicant.findFirst({
+      where: {
+        jobId: jobData?.id,
+        userId: user?.id || "",
+      },
+      select: {
+        userId: true,
+      },
+    });
+    applied = !!application;
+  }
   return (
     <div className="grid grid-cols-[260px_1fr_240px] overflow-y-scroll pb-32 gap-6 w-full min-h-screen bg-muted/40 p-6">
       <div className="flex flex-col gap-4 overflow-y-scroll pr-4 mx-auto">
@@ -72,10 +87,20 @@ export default async function Page({ params }: { params: { jobid: string } }) {
             </div>
           </div>
           <div className="mt-4 space-y-2">
-            <Link href={`/jobs/apply/${params.jobid}`}>
-              <Button>Apply Now</Button>
-            </Link>
-            {jobData?.userId === user.id && (
+            {user && applied ? (
+              <Button
+                variant={"link"}
+                className="text-green-600 gap-1 text-lg p-0"
+              >
+                <CircleCheck size={16} />
+                Applied
+              </Button>
+            ) : (
+              <Link href={`/jobs/apply/${params.jobid}`}>
+                <Button>Apply Now</Button>
+              </Link>
+            )}
+            {jobData?.userId === application?.userId && (
               <Link href={`/view/${params.jobid}`}>
                 <Button>View Aplicants</Button>
               </Link>

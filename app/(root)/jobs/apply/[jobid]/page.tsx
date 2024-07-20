@@ -21,10 +21,10 @@ import { applyToJob, getUrl } from "@/app/actions/jobs.action";
 import { toast } from "sonner";
 import { InputTextArea } from "@/components/shared/InputTextArea";
 import UploadFile from "@/components/shared/UploadFile";
-import { checkUser } from "@/app/actions/auth.action";
+import { checkUser, clientCheckUser } from "@/app/actions/auth.action";
 import StateButton from "@/components/shared/StateButton";
 import { MediaNameSchema } from "@/prisma/generated/zod";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 const applyJob = z.object({
   coverLetter: z
@@ -56,7 +56,11 @@ export default function Page({ params }: { params: { jobid: string } }) {
   const router = useRouter();
   useEffect(() => {
     async function getUser() {
-      await checkUser();
+      const res = await clientCheckUser();
+      if (!res) {
+        toast.error("User Not Logged In");
+        router.push("/authenticate/signin");
+      }
     }
     getUser();
   }, []);

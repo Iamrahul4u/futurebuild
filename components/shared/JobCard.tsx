@@ -15,7 +15,7 @@ import { JobPost } from "@prisma/client";
 import { JobPostOptionalDefaults } from "@/prisma/generated/zod";
 import { formatNumberToLakh, formatTimeAgo } from "@/_utils/utils";
 
-const JobCard = ({ details }: { details: JobPostOptionalDefaults }) => {
+const JobCard = async ({ details }: { details: JobPostOptionalDefaults }) => {
   return (
     <Link href={`jobs/${details.id}`}>
       <Card className="-space-y-3     cursor-pointer  border-solid border-[1px] border-black dark:hover:shadow-[4px_4px_0px_gray] transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px]  p-0">

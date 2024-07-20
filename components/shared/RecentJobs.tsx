@@ -13,7 +13,9 @@ import { Clock } from "lucide-react";
 import prisma from "@/prisma";
 
 const RecentJobs = async () => {
-  const res = await prisma.jobPost.findMany({});
+  const res = await prisma.jobPost.findMany({
+    cacheStrategy: { swr: 60, ttl: 60 },
+  });
 
   return (
     <div className="flex flex-col gap-4 overflow-y-scroll pr-4 mx-auto">

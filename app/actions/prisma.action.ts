@@ -62,8 +62,3 @@ export async function createJob(props: JobPostOptionalDefaults) {
     return { error: "Error Occured" };
   }
 }
-
-export async function getJobs() {
-  const jobs = await prisma.jobPost.findMany({});
-  return jobs;
-}

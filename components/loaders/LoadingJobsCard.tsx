@@ -6,7 +6,9 @@ const LoadingJobsCard = ({ columns }: { columns: number }) => {
   return (
     <div
       className={`h-full grid grid-cols-${columns}  rounded-md  ${
-        columns > 1 ? "px-8 py-4 border" : ""
+        columns > 1
+          ? "px-8 py-4 border grid-cols-1 md:grid-col-2 lg:grid-cols-3"
+          : ""
       } gap-4`}
     >
       {Array.from({ length: 10 }).map((_, index) => (

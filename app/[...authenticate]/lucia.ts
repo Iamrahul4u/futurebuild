@@ -19,7 +19,7 @@ interface User {
   id: string;
 }
 interface getUser {
-  (): Promise<User | { error: true } | null>;
+  (): Promise<User | { error: string } | null>;
 }
 export const getUser: getUser = cache(async () => {
   const sessionId = cookies().get(lucia.sessionCookieName)?.value || null;
@@ -42,7 +42,7 @@ export const getUser: getUser = cache(async () => {
       cookies().set(session.name, session.value, session.attributes);
     }
   } catch (error) {
-    return { error: true };
+    return { error: "Error Occured" };
   }
   return user;
 });

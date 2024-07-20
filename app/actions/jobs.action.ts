@@ -7,6 +7,10 @@ import { getUser } from "../[...authenticate]/lucia";
 import { generateRandomName } from "@/_utils/utils";
 import prisma from "@/prisma";
 import { prismaMedia } from "./prisma.action";
+import { headers } from "next/headers";
+import rateLimiter from "@/lib/rateLimit";
+import { JobPost, JobPostOptionalDefaults } from "@/prisma/generated/zod";
+import { redirect } from "next/navigation";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -100,4 +104,17 @@ export async function applyToJob(jobId: string) {
     console.error("Error applying to job:", error);
     return { error: "Failed to apply to job" };
   }
+}
+
+export async function getjobs() {
+  const res = await rateLimiter();
+  if ("error" in res) {
+    return { error: res?.error };
+  }
+  const jobs = await prisma.jobPost.findMany({});
+  return jobs;
+}
+
+export async function redirecttest() {
+  redirect("/");
 }
