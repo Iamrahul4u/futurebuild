@@ -35,7 +35,10 @@ jobs:
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
+<<<<<<< HEAD
 
+=======
+>>>>>>> a04e21169f4f7525aae0dd01ff327e7328206f74
       - name: Run Playwright tests
         run: npx playwright test
         env:
