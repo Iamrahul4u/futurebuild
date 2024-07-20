@@ -19,6 +19,7 @@
     "@node-rs/argon2": "^1.8.3",
     "@node-rs/bcrypt": "^1.10.4",
     "@opentelemetry/auto-instrumentations-node": "^0.48.0",
+    "@opentelemetry/exporter-metrics-otlp-grpc": "^0.52.1",
     "@opentelemetry/exporter-trace-otlp-http": "^0.52.1",
     "@opentelemetry/resources": "^1.25.1",
     "@opentelemetry/sdk-node": "^0.52.1",

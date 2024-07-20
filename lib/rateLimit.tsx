@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 const rateLimit = new Ratelimit({
   redis: kv, // Use Vercel KV for storage
-  limiter: Ratelimit.slidingWindow(5, "30s"), // Limit to 5 requests per minute
+  limiter: Ratelimit.slidingWindow(60, "1m"), // Limit to 5 requests per minute
 });
 
 export default async function rateLimiter() {
