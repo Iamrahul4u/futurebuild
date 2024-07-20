@@ -10,13 +10,23 @@ const rateLimit = new Ratelimit({
 
 export default async function rateLimiter() {
   // Check if the user has reached their rate limit
-  const ip = headers().get("x-forwarded-for") || "unknown";
+  try {
+    const ip = headers().get("x-forwarded-for") || "unknown";
 
-  const { success } = await rateLimit.limit(`ratelimit_${ip}`);
-  if (!success) {
+    const { success } = await rateLimit.limit(`ratelimit_${ip}`);
+    if (!success) {
+      return {
+        success: false,
+        error: "Rate Limit Exceeded",
+        statusCode: 301,
+      };
+    }
+    return { success: true };
+  } catch (error) {
     return {
+      success: false,
       error: "Internal Server Error",
+      statusCode: 401,
     };
   }
-  return NextResponse.next();
 }

@@ -7,12 +7,12 @@ import ToasterShow from "./ToasterShow";
 
 const JobRightSideBar = async () => {
   const res = await getjobs();
-  if ("error" in res) {
-    return <ToasterShow />;
+  if (res.statusCode === 301) {
+    <ToasterShow />;
   }
   return (
     <div className="h-full grid grid-cols-1 md:grid-col-2 lg:grid-cols-3   overflow-y-scroll rounded-md border px-8 py-4 gap-4">
-      {res?.map((job) => (
+      {res?.jobs?.map((job) => (
         <JobCard details={job} key={job.id} />
       ))}
     </div>

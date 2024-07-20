@@ -105,16 +105,29 @@ export async function applyToJob(jobId: string) {
     return { error: "Failed to apply to job" };
   }
 }
-
-export async function getjobs() {
-  const res = await rateLimiter();
-  if ("error" in res) {
-    return { error: res?.error };
-  }
-  const jobs = await prisma.jobPost.findMany({});
-  return jobs;
+interface ErrorResponse {
+  error: {
+    message: string;
+  };
 }
 
-export async function redirecttest() {
-  redirect("/");
+interface JobsResponse {
+  jobs?: JobPost[];
+  error?: {
+    message: string | undefined;
+  };
+  statusCode?: number;
+}
+
+export async function getjobs(): Promise<JobsResponse> {
+  const res = await rateLimiter();
+  if (res.statusCode === 301) {
+    return { error: { message: res.error }, statusCode: res.statusCode };
+  }
+  try {
+    const jobs = await prisma.jobPost.findMany({});
+    return { jobs };
+  } catch (error) {
+    return { error: { message: "Failed to fetch jobs." }, statusCode: 501 };
+  }
 }

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { redirecttest } from "./app/actions/jobs.action";
 
 export async function middleware(request: NextRequest) {
   // Get the IP address of the user
