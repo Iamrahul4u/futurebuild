@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { online } from "./lib/utils";
 
 export async function middleware(request: NextRequest) {
   // Get the IP address of the user
