@@ -101,3 +101,14 @@ export const clientCheckUser = async () => {
   const user = await getUser();
   return !!user;
 };
+
+export const getUserId = async () => {
+  const user = await getUser();
+  if (!user) {
+    return { user: null };
+  }
+  if ("error" in user) {
+    return { user: "error" };
+  }
+  return { user };
+};

@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <>
       <html lang="en" className={inter.className} suppressHydrationWarning>
-        <body suppressHydrationWarning={true}>
+        <body suppressHydrationWarning={true} className="bg-black">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ShowConnection />
             {children}
