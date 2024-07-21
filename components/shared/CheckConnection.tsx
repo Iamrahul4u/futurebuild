@@ -9,15 +9,30 @@ export const ShowConnection = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [online, setOnline] = useState(true);
-  useEffect(() => {
-    setOnline(navigator.onLine);
+  const checkOnlineStatus = async () => {
+    try {
+      const response = await fetch(
+        "https://old-hat-fef4.iamrahulgupta4u.workers.dev/",
+        {
+          method: "GET",
+          cache: "no-store",
+        },
+      );
 
+      setOnline(response.ok);
+    } catch (error) {
+      setOnline(false);
+    }
+  };
+  useEffect(() => {
+    checkOnlineStatus();
     const handleOnline = () => setOnline(true);
     const handleOffline = () => setOnline(false);
-
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
+    const interval = setInterval(checkOnlineStatus, 5000);
     return () => {
+      clearInterval(interval);
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
