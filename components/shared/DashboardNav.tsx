@@ -17,34 +17,9 @@ const DashboardNav = () => {
         <Link
           href="#"
           className="flex items-center gap-4 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-          prefetch={false}
         >
           <HomeIcon className="h-5 w-5" />
           <span className="text-sm font-medium sm:block">Home</span>
-        </Link>
-        <Link
-          href="#"
-          className="flex items-center gap-4 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-          prefetch={false}
-        >
-          <CalendarIcon className="h-5 w-5" />
-          <span className="text-sm font-medium sm:block">Calendar</span>
-        </Link>
-        <Link
-          href="#"
-          className="flex items-center gap-4 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-          prefetch={false}
-        >
-          <UsersIcon className="h-5 w-5" />
-          <span className="text-sm font-medium sm:block">Users</span>
-        </Link>
-        <Link
-          href="#"
-          className="flex items-center gap-4 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-          prefetch={false}
-        >
-          <SettingsIcon className="h-5 w-5" />
-          <span className="text-sm font-medium sm:block">Settings</span>
         </Link>
       </nav>
     </aside>

@@ -14,7 +14,7 @@ export default function ResizablePageLayout({
 }) {
   return (
     <ResizablePanelGroup direction="horizontal">
-      <ResizablePanel minSize={20} defaultSize={25} maxSize={35}>
+      <ResizablePanel minSize={20} defaultSize={20} maxSize={35}>
         {JobLeftSideBar}
       </ResizablePanel>
       <ResizableHandle withHandle className="bg-slate-700" />

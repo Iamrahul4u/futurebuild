@@ -14,7 +14,7 @@ export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCo
 
 export const JobPostScalarFieldEnumSchema = z.enum(['id','jobTitle','jobDescription','organisationName','modeOfWork','minExperience','maxExperience','minSalary','maxSalary','jobType','postedAt','whoCanApply','userId']);
 
-export const ApplicantScalarFieldEnumSchema = z.enum(['id','userId','coverLetter','availability','jobId']);
+export const ApplicantScalarFieldEnumSchema = z.enum(['id','userId','coverLetter','availability','approvalStatus','jobId']);
 
 export const UserScalarFieldEnumSchema = z.enum(['id','username','firstName','secondName','email','hashedPassword','createdAt','updatedAt','role','locationId']);
 
@@ -38,11 +38,15 @@ export const QueryModeSchema = z.enum(['default','insensitive']);
 
 export const NullsOrderSchema = z.enum(['first','last']);
 
+export const ApprovalStatusSchema = z.enum(['Pending','Rejected','Accepted']);
+
+export type ApprovalStatusType = `${z.infer<typeof ApprovalStatusSchema>}`
+
 export const modeSchema = z.enum(['Remote','Hybrid']);
 
 export type modeType = `${z.infer<typeof modeSchema>}`
 
-export const RoleSchema = z.enum(['ADMIN','USER']);
+export const RoleSchema = z.enum(['ADMIN','USER','ORGANIZATION']);
 
 export type RoleType = `${z.infer<typeof RoleSchema>}`
 
@@ -68,7 +72,7 @@ export type MediaNameType = `${z.infer<typeof MediaNameSchema>}`
 
 export const JobPostSchema = z.object({
   modeOfWork: modeSchema.nullable(),
-  jobType: JobTypeSchema.nullable(),
+  jobType: JobTypeSchema,
   whoCanApply: ExperienceEnumSchema,
   id: z.string().cuid(),
   jobTitle: z.string(),
@@ -88,6 +92,7 @@ export type JobPost = z.infer<typeof JobPostSchema>
 //------------------------------------------------------
 
 export const JobPostOptionalDefaultsSchema = JobPostSchema.merge(z.object({
+  jobType: JobTypeSchema.optional(),
   whoCanApply: ExperienceEnumSchema.optional(),
   id: z.string().cuid().optional(),
   minExperience: z.coerce.number().optional(),
@@ -102,6 +107,7 @@ export type JobPostOptionalDefaults = z.infer<typeof JobPostOptionalDefaultsSche
 /////////////////////////////////////////
 
 export const ApplicantSchema = z.object({
+  approvalStatus: ApprovalStatusSchema,
   id: z.string().cuid(),
   userId: z.string(),
   coverLetter: z.string(),
@@ -115,6 +121,7 @@ export type Applicant = z.infer<typeof ApplicantSchema>
 //------------------------------------------------------
 
 export const ApplicantOptionalDefaultsSchema = ApplicantSchema.merge(z.object({
+  approvalStatus: ApprovalStatusSchema.optional(),
   id: z.string().cuid().optional(),
 }))
 
@@ -370,6 +377,7 @@ export const ApplicantSelectSchema: z.ZodType<Prisma.ApplicantSelect> = z.object
   userId: z.boolean().optional(),
   coverLetter: z.boolean().optional(),
   availability: z.boolean().optional(),
+  approvalStatus: z.boolean().optional(),
   jobId: z.boolean().optional(),
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
   jobPost: z.union([z.boolean(),z.lazy(() => JobPostArgsSchema)]).optional(),
@@ -593,7 +601,7 @@ export const JobPostWhereInputSchema: z.ZodType<Prisma.JobPostWhereInput> = z.ob
   maxExperience: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   minSalary: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   maxSalary: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  jobType: z.union([ z.lazy(() => EnumJobTypeNullableFilterSchema),z.lazy(() => JobTypeSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => EnumJobTypeFilterSchema),z.lazy(() => JobTypeSchema) ]).optional(),
   postedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   whoCanApply: z.union([ z.lazy(() => EnumExperienceEnumFilterSchema),z.lazy(() => ExperienceEnumSchema) ]).optional(),
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
@@ -613,7 +621,7 @@ export const JobPostOrderByWithRelationInputSchema: z.ZodType<Prisma.JobPostOrde
   maxExperience: z.lazy(() => SortOrderSchema).optional(),
   minSalary: z.lazy(() => SortOrderSchema).optional(),
   maxSalary: z.lazy(() => SortOrderSchema).optional(),
-  jobType: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  jobType: z.lazy(() => SortOrderSchema).optional(),
   postedAt: z.lazy(() => SortOrderSchema).optional(),
   whoCanApply: z.lazy(() => SortOrderSchema).optional(),
   userId: z.lazy(() => SortOrderSchema).optional(),
@@ -639,7 +647,7 @@ export const JobPostWhereUniqueInputSchema: z.ZodType<Prisma.JobPostWhereUniqueI
   maxExperience: z.union([ z.lazy(() => IntFilterSchema),z.coerce.number() ]).optional(),
   minSalary: z.union([ z.lazy(() => IntFilterSchema),z.coerce.number() ]).optional(),
   maxSalary: z.union([ z.lazy(() => IntFilterSchema),z.coerce.number() ]).optional(),
-  jobType: z.union([ z.lazy(() => EnumJobTypeNullableFilterSchema),z.lazy(() => JobTypeSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => EnumJobTypeFilterSchema),z.lazy(() => JobTypeSchema) ]).optional(),
   postedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   whoCanApply: z.union([ z.lazy(() => EnumExperienceEnumFilterSchema),z.lazy(() => ExperienceEnumSchema) ]).optional(),
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
@@ -659,7 +667,7 @@ export const JobPostOrderByWithAggregationInputSchema: z.ZodType<Prisma.JobPostO
   maxExperience: z.lazy(() => SortOrderSchema).optional(),
   minSalary: z.lazy(() => SortOrderSchema).optional(),
   maxSalary: z.lazy(() => SortOrderSchema).optional(),
-  jobType: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  jobType: z.lazy(() => SortOrderSchema).optional(),
   postedAt: z.lazy(() => SortOrderSchema).optional(),
   whoCanApply: z.lazy(() => SortOrderSchema).optional(),
   userId: z.lazy(() => SortOrderSchema).optional(),
@@ -683,7 +691,7 @@ export const JobPostScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.JobPo
   maxExperience: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   minSalary: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   maxSalary: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
-  jobType: z.union([ z.lazy(() => EnumJobTypeNullableWithAggregatesFilterSchema),z.lazy(() => JobTypeSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => EnumJobTypeWithAggregatesFilterSchema),z.lazy(() => JobTypeSchema) ]).optional(),
   postedAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   whoCanApply: z.union([ z.lazy(() => EnumExperienceEnumWithAggregatesFilterSchema),z.lazy(() => ExperienceEnumSchema) ]).optional(),
   userId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
@@ -697,6 +705,7 @@ export const ApplicantWhereInputSchema: z.ZodType<Prisma.ApplicantWhereInput> = 
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   coverLetter: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   availability: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => EnumApprovalStatusFilterSchema),z.lazy(() => ApprovalStatusSchema) ]).optional(),
   jobId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   jobPost: z.union([ z.lazy(() => JobPostRelationFilterSchema),z.lazy(() => JobPostWhereInputSchema) ]).optional(),
@@ -707,6 +716,7 @@ export const ApplicantOrderByWithRelationInputSchema: z.ZodType<Prisma.Applicant
   userId: z.lazy(() => SortOrderSchema).optional(),
   coverLetter: z.lazy(() => SortOrderSchema).optional(),
   availability: z.lazy(() => SortOrderSchema).optional(),
+  approvalStatus: z.lazy(() => SortOrderSchema).optional(),
   jobId: z.lazy(() => SortOrderSchema).optional(),
   user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
   jobPost: z.lazy(() => JobPostOrderByWithRelationInputSchema).optional()
@@ -723,6 +733,7 @@ export const ApplicantWhereUniqueInputSchema: z.ZodType<Prisma.ApplicantWhereUni
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   coverLetter: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   availability: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => EnumApprovalStatusFilterSchema),z.lazy(() => ApprovalStatusSchema) ]).optional(),
   jobId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   jobPost: z.union([ z.lazy(() => JobPostRelationFilterSchema),z.lazy(() => JobPostWhereInputSchema) ]).optional(),
@@ -733,6 +744,7 @@ export const ApplicantOrderByWithAggregationInputSchema: z.ZodType<Prisma.Applic
   userId: z.lazy(() => SortOrderSchema).optional(),
   coverLetter: z.lazy(() => SortOrderSchema).optional(),
   availability: z.lazy(() => SortOrderSchema).optional(),
+  approvalStatus: z.lazy(() => SortOrderSchema).optional(),
   jobId: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => ApplicantCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => ApplicantMaxOrderByAggregateInputSchema).optional(),
@@ -747,6 +759,7 @@ export const ApplicantScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.App
   userId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   coverLetter: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   availability: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => EnumApprovalStatusWithAggregatesFilterSchema),z.lazy(() => ApprovalStatusSchema) ]).optional(),
   jobId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
@@ -762,7 +775,7 @@ export const UserWhereInputSchema: z.ZodType<Prisma.UserWhereInput> = z.object({
   hashedPassword: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
-  role: z.union([ z.lazy(() => EnumRoleNullableFilterSchema),z.lazy(() => RoleSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => EnumRoleFilterSchema),z.lazy(() => RoleSchema) ]).optional(),
   locationId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   skills: z.lazy(() => SkillListRelationFilterSchema).optional(),
   media: z.lazy(() => MediaListRelationFilterSchema).optional(),
@@ -781,7 +794,7 @@ export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWit
   hashedPassword: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
-  role: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  role: z.lazy(() => SortOrderSchema).optional(),
   locationId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   skills: z.lazy(() => SkillOrderByRelationAggregateInputSchema).optional(),
   media: z.lazy(() => MediaOrderByRelationAggregateInputSchema).optional(),
@@ -815,7 +828,7 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   hashedPassword: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
-  role: z.union([ z.lazy(() => EnumRoleNullableFilterSchema),z.lazy(() => RoleSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => EnumRoleFilterSchema),z.lazy(() => RoleSchema) ]).optional(),
   locationId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   skills: z.lazy(() => SkillListRelationFilterSchema).optional(),
   media: z.lazy(() => MediaListRelationFilterSchema).optional(),
@@ -834,7 +847,7 @@ export const UserOrderByWithAggregationInputSchema: z.ZodType<Prisma.UserOrderBy
   hashedPassword: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
-  role: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  role: z.lazy(() => SortOrderSchema).optional(),
   locationId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => UserCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => UserMaxOrderByAggregateInputSchema).optional(),
@@ -853,7 +866,7 @@ export const UserScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.UserScal
   hashedPassword: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
-  role: z.union([ z.lazy(() => EnumRoleNullableWithAggregatesFilterSchema),z.lazy(() => RoleSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => EnumRoleWithAggregatesFilterSchema),z.lazy(() => RoleSchema) ]).optional(),
   locationId: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
@@ -1223,7 +1236,7 @@ export const JobPostCreateInputSchema: z.ZodType<Prisma.JobPostCreateInput> = z.
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
   skills: z.lazy(() => SkillCreateNestedManyWithoutJobPostInputSchema).optional(),
@@ -1242,7 +1255,7 @@ export const JobPostUncheckedCreateInputSchema: z.ZodType<Prisma.JobPostUnchecke
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
   userId: z.string(),
@@ -1261,7 +1274,7 @@ export const JobPostUpdateInputSchema: z.ZodType<Prisma.JobPostUpdateInput> = z.
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUpdateManyWithoutJobPostNestedInputSchema).optional(),
@@ -1280,7 +1293,7 @@ export const JobPostUncheckedUpdateInputSchema: z.ZodType<Prisma.JobPostUnchecke
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1299,7 +1312,7 @@ export const JobPostCreateManyInputSchema: z.ZodType<Prisma.JobPostCreateManyInp
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
   userId: z.string()
@@ -1315,7 +1328,7 @@ export const JobPostUpdateManyMutationInputSchema: z.ZodType<Prisma.JobPostUpdat
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -1330,7 +1343,7 @@ export const JobPostUncheckedUpdateManyInputSchema: z.ZodType<Prisma.JobPostUnch
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1340,6 +1353,7 @@ export const ApplicantCreateInputSchema: z.ZodType<Prisma.ApplicantCreateInput> 
   id: z.string().cuid().optional(),
   coverLetter: z.string(),
   availability: z.string(),
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutAppliedJobsInputSchema),
   jobPost: z.lazy(() => JobPostCreateNestedOneWithoutApplicantsInputSchema)
 }).strict();
@@ -1349,6 +1363,7 @@ export const ApplicantUncheckedCreateInputSchema: z.ZodType<Prisma.ApplicantUnch
   userId: z.string(),
   coverLetter: z.string(),
   availability: z.string(),
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
   jobId: z.string()
 }).strict();
 
@@ -1356,6 +1371,7 @@ export const ApplicantUpdateInputSchema: z.ZodType<Prisma.ApplicantUpdateInput> 
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutAppliedJobsNestedInputSchema).optional(),
   jobPost: z.lazy(() => JobPostUpdateOneRequiredWithoutApplicantsNestedInputSchema).optional()
 }).strict();
@@ -1365,6 +1381,7 @@ export const ApplicantUncheckedUpdateInputSchema: z.ZodType<Prisma.ApplicantUnch
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
   jobId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -1373,6 +1390,7 @@ export const ApplicantCreateManyInputSchema: z.ZodType<Prisma.ApplicantCreateMan
   userId: z.string(),
   coverLetter: z.string(),
   availability: z.string(),
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
   jobId: z.string()
 }).strict();
 
@@ -1380,6 +1398,7 @@ export const ApplicantUpdateManyMutationInputSchema: z.ZodType<Prisma.ApplicantU
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ApplicantUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ApplicantUncheckedUpdateManyInput> = z.object({
@@ -1387,6 +1406,7 @@ export const ApplicantUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Applicant
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
   jobId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -1399,7 +1419,7 @@ export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   skills: z.lazy(() => SkillCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
@@ -1417,7 +1437,7 @@ export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreat
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   locationId: z.string().optional().nullable(),
   skills: z.lazy(() => SkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
@@ -1435,7 +1455,7 @@ export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
@@ -1453,7 +1473,7 @@ export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdat
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   skills: z.lazy(() => SkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
@@ -1471,7 +1491,7 @@ export const UserCreateManyInputSchema: z.ZodType<Prisma.UserCreateManyInput> = 
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   locationId: z.string().optional().nullable()
 }).strict();
 
@@ -1484,7 +1504,7 @@ export const UserUpdateManyMutationInputSchema: z.ZodType<Prisma.UserUpdateManyM
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const UserUncheckedUpdateManyInputSchema: z.ZodType<Prisma.UserUncheckedUpdateManyInput> = z.object({
@@ -1496,7 +1516,7 @@ export const UserUncheckedUpdateManyInputSchema: z.ZodType<Prisma.UserUncheckedU
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
@@ -1850,11 +1870,11 @@ export const IntFilterSchema: z.ZodType<Prisma.IntFilter> = z.object({
   not: z.union([ z.number(),z.lazy(() => NestedIntFilterSchema) ]).optional(),
 }).strict();
 
-export const EnumJobTypeNullableFilterSchema: z.ZodType<Prisma.EnumJobTypeNullableFilter> = z.object({
-  equals: z.lazy(() => JobTypeSchema).optional().nullable(),
-  in: z.lazy(() => JobTypeSchema).array().optional().nullable(),
-  notIn: z.lazy(() => JobTypeSchema).array().optional().nullable(),
-  not: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NestedEnumJobTypeNullableFilterSchema) ]).optional().nullable(),
+export const EnumJobTypeFilterSchema: z.ZodType<Prisma.EnumJobTypeFilter> = z.object({
+  equals: z.lazy(() => JobTypeSchema).optional(),
+  in: z.lazy(() => JobTypeSchema).array().optional(),
+  notIn: z.lazy(() => JobTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NestedEnumJobTypeFilterSchema) ]).optional(),
 }).strict();
 
 export const DateTimeFilterSchema: z.ZodType<Prisma.DateTimeFilter> = z.object({
@@ -2021,14 +2041,14 @@ export const IntWithAggregatesFilterSchema: z.ZodType<Prisma.IntWithAggregatesFi
   _max: z.lazy(() => NestedIntFilterSchema).optional()
 }).strict();
 
-export const EnumJobTypeNullableWithAggregatesFilterSchema: z.ZodType<Prisma.EnumJobTypeNullableWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => JobTypeSchema).optional().nullable(),
-  in: z.lazy(() => JobTypeSchema).array().optional().nullable(),
-  notIn: z.lazy(() => JobTypeSchema).array().optional().nullable(),
-  not: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NestedEnumJobTypeNullableWithAggregatesFilterSchema) ]).optional().nullable(),
-  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _min: z.lazy(() => NestedEnumJobTypeNullableFilterSchema).optional(),
-  _max: z.lazy(() => NestedEnumJobTypeNullableFilterSchema).optional()
+export const EnumJobTypeWithAggregatesFilterSchema: z.ZodType<Prisma.EnumJobTypeWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => JobTypeSchema).optional(),
+  in: z.lazy(() => JobTypeSchema).array().optional(),
+  notIn: z.lazy(() => JobTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NestedEnumJobTypeWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumJobTypeFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumJobTypeFilterSchema).optional()
 }).strict();
 
 export const DateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.DateTimeWithAggregatesFilter> = z.object({
@@ -2055,6 +2075,13 @@ export const EnumExperienceEnumWithAggregatesFilterSchema: z.ZodType<Prisma.Enum
   _max: z.lazy(() => NestedEnumExperienceEnumFilterSchema).optional()
 }).strict();
 
+export const EnumApprovalStatusFilterSchema: z.ZodType<Prisma.EnumApprovalStatusFilter> = z.object({
+  equals: z.lazy(() => ApprovalStatusSchema).optional(),
+  in: z.lazy(() => ApprovalStatusSchema).array().optional(),
+  notIn: z.lazy(() => ApprovalStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => NestedEnumApprovalStatusFilterSchema) ]).optional(),
+}).strict();
+
 export const JobPostRelationFilterSchema: z.ZodType<Prisma.JobPostRelationFilter> = z.object({
   is: z.lazy(() => JobPostWhereInputSchema).optional(),
   isNot: z.lazy(() => JobPostWhereInputSchema).optional()
@@ -2065,6 +2092,7 @@ export const ApplicantCountOrderByAggregateInputSchema: z.ZodType<Prisma.Applica
   userId: z.lazy(() => SortOrderSchema).optional(),
   coverLetter: z.lazy(() => SortOrderSchema).optional(),
   availability: z.lazy(() => SortOrderSchema).optional(),
+  approvalStatus: z.lazy(() => SortOrderSchema).optional(),
   jobId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -2073,6 +2101,7 @@ export const ApplicantMaxOrderByAggregateInputSchema: z.ZodType<Prisma.Applicant
   userId: z.lazy(() => SortOrderSchema).optional(),
   coverLetter: z.lazy(() => SortOrderSchema).optional(),
   availability: z.lazy(() => SortOrderSchema).optional(),
+  approvalStatus: z.lazy(() => SortOrderSchema).optional(),
   jobId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -2081,14 +2110,25 @@ export const ApplicantMinOrderByAggregateInputSchema: z.ZodType<Prisma.Applicant
   userId: z.lazy(() => SortOrderSchema).optional(),
   coverLetter: z.lazy(() => SortOrderSchema).optional(),
   availability: z.lazy(() => SortOrderSchema).optional(),
+  approvalStatus: z.lazy(() => SortOrderSchema).optional(),
   jobId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const EnumRoleNullableFilterSchema: z.ZodType<Prisma.EnumRoleNullableFilter> = z.object({
-  equals: z.lazy(() => RoleSchema).optional().nullable(),
-  in: z.lazy(() => RoleSchema).array().optional().nullable(),
-  notIn: z.lazy(() => RoleSchema).array().optional().nullable(),
-  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleNullableFilterSchema) ]).optional().nullable(),
+export const EnumApprovalStatusWithAggregatesFilterSchema: z.ZodType<Prisma.EnumApprovalStatusWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => ApprovalStatusSchema).optional(),
+  in: z.lazy(() => ApprovalStatusSchema).array().optional(),
+  notIn: z.lazy(() => ApprovalStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => NestedEnumApprovalStatusWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumApprovalStatusFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumApprovalStatusFilterSchema).optional()
+}).strict();
+
+export const EnumRoleFilterSchema: z.ZodType<Prisma.EnumRoleFilter> = z.object({
+  equals: z.lazy(() => RoleSchema).optional(),
+  in: z.lazy(() => RoleSchema).array().optional(),
+  notIn: z.lazy(() => RoleSchema).array().optional(),
+  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleFilterSchema) ]).optional(),
 }).strict();
 
 export const StringNullableFilterSchema: z.ZodType<Prisma.StringNullableFilter> = z.object({
@@ -2180,14 +2220,14 @@ export const UserMinOrderByAggregateInputSchema: z.ZodType<Prisma.UserMinOrderBy
   locationId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const EnumRoleNullableWithAggregatesFilterSchema: z.ZodType<Prisma.EnumRoleNullableWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => RoleSchema).optional().nullable(),
-  in: z.lazy(() => RoleSchema).array().optional().nullable(),
-  notIn: z.lazy(() => RoleSchema).array().optional().nullable(),
-  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleNullableWithAggregatesFilterSchema) ]).optional().nullable(),
-  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _min: z.lazy(() => NestedEnumRoleNullableFilterSchema).optional(),
-  _max: z.lazy(() => NestedEnumRoleNullableFilterSchema).optional()
+export const EnumRoleWithAggregatesFilterSchema: z.ZodType<Prisma.EnumRoleWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => RoleSchema).optional(),
+  in: z.lazy(() => RoleSchema).array().optional(),
+  notIn: z.lazy(() => RoleSchema).array().optional(),
+  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumRoleFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumRoleFilterSchema).optional()
 }).strict();
 
 export const StringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.StringNullableWithAggregatesFilter> = z.object({
@@ -2450,8 +2490,8 @@ export const IntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.IntFieldUpdat
   divide: z.number().optional()
 }).strict();
 
-export const NullableEnumJobTypeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableEnumJobTypeFieldUpdateOperationsInput> = z.object({
-  set: z.lazy(() => JobTypeSchema).optional().nullable()
+export const EnumJobTypeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumJobTypeFieldUpdateOperationsInput> = z.object({
+  set: z.lazy(() => JobTypeSchema).optional()
 }).strict();
 
 export const DateTimeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.DateTimeFieldUpdateOperationsInput> = z.object({
@@ -2566,6 +2606,10 @@ export const JobPostCreateNestedOneWithoutApplicantsInputSchema: z.ZodType<Prism
   connect: z.lazy(() => JobPostWhereUniqueInputSchema).optional()
 }).strict();
 
+export const EnumApprovalStatusFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumApprovalStatusFieldUpdateOperationsInput> = z.object({
+  set: z.lazy(() => ApprovalStatusSchema).optional()
+}).strict();
+
 export const UserUpdateOneRequiredWithoutAppliedJobsNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutAppliedJobsNestedInput> = z.object({
   create: z.union([ z.lazy(() => UserCreateWithoutAppliedJobsInputSchema),z.lazy(() => UserUncheckedCreateWithoutAppliedJobsInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutAppliedJobsInputSchema).optional(),
@@ -2658,8 +2702,8 @@ export const SessionUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<P
   connect: z.union([ z.lazy(() => SessionWhereUniqueInputSchema),z.lazy(() => SessionWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
-export const NullableEnumRoleFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableEnumRoleFieldUpdateOperationsInput> = z.object({
-  set: z.lazy(() => RoleSchema).optional().nullable()
+export const EnumRoleFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumRoleFieldUpdateOperationsInput> = z.object({
+  set: z.lazy(() => RoleSchema).optional()
 }).strict();
 
 export const SkillUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.SkillUpdateManyWithoutUserNestedInput> = z.object({
@@ -3022,11 +3066,11 @@ export const NestedIntFilterSchema: z.ZodType<Prisma.NestedIntFilter> = z.object
   not: z.union([ z.number(),z.lazy(() => NestedIntFilterSchema) ]).optional(),
 }).strict();
 
-export const NestedEnumJobTypeNullableFilterSchema: z.ZodType<Prisma.NestedEnumJobTypeNullableFilter> = z.object({
-  equals: z.lazy(() => JobTypeSchema).optional().nullable(),
-  in: z.lazy(() => JobTypeSchema).array().optional().nullable(),
-  notIn: z.lazy(() => JobTypeSchema).array().optional().nullable(),
-  not: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NestedEnumJobTypeNullableFilterSchema) ]).optional().nullable(),
+export const NestedEnumJobTypeFilterSchema: z.ZodType<Prisma.NestedEnumJobTypeFilter> = z.object({
+  equals: z.lazy(() => JobTypeSchema).optional(),
+  in: z.lazy(() => JobTypeSchema).array().optional(),
+  notIn: z.lazy(() => JobTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NestedEnumJobTypeFilterSchema) ]).optional(),
 }).strict();
 
 export const NestedDateTimeFilterSchema: z.ZodType<Prisma.NestedDateTimeFilter> = z.object({
@@ -3112,14 +3156,14 @@ export const NestedFloatFilterSchema: z.ZodType<Prisma.NestedFloatFilter> = z.ob
   not: z.union([ z.number(),z.lazy(() => NestedFloatFilterSchema) ]).optional(),
 }).strict();
 
-export const NestedEnumJobTypeNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumJobTypeNullableWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => JobTypeSchema).optional().nullable(),
-  in: z.lazy(() => JobTypeSchema).array().optional().nullable(),
-  notIn: z.lazy(() => JobTypeSchema).array().optional().nullable(),
-  not: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NestedEnumJobTypeNullableWithAggregatesFilterSchema) ]).optional().nullable(),
-  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _min: z.lazy(() => NestedEnumJobTypeNullableFilterSchema).optional(),
-  _max: z.lazy(() => NestedEnumJobTypeNullableFilterSchema).optional()
+export const NestedEnumJobTypeWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumJobTypeWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => JobTypeSchema).optional(),
+  in: z.lazy(() => JobTypeSchema).array().optional(),
+  notIn: z.lazy(() => JobTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NestedEnumJobTypeWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumJobTypeFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumJobTypeFilterSchema).optional()
 }).strict();
 
 export const NestedDateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.NestedDateTimeWithAggregatesFilter> = z.object({
@@ -3146,11 +3190,28 @@ export const NestedEnumExperienceEnumWithAggregatesFilterSchema: z.ZodType<Prism
   _max: z.lazy(() => NestedEnumExperienceEnumFilterSchema).optional()
 }).strict();
 
-export const NestedEnumRoleNullableFilterSchema: z.ZodType<Prisma.NestedEnumRoleNullableFilter> = z.object({
-  equals: z.lazy(() => RoleSchema).optional().nullable(),
-  in: z.lazy(() => RoleSchema).array().optional().nullable(),
-  notIn: z.lazy(() => RoleSchema).array().optional().nullable(),
-  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleNullableFilterSchema) ]).optional().nullable(),
+export const NestedEnumApprovalStatusFilterSchema: z.ZodType<Prisma.NestedEnumApprovalStatusFilter> = z.object({
+  equals: z.lazy(() => ApprovalStatusSchema).optional(),
+  in: z.lazy(() => ApprovalStatusSchema).array().optional(),
+  notIn: z.lazy(() => ApprovalStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => NestedEnumApprovalStatusFilterSchema) ]).optional(),
+}).strict();
+
+export const NestedEnumApprovalStatusWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumApprovalStatusWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => ApprovalStatusSchema).optional(),
+  in: z.lazy(() => ApprovalStatusSchema).array().optional(),
+  notIn: z.lazy(() => ApprovalStatusSchema).array().optional(),
+  not: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => NestedEnumApprovalStatusWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumApprovalStatusFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumApprovalStatusFilterSchema).optional()
+}).strict();
+
+export const NestedEnumRoleFilterSchema: z.ZodType<Prisma.NestedEnumRoleFilter> = z.object({
+  equals: z.lazy(() => RoleSchema).optional(),
+  in: z.lazy(() => RoleSchema).array().optional(),
+  notIn: z.lazy(() => RoleSchema).array().optional(),
+  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleFilterSchema) ]).optional(),
 }).strict();
 
 export const NestedStringNullableFilterSchema: z.ZodType<Prisma.NestedStringNullableFilter> = z.object({
@@ -3167,14 +3228,14 @@ export const NestedStringNullableFilterSchema: z.ZodType<Prisma.NestedStringNull
   not: z.union([ z.string(),z.lazy(() => NestedStringNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
-export const NestedEnumRoleNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumRoleNullableWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => RoleSchema).optional().nullable(),
-  in: z.lazy(() => RoleSchema).array().optional().nullable(),
-  notIn: z.lazy(() => RoleSchema).array().optional().nullable(),
-  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleNullableWithAggregatesFilterSchema) ]).optional().nullable(),
-  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _min: z.lazy(() => NestedEnumRoleNullableFilterSchema).optional(),
-  _max: z.lazy(() => NestedEnumRoleNullableFilterSchema).optional()
+export const NestedEnumRoleWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumRoleWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => RoleSchema).optional(),
+  in: z.lazy(() => RoleSchema).array().optional(),
+  notIn: z.lazy(() => RoleSchema).array().optional(),
+  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumRoleFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumRoleFilterSchema).optional()
 }).strict();
 
 export const NestedStringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedStringNullableWithAggregatesFilter> = z.object({
@@ -3240,6 +3301,7 @@ export const ApplicantCreateWithoutJobPostInputSchema: z.ZodType<Prisma.Applican
   id: z.string().cuid().optional(),
   coverLetter: z.string(),
   availability: z.string(),
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutAppliedJobsInputSchema)
 }).strict();
 
@@ -3247,7 +3309,8 @@ export const ApplicantUncheckedCreateWithoutJobPostInputSchema: z.ZodType<Prisma
   id: z.string().cuid().optional(),
   userId: z.string(),
   coverLetter: z.string(),
-  availability: z.string()
+  availability: z.string(),
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional()
 }).strict();
 
 export const ApplicantCreateOrConnectWithoutJobPostInputSchema: z.ZodType<Prisma.ApplicantCreateOrConnectWithoutJobPostInput> = z.object({
@@ -3269,7 +3332,7 @@ export const UserCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserCreate
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   skills: z.lazy(() => SkillCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
@@ -3286,7 +3349,7 @@ export const UserUncheckedCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.U
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   locationId: z.string().optional().nullable(),
   skills: z.lazy(() => SkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
@@ -3374,6 +3437,7 @@ export const ApplicantScalarWhereInputSchema: z.ZodType<Prisma.ApplicantScalarWh
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   coverLetter: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   availability: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => EnumApprovalStatusFilterSchema),z.lazy(() => ApprovalStatusSchema) ]).optional(),
   jobId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
 
@@ -3397,7 +3461,7 @@ export const UserUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUpdate
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
@@ -3414,7 +3478,7 @@ export const UserUncheckedUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.U
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   skills: z.lazy(() => SkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
@@ -3431,7 +3495,7 @@ export const UserCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserCreat
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   skills: z.lazy(() => SkillCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
@@ -3448,7 +3512,7 @@ export const UserUncheckedCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   locationId: z.string().optional().nullable(),
   skills: z.lazy(() => SkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
@@ -3471,7 +3535,7 @@ export const JobPostCreateWithoutApplicantsInputSchema: z.ZodType<Prisma.JobPost
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
   skills: z.lazy(() => SkillCreateNestedManyWithoutJobPostInputSchema).optional(),
@@ -3489,7 +3553,7 @@ export const JobPostUncheckedCreateWithoutApplicantsInputSchema: z.ZodType<Prism
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
   userId: z.string(),
@@ -3522,7 +3586,7 @@ export const UserUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUpdat
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
@@ -3539,7 +3603,7 @@ export const UserUncheckedUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   skills: z.lazy(() => SkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
@@ -3568,7 +3632,7 @@ export const JobPostUpdateWithoutApplicantsInputSchema: z.ZodType<Prisma.JobPost
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUpdateManyWithoutJobPostNestedInputSchema).optional(),
@@ -3586,7 +3650,7 @@ export const JobPostUncheckedUpdateWithoutApplicantsInputSchema: z.ZodType<Prism
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3669,7 +3733,7 @@ export const JobPostCreateWithoutPostedByInputSchema: z.ZodType<Prisma.JobPostCr
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
   skills: z.lazy(() => SkillCreateNestedManyWithoutJobPostInputSchema).optional(),
@@ -3687,7 +3751,7 @@ export const JobPostUncheckedCreateWithoutPostedByInputSchema: z.ZodType<Prisma.
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
   skills: z.lazy(() => SkillUncheckedCreateNestedManyWithoutJobPostInputSchema).optional(),
@@ -3709,6 +3773,7 @@ export const ApplicantCreateWithoutUserInputSchema: z.ZodType<Prisma.ApplicantCr
   id: z.string().cuid().optional(),
   coverLetter: z.string(),
   availability: z.string(),
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
   jobPost: z.lazy(() => JobPostCreateNestedOneWithoutApplicantsInputSchema)
 }).strict();
 
@@ -3716,6 +3781,7 @@ export const ApplicantUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.Ap
   id: z.string().cuid().optional(),
   coverLetter: z.string(),
   availability: z.string(),
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
   jobId: z.string()
 }).strict();
 
@@ -3846,7 +3912,7 @@ export const JobPostScalarWhereInputSchema: z.ZodType<Prisma.JobPostScalarWhereI
   maxExperience: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   minSalary: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   maxSalary: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  jobType: z.union([ z.lazy(() => EnumJobTypeNullableFilterSchema),z.lazy(() => JobTypeSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => EnumJobTypeFilterSchema),z.lazy(() => JobTypeSchema) ]).optional(),
   postedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   whoCanApply: z.union([ z.lazy(() => EnumExperienceEnumFilterSchema),z.lazy(() => ExperienceEnumSchema) ]).optional(),
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
@@ -3902,7 +3968,7 @@ export const UserCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserCreateWith
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
@@ -3919,7 +3985,7 @@ export const UserUncheckedCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserU
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   locationId: z.string().optional().nullable(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
@@ -3942,7 +4008,7 @@ export const JobPostCreateWithoutSkillsInputSchema: z.ZodType<Prisma.JobPostCrea
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
   perks: z.lazy(() => PerkCreateNestedManyWithoutJobPostInputSchema).optional(),
@@ -3960,7 +4026,7 @@ export const JobPostUncheckedCreateWithoutSkillsInputSchema: z.ZodType<Prisma.Jo
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
   userId: z.string(),
@@ -3993,7 +4059,7 @@ export const UserUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUpdateWith
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
@@ -4010,7 +4076,7 @@ export const UserUncheckedUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserU
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
@@ -4039,7 +4105,7 @@ export const JobPostUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.JobPostUpda
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
   perks: z.lazy(() => PerkUpdateManyWithoutJobPostNestedInputSchema).optional(),
@@ -4057,7 +4123,7 @@ export const JobPostUncheckedUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.Jo
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4075,7 +4141,7 @@ export const JobPostCreateWithoutPerksInputSchema: z.ZodType<Prisma.JobPostCreat
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
   skills: z.lazy(() => SkillCreateNestedManyWithoutJobPostInputSchema).optional(),
@@ -4093,7 +4159,7 @@ export const JobPostUncheckedCreateWithoutPerksInputSchema: z.ZodType<Prisma.Job
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
   userId: z.string(),
@@ -4127,7 +4193,7 @@ export const JobPostUpdateWithoutPerksInputSchema: z.ZodType<Prisma.JobPostUpdat
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUpdateManyWithoutJobPostNestedInputSchema).optional(),
@@ -4145,7 +4211,7 @@ export const JobPostUncheckedUpdateWithoutPerksInputSchema: z.ZodType<Prisma.Job
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4162,7 +4228,7 @@ export const UserCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserCreateWitho
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   skills: z.lazy(() => SkillCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
@@ -4179,7 +4245,7 @@ export const UserUncheckedCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserUn
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   locationId: z.string().optional().nullable(),
   skills: z.lazy(() => SkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
@@ -4212,7 +4278,7 @@ export const UserUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUpdateWitho
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
@@ -4229,7 +4295,7 @@ export const UserUncheckedUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUn
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   skills: z.lazy(() => SkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
@@ -4246,7 +4312,7 @@ export const UserCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateWi
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   skills: z.lazy(() => SkillCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
@@ -4263,7 +4329,7 @@ export const UserUncheckedCreateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   locationId: z.string().optional().nullable(),
   skills: z.lazy(() => SkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
@@ -4296,7 +4362,7 @@ export const UserUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUpdateWi
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
@@ -4313,7 +4379,7 @@ export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   skills: z.lazy(() => SkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
@@ -4330,7 +4396,7 @@ export const UserCreateWithoutAddressInputSchema: z.ZodType<Prisma.UserCreateWit
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   skills: z.lazy(() => SkillCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
@@ -4347,7 +4413,7 @@ export const UserUncheckedCreateWithoutAddressInputSchema: z.ZodType<Prisma.User
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable(),
+  role: z.lazy(() => RoleSchema).optional(),
   skills: z.lazy(() => SkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
@@ -4410,7 +4476,7 @@ export const UserScalarWhereInputSchema: z.ZodType<Prisma.UserScalarWhereInput> 
   hashedPassword: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
-  role: z.union([ z.lazy(() => EnumRoleNullableFilterSchema),z.lazy(() => RoleSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => EnumRoleFilterSchema),z.lazy(() => RoleSchema) ]).optional(),
   locationId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
@@ -4502,7 +4568,8 @@ export const ApplicantCreateManyJobPostInputSchema: z.ZodType<Prisma.ApplicantCr
   id: z.string().cuid().optional(),
   userId: z.string(),
   coverLetter: z.string(),
-  availability: z.string()
+  availability: z.string(),
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional()
 }).strict();
 
 export const SkillUpdateWithoutJobPostInputSchema: z.ZodType<Prisma.SkillUpdateWithoutJobPostInput> = z.object({
@@ -4542,6 +4609,7 @@ export const ApplicantUpdateWithoutJobPostInputSchema: z.ZodType<Prisma.Applican
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutAppliedJobsNestedInputSchema).optional()
 }).strict();
 
@@ -4550,6 +4618,7 @@ export const ApplicantUncheckedUpdateWithoutJobPostInputSchema: z.ZodType<Prisma
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const ApplicantUncheckedUpdateManyWithoutJobPostInputSchema: z.ZodType<Prisma.ApplicantUncheckedUpdateManyWithoutJobPostInput> = z.object({
@@ -4557,6 +4626,7 @@ export const ApplicantUncheckedUpdateManyWithoutJobPostInputSchema: z.ZodType<Pr
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const SkillCreateManyUserInputSchema: z.ZodType<Prisma.SkillCreateManyUserInput> = z.object({
@@ -4582,7 +4652,7 @@ export const JobPostCreateManyPostedByInputSchema: z.ZodType<Prisma.JobPostCreat
   maxExperience: z.coerce.number(),
   minSalary: z.coerce.number().optional(),
   maxSalary: z.coerce.number(),
-  jobType: z.lazy(() => JobTypeSchema).optional().nullable(),
+  jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional()
 }).strict();
@@ -4591,6 +4661,7 @@ export const ApplicantCreateManyUserInputSchema: z.ZodType<Prisma.ApplicantCreat
   id: z.string().cuid().optional(),
   coverLetter: z.string(),
   availability: z.string(),
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
   jobId: z.string()
 }).strict();
 
@@ -4648,7 +4719,7 @@ export const JobPostUpdateWithoutPostedByInputSchema: z.ZodType<Prisma.JobPostUp
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUpdateManyWithoutJobPostNestedInputSchema).optional(),
@@ -4666,7 +4737,7 @@ export const JobPostUncheckedUpdateWithoutPostedByInputSchema: z.ZodType<Prisma.
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUncheckedUpdateManyWithoutJobPostNestedInputSchema).optional(),
@@ -4684,7 +4755,7 @@ export const JobPostUncheckedUpdateManyWithoutPostedByInputSchema: z.ZodType<Pri
   maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => NullableEnumJobTypeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -4693,6 +4764,7 @@ export const ApplicantUpdateWithoutUserInputSchema: z.ZodType<Prisma.ApplicantUp
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
   jobPost: z.lazy(() => JobPostUpdateOneRequiredWithoutApplicantsNestedInputSchema).optional()
 }).strict();
 
@@ -4700,6 +4772,7 @@ export const ApplicantUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.Ap
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
   jobId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -4707,6 +4780,7 @@ export const ApplicantUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prism
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
   jobId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -4734,7 +4808,7 @@ export const UserCreateManyAddressInputSchema: z.ZodType<Prisma.UserCreateManyAd
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  role: z.lazy(() => RoleSchema).optional().nullable()
+  role: z.lazy(() => RoleSchema).optional()
 }).strict();
 
 export const UserUpdateWithoutAddressInputSchema: z.ZodType<Prisma.UserUpdateWithoutAddressInput> = z.object({
@@ -4746,7 +4820,7 @@ export const UserUpdateWithoutAddressInputSchema: z.ZodType<Prisma.UserUpdateWit
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
@@ -4763,7 +4837,7 @@ export const UserUncheckedUpdateWithoutAddressInputSchema: z.ZodType<Prisma.User
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => SkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
@@ -4780,7 +4854,7 @@ export const UserUncheckedUpdateManyWithoutAddressInputSchema: z.ZodType<Prisma.
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NullableEnumRoleFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LocationCreateManyCityInputSchema: z.ZodType<Prisma.LocationCreateManyCityInput> = z.object({

@@ -41,7 +41,7 @@ export function SelectForm({ label, options, name }: SelectOptions) {
           {label && (
             <FormLabel
               htmlFor={name}
-              className="mt-4 mb-2 text-black dark:text-white font-semibold text-base"
+              className="mb-2 mt-4 w-full text-base font-semibold text-black dark:text-white"
             >
               {label}
             </FormLabel>
@@ -49,7 +49,7 @@ export function SelectForm({ label, options, name }: SelectOptions) {
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder="Select a verified email to display" />
+                <SelectValue placeholder="Select a Value" />
               </SelectTrigger>
             </FormControl>
             <SelectContent>

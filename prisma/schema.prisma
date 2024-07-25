@@ -33,22 +33,29 @@ model JobPost {
   maxSalary        Int ///@zod.custom.use(z.coerce.number())
   skills           Skill[]
   perks            Perk[]
-  jobType          JobType?
+  jobType          JobType        @default(Full_Time)
   postedAt         DateTime       @default(now())
   whoCanApply      ExperienceEnum @default(Anyone)
   applicants       Applicant[]
-  postedBy         User           @relation("PostedJobs", fields: [userId], references: [id])
+  postedBy         User           @relation("PostedJobs", fields: [userId], references: [id], onDelete: Cascade)
   userId           String
 }
 
 model Applicant {
-  id           String  @id @unique @default(cuid())
-  userId       String
-  coverLetter  String
-  availability String
-  user         User    @relation(fields: [userId], references: [id])
-  jobId        String
-  jobPost      JobPost @relation(fields: [jobId], references: [id])
+  id             String         @id @unique @default(cuid())
+  userId         String
+  coverLetter    String
+  availability   String
+  approvalStatus ApprovalStatus @default(Pending)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId          String
+  jobPost        JobPost        @relation(fields: [jobId], references: [id])
+}
+
+enum ApprovalStatus {
+  Pending
+  Rejected
+  Accepted
 }
 
 model User {
@@ -60,7 +67,7 @@ model User {
   hashedPassword String
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
-  role           Role?       @default(USER)
+  role           Role        @default(USER)
   skills         Skill[]
   locationId     String?
   media          Media[]
@@ -92,7 +99,7 @@ model Media {
   url       String
   mediaName String
   userId    String
-  user      User   @relation(fields: [userId], references: [id])
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Session {
@@ -109,7 +116,7 @@ model Location {
   postalCode Int
   cityId     String
   User       User[]
-  city       City    @relation(fields: [cityId], references: [id])
+  city       City    @relation(fields: [cityId], references: [id], onDelete: Cascade)
 }
 
 model City {
@@ -132,6 +139,7 @@ enum mode {
 enum Role {
   ADMIN
   USER
+  ORGANIZATION
 }
 
 enum ExperienceEnum {

@@ -9,14 +9,14 @@ import {
   SelectValue,
 } from "../ui/select";
 import { FormLabel } from "../ui/form";
-import { approvalStatusSchema } from "@/prisma/generated/zod";
+import { ApprovalStatusSchema } from "@/prisma/generated/zod";
 
 interface SelectOptions {
   options: string[];
   label?: string;
 }
 const SelectOptions = () => {
-  const options = approvalStatusSchema.options;
+  const options = ApprovalStatusSchema.options;
 
   return (
     <div className="max-w-xs">

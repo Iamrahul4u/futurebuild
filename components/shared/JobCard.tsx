@@ -14,12 +14,14 @@ import Link from "next/link";
 import { JobPost } from "@prisma/client";
 import { JobPostOptionalDefaults } from "@/prisma/generated/zod";
 import { formatNumberToLakh, formatTimeAgo } from "@/_utils/utils";
+import { JobPostSelectType } from "@/types/zodValidations";
 
-const JobCard = async ({ details }: { details: JobPostOptionalDefaults }) => {
+const JobCard = async ({ details }: { details: JobPostSelectType }) => {
+  const applicants = details._count.applicants;
   return (
     <Link href={`jobs/${details.id}`}>
-      <Card className="-space-y-3     cursor-pointer  border-solid border-[1px] border-black dark:hover:shadow-[4px_4px_0px_gray] transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px]  p-0">
-        <CardHeader className="flex flex-row  gap-4  items-center  ">
+      <Card className="cursor-pointer -space-y-3 border-[1px] border-solid border-black p-0 transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px] dark:hover:shadow-[4px_4px_0px_gray]">
+        <CardHeader className="flex flex-row items-center gap-4">
           <Image
             src={
               "https://i.pinimg.com/736x/f6/97/4e/f6974e017d3f6196c4cbe284ee3eaf4e.jpg"
@@ -27,30 +29,33 @@ const JobCard = async ({ details }: { details: JobPostOptionalDefaults }) => {
             height={40}
             width={40}
             alt="company logo"
-            className="h-12 w-12 object-cover rounded-full mb-2 "
+            className="mb-2 h-12 w-12 rounded-full object-cover"
           />
           <div className="flex flex-col flex-wrap">
-            <CardTitle className=" line-clamp-1 text-base font-bold tracking-wide text-black dark:text-white">
+            <CardTitle className="line-clamp-1 text-base font-bold tracking-wide text-black dark:text-white">
               {details.jobTitle}
             </CardTitle>
-            <div className="flex-row flex gap-2  ">
-              <CardDescription className="flex text-xs flex-row">
+            <div className="flex flex-row gap-2">
+              <CardDescription className="flex flex-row text-xs">
                 {details.organisationName}
               </CardDescription>
-              <CardDescription className="flex text-xs flex-row">
-                &#x2022; Applicants
+              <CardDescription className="flex flex-row text-xs">
+                &#x2022;{" "}
+                {applicants > 1
+                  ? `${applicants} Applicant`
+                  : `${applicants} Applicants`}
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="flex gap-2 ">
-          <Badge className="text-[12px] bg-purple-200 font-bold hover:bg-white hover:outline ease-in-out transition-colors duration-300 text-purple-900  p-0 px-1 py-1 rounded-md">
+        <CardContent className="flex gap-2">
+          <Badge className="rounded-md bg-purple-200 p-0 px-1 py-1 text-[12px] font-bold text-purple-900 transition-colors duration-300 ease-in-out hover:bg-white hover:outline">
             {details.whoCanApply}
           </Badge>
-          <Badge className="text-[12px] bg-green-200 font-bold text-green-900 hover:bg-white hover:outline ease-in-out transition-colors duration-300 p-0 px-1 py-1 rounded-md">
+          <Badge className="rounded-md bg-green-200 p-0 px-1 py-1 text-[12px] font-bold text-green-900 transition-colors duration-300 ease-in-out hover:bg-white hover:outline">
             {details.modeOfWork}
           </Badge>
-          <Badge className="text-[12px] bg-orange-200 font-bold text-orange-600 hover:bg-white hover:outline ease-in-out transition-colors duration-300 p-0 px-1 py-1 rounded-md">
+          <Badge className="rounded-md bg-orange-200 p-0 px-1 py-1 text-[12px] font-bold text-orange-600 transition-colors duration-300 ease-in-out hover:bg-white hover:outline">
             {details.jobType}
           </Badge>
         </CardContent>
@@ -58,9 +63,9 @@ const JobCard = async ({ details }: { details: JobPostOptionalDefaults }) => {
           <CardDescription className="line-clamp-5 font-semibold">
             {details.jobDescription}
           </CardDescription>
-          <hr className="w-52 mx-auto " />
+          <hr className="mx-auto w-52" />
         </CardContent>
-        <CardFooter className="pb-0 text-xs flex justify-between">
+        <CardFooter className="flex justify-between pb-0 text-xs">
           <p className="text-sm">
             <span>
               &#8377;{formatNumberToLakh(details.minSalary ?? 0)}-
@@ -68,7 +73,7 @@ const JobCard = async ({ details }: { details: JobPostOptionalDefaults }) => {
             </span>
             LPA
           </p>
-          <CardDescription className="flex text-xs items-center gap-1 flex-row">
+          <CardDescription className="flex flex-row items-center gap-1 text-xs">
             <Clock size={12} />
             Posted {formatTimeAgo(details?.postedAt?.toISOString())}
           </CardDescription>

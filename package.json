@@ -72,6 +72,7 @@
     "next-themes": "^0.3.0",
     "oslo": "^1.2.1",
     "prisma": "^5.16.1",
+    "query-string": "^9.1.0",
     "react": "^18",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",

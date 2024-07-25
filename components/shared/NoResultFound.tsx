@@ -1,6 +1,4 @@
 import Link from "next/link";
-import Lottie from "lottie-react";
-import Animation from "@/public/3d-fluency-see-no-evil-monkey.png";
 import Image from "next/image";
 export default function NoResultFound() {
   return (

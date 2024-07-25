@@ -29,8 +29,6 @@ import {
 import { Pie, PieChart, CartesianGrid, XAxis, Line, LineChart } from "recharts";
 import DashboardNav from "@/components/shared/DashboardNav";
 import prisma from "@/prisma";
-import { SearchParamsProps } from "@/types/sharedTypes";
-import { UserIncludeSchema, UserSchema } from "@/prisma/generated/zod";
 import { redirect } from "next/navigation";
 import TableList from "@/components/shared/TableList";
 import { JobPost } from "@prisma/client";
@@ -38,34 +36,7 @@ import { z } from "zod";
 import { UserWithJobs } from "@/types/zodValidations";
 import { DialogCloseButton } from "@/components/shared/DialogCloseButton";
 export default async function Page({ params }: { params: { userId: string } }) {
-  const userDetails: UserWithJobs | null = await prisma.user.findFirst({
-    where: {
-      id: params.userId[0],
-    },
-    include: {
-      postedJobs: {
-        select: {
-          id: true,
-        },
-      },
-    },
-  });
-  const jobDetails = await prisma.jobPost.findMany({
-    where: {
-      id: {
-        in: userDetails?.postedJobs.map((jobs) => jobs.id) ?? [],
-      },
-    },
-    select: {
-      id: true,
-      jobTitle: true,
-      _count: {
-        select: {
-          applicants: true,
-        },
-      },
-    },
-  });
+  const userDetails = prisma.user;
   if (!userDetails) {
     redirect("/authenticate/signin");
   }

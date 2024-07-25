@@ -21,16 +21,17 @@ const InputNumber = ({
   max?: number;
 }) => {
   const { control } = useFormContext();
+  console.log();
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="flex  flex-col justify-start space-y-0">
+        <FormItem className="flex flex-col justify-start space-y-0">
           {label && (
             <FormLabel
               htmlFor={name}
-              className="mt-4 mb-2 text-black dark:text-white font-semibold text-base"
+              className="mb-2 mt-4 text-base font-semibold text-black dark:text-white"
             >
               {label}
             </FormLabel>

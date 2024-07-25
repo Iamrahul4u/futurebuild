@@ -32,6 +32,18 @@ export const sidebarLinks: SidebarLink[] = [
     label: "Practice",
   },
 ];
+export const DashboardNav: SidebarLink[] = [
+  {
+    imgURL: "/assets/icons/home.svg",
+    route: "/user",
+    label: "Home",
+  },
+  {
+    imgURL: "/assets/icons/users.svg",
+    route: "/settings",
+    label: "Settings",
+  },
+];
 export const BADGE_CRITERIA = {
   QUESTION_COUNT: {
     BRONZE: 10,

@@ -11,6 +11,7 @@ import { headers } from "next/headers";
 import rateLimiter from "@/lib/rateLimit";
 import { JobPost, JobPostOptionalDefaults } from "@/prisma/generated/zod";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -68,6 +69,9 @@ export async function applyToJob(jobId: string) {
     if (!existingUser) {
       return { error: "User not found in database" };
     }
+    if (existingUser.role !== "ORGANIZATION" && existingUser.role !== "ADMIN") {
+      return { error: "You Are Not Authorized To Create Jobs" };
+    }
 
     // Ensure the job post exists in the database
     const existingJobPost = await prisma.jobPost.findUnique({
@@ -112,22 +116,102 @@ interface ErrorResponse {
 }
 
 interface JobsResponse {
-  jobs?: JobPost[];
+  jobs?: JobPostSelectType[];
   error?: {
     message: string | undefined;
   };
   statusCode?: number;
 }
 
-export async function getjobs(): Promise<JobsResponse> {
+export const getjobs: ({
+  searchParams,
+}: {
+  searchParams: leftSidebarfilterPropsTypes;
+}) => Promise<JobsResponse> = async ({
+  searchParams,
+}: {
+  searchParams?: leftSidebarfilterPropsTypes;
+}) => {
   const res = await rateLimiter();
   if (res.statusCode === 301) {
     return { error: { message: res.error }, statusCode: res.statusCode };
   }
   try {
-    const jobs = await prisma.jobPost.findMany({});
+    let parseParams = searchParams;
+    if (searchParams?.jobTitle) {
+      const parsed = leftSidebarfilterProps.safeParse(searchParams);
+      if (!parsed.success) {
+        return { jobs: [] };
+      }
+      parseParams = parsed.data;
+    }
+    const { jobTitle, whoCanApply, maxSalary, minSalary, modeOfWork, jobType } =
+      parseParams || {};
+
+    const jobs = searchParams
+      ? await prisma.jobPost.findMany({
+          where: {
+            jobTitle: {
+              contains: jobTitle,
+              mode: "insensitive",
+            },
+            minSalary: {
+              gte: minSalary,
+            },
+            maxSalary: {
+              lte: maxSalary,
+            },
+            modeOfWork: modeOfWork,
+            whoCanApply: whoCanApply,
+            jobType: jobType,
+          },
+          include: {
+            _count: {
+              select: {
+                applicants: true,
+              },
+            },
+          },
+        })
+      : await prisma.jobPost.findMany({
+          include: {
+            _count: {
+              select: {
+                applicants: true,
+              },
+            },
+          },
+          cacheStrategy: { ttl: 60, swr: 60 },
+        });
     return { jobs };
   } catch (error) {
     return { error: { message: "Failed to fetch jobs." }, statusCode: 501 };
   }
+};
+
+export async function changePendingStatus({
+  status,
+}: {
+  status: ApprovalStatus;
+}) {}
+export async function deleteUser({ id }: { id: string }) {
+  try {
+    await prisma.user.delete({
+      where: {
+        id: id,
+      },
+    });
+  } catch (error) {}
+}
+import { revalidatePath } from "next/cache";
+import { ApprovalStatus } from "@prisma/client";
+import {
+  leftSidebarfilterProps,
+  leftSidebarfilterPropsTypes,
+} from "@/types/sharedTypes";
+import { max } from "date-fns";
+import { JobPostSelectType } from "@/types/zodValidations";
+
+export default async function revalidatePathname(pathname: string) {
+  revalidatePath(pathname);
 }
