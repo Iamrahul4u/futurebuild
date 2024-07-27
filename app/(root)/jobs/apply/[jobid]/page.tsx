@@ -63,7 +63,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
       }
     }
     getUser();
-  }, []);
+  }, [router]);
 
   const form = useForm<z.infer<typeof applyJob>>({
     resolver: zodResolver(applyJob),

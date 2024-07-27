@@ -3,12 +3,12 @@ import JobLeftSideBar from "@/components/shared/JobLeftSideBar";
 import JobRightSideBar from "@/components/shared/JobRightSideBar";
 
 import ResizableJobsLayout from "@/components/shared/ResizableJobsLayout";
-import { getJobsProps } from "@/types/sharedTypes";
+import { getJobsProps, leftSidebarfilterPropsTypes } from "@/types/sharedTypes";
 
 export default async function Page({
   searchParams,
 }: {
-  searchParams: getJobsProps;
+  searchParams: leftSidebarfilterPropsTypes;
 }) {
   const user = getUserId();
   return (

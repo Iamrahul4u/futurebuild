@@ -21,7 +21,7 @@ const ToasterShow = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [router]);
+  }, [router, pathname]);
 
   return (
     <div className="fixed inset-0 z-[999] flex h-screen w-screen items-center justify-center bg-gray-600/50 animate-in fade-in-5">
