@@ -13,11 +13,11 @@ import { Clock } from "lucide-react";
 import Link from "next/link";
 import { JobPost } from "@prisma/client";
 import { JobPostOptionalDefaults } from "@/prisma/generated/zod";
-import { formatNumberToLakh, formatTimeAgo } from "@/_utils/utils";
+import { formatNumber, formatTimeAgo } from "@/_utils/utils";
 import { JobPostSelectType } from "@/types/zodValidations";
 
 const JobCard = async ({ details }: { details: JobPostSelectType }) => {
-  const applicants = details._count.applicants;
+  const applicants = details?._count?.applicants;
   return (
     <Link href={`jobs/${details.id}`}>
       <Card className="cursor-pointer -space-y-3 border-[1px] border-solid border-black p-0 transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px] dark:hover:shadow-[4px_4px_0px_gray]">
@@ -39,11 +39,13 @@ const JobCard = async ({ details }: { details: JobPostSelectType }) => {
               <CardDescription className="flex flex-row text-xs">
                 {details.organisationName}
               </CardDescription>
-              <CardDescription className="flex flex-row text-xs">
+              <CardDescription className="line-clamp-1 flex flex-row text-xs">
                 &#x2022;{" "}
-                {applicants > 1
-                  ? `${applicants} Applicant`
-                  : `${applicants} Applicants`}
+                {applicants === 0
+                  ? `${applicants} Applicants`
+                  : applicants && applicants > 1
+                    ? `${applicants} Applicant`
+                    : `${applicants} Applicants`}
               </CardDescription>
             </div>
           </div>
@@ -68,10 +70,9 @@ const JobCard = async ({ details }: { details: JobPostSelectType }) => {
         <CardFooter className="flex justify-between pb-0 text-xs">
           <p className="text-sm">
             <span>
-              &#8377;{formatNumberToLakh(details.minSalary ?? 0)}-
-              {formatNumberToLakh(details.maxSalary)}&nbsp;
+              &#8377;{formatNumber(details.minSalary ?? 0)}-
+              {formatNumber(details.maxSalary)}&nbsp;
             </span>
-            LPA
           </p>
           <CardDescription className="flex flex-row items-center gap-1 text-xs">
             <Clock size={12} />

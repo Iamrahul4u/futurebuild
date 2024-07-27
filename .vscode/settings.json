@@ -1,0 +1,18 @@
+{
+  "list": [
+    {
+      "commandline": "ssh devcloud",
+      "guid": "{241213b4-e1a2-49ef-b8c0-22ae878f26b1}",
+      "hidden": false,
+      "name": "devcloud",
+      "tabTitle": "DevCloud"
+    },
+    {
+      "commandline": "ssh devcloudx",
+      "guid": "{14810d36-1f24-420d-9290-556321c0d7c6}",
+      "hidden": false,
+      "name": "devcloudx",
+      "tabTitle": "DevCloud"
+    }
+  ]
+}

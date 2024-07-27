@@ -15,11 +15,11 @@ export const lucia = new Lucia(adapter, {
   },
 });
 
-interface User {
+export interface User {
   id: string;
 }
 interface getUser {
-  (): Promise<User | { error: string } | null>;
+  (): Promise<{ id: string } | { error: string } | null>;
 }
 export const getUser: getUser = cache(async () => {
   const sessionId = cookies().get(lucia.sessionCookieName)?.value || null;

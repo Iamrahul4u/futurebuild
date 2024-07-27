@@ -8,7 +8,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
+} from "../ui/table";
 import Link from "next/link";
 
 interface TableListTypes {
@@ -16,7 +16,7 @@ interface TableListTypes {
   label: string;
   applicants: number;
 }
-export default function TableList({ details }: { details: any }) {
+export default function TablePostedJobs({ details }: { details: any }) {
   return (
     <Table className="relative h-full">
       <TableHeader>

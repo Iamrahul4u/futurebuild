@@ -32,7 +32,7 @@ export const sidebarLinks: SidebarLink[] = [
     label: "Practice",
   },
 ];
-export const DashboardNav: SidebarLink[] = [
+export const DashboardNavLinks: SidebarLink[] = [
   {
     imgURL: "/assets/icons/home.svg",
     route: "/user",

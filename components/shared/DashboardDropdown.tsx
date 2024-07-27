@@ -23,10 +23,10 @@ import { User } from "@prisma/client";
 import { UserOptionalDefaults } from "@/prisma/generated/zod";
 import useGetUser from "@/hooks/useGetUser";
 export function DashboardDropdownMenu() {
-  const user = useGetUser();
+  const userId = useGetUser();
 
   return (
-    user && (
+    userId && (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar>
@@ -37,7 +37,7 @@ export function DashboardDropdownMenu() {
         <DropdownMenuContent className="w-32">
           <DropdownMenuGroup className="gap-2">
             <DropdownMenuItem>
-              <Link href={"/dashboard/user"}>Dashboard</Link>
+              <Link href={`/dashboard/user/${userId}`}>Dashboard</Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuItem>

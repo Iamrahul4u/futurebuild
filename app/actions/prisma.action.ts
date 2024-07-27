@@ -5,29 +5,40 @@ import {
   JobPostOptionalDefaults,
   Media,
   MediaOptionalDefaults,
+  MediaOptionalDefaultsSchema,
 } from "@/prisma/generated/zod/index";
-import { z } from "zod";
+import z from "zod";
 import { getUser } from "../[...authenticate]/lucia";
+import { Z } from "vitest/dist/reporters-BECoY4-b.js";
 
+const mediaOptional = MediaOptionalDefaultsSchema.omit({
+  applicantId: true,
+}).extend({
+  applicantId: z.string().optional(),
+});
 export async function prismaMedia({
   mediaType,
   url,
   mediaName,
   userId,
-}: MediaOptionalDefaults) {
+  applicantId,
+}: z.infer<typeof mediaOptional>) {
   const user = await getUser();
   if (!user || "error" in user) {
     return { error: "User Not Authenticated" };
   }
   try {
+    const filter = {
+      mediaType: mediaType,
+      url: url,
+      userId: userId,
+      mediaName: mediaName,
+      applicantId: applicantId ? applicantId : null,
+    };
     const media = await prisma.media.create({
-      data: {
-        mediaType: mediaType,
-        url: url,
-        userId: userId,
-        mediaName: mediaName,
-      },
+      data: filter,
     });
+    return;
   } catch (error) {
     return { error: "Prisma Database Insertion Failed" };
   }

@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   // previewFeatures = ["tracing"]
+  previewFeatures = ["omitApi"]
 }
 
 generator zod {
@@ -47,6 +48,7 @@ model Applicant {
   coverLetter    String
   availability   String
   approvalStatus ApprovalStatus @default(Pending)
+  resume         Media[]
   user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   jobId          String
   jobPost        JobPost        @relation(fields: [jobId], references: [id])
@@ -94,12 +96,14 @@ model Perk {
 }
 
 model Media {
-  id        String @id @unique @default(cuid())
-  mediaType String
-  url       String
-  mediaName String
-  userId    String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String     @id @unique @default(cuid())
+  mediaType   String
+  url         String
+  mediaName   String
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applicantId String?
+  applicant   Applicant? @relation(fields: [applicantId], references: [id])
 }
 
 model Session {

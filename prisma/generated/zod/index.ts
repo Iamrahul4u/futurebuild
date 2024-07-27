@@ -22,7 +22,7 @@ export const SkillScalarFieldEnumSchema = z.enum(['id','name','userId','jobPostI
 
 export const PerkScalarFieldEnumSchema = z.enum(['id','name','jobPostId']);
 
-export const MediaScalarFieldEnumSchema = z.enum(['id','mediaType','url','mediaName','userId']);
+export const MediaScalarFieldEnumSchema = z.enum(['id','mediaType','url','mediaName','userId','applicantId']);
 
 export const SessionScalarFieldEnumSchema = z.enum(['id','userId','expiresAt']);
 
@@ -211,6 +211,7 @@ export const MediaSchema = z.object({
   url: z.string(),
   mediaName: z.string(),
   userId: z.string(),
+  applicantId: z.string().nullable(),
 })
 
 export type Media = z.infer<typeof MediaSchema>
@@ -363,6 +364,7 @@ export const JobPostSelectSchema: z.ZodType<Prisma.JobPostSelect> = z.object({
 //------------------------------------------------------
 
 export const ApplicantIncludeSchema: z.ZodType<Prisma.ApplicantInclude> = z.object({
+  resume: z.union([z.boolean(),z.lazy(() => MediaArgsSchema)]).optional(),
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
   jobPost: z.union([z.boolean(),z.lazy(() => JobPostArgsSchema)]).optional(),
 }).strict()
@@ -379,6 +381,7 @@ export const ApplicantSelectSchema: z.ZodType<Prisma.ApplicantSelect> = z.object
   availability: z.boolean().optional(),
   approvalStatus: z.boolean().optional(),
   jobId: z.boolean().optional(),
+  resume: z.union([z.boolean(),z.lazy(() => MediaArgsSchema)]).optional(),
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
   jobPost: z.union([z.boolean(),z.lazy(() => JobPostArgsSchema)]).optional(),
 }).strict()
@@ -479,6 +482,7 @@ export const PerkSelectSchema: z.ZodType<Prisma.PerkSelect> = z.object({
 
 export const MediaIncludeSchema: z.ZodType<Prisma.MediaInclude> = z.object({
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  applicant: z.union([z.boolean(),z.lazy(() => ApplicantArgsSchema)]).optional(),
 }).strict()
 
 export const MediaArgsSchema: z.ZodType<Prisma.MediaDefaultArgs> = z.object({
@@ -492,7 +496,9 @@ export const MediaSelectSchema: z.ZodType<Prisma.MediaSelect> = z.object({
   url: z.boolean().optional(),
   mediaName: z.boolean().optional(),
   userId: z.boolean().optional(),
+  applicantId: z.boolean().optional(),
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  applicant: z.union([z.boolean(),z.lazy(() => ApplicantArgsSchema)]).optional(),
 }).strict()
 
 // SESSION
@@ -707,6 +713,7 @@ export const ApplicantWhereInputSchema: z.ZodType<Prisma.ApplicantWhereInput> = 
   availability: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   approvalStatus: z.union([ z.lazy(() => EnumApprovalStatusFilterSchema),z.lazy(() => ApprovalStatusSchema) ]).optional(),
   jobId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  resume: z.union([ z.lazy(() => MediaNullableRelationFilterSchema),z.lazy(() => MediaWhereInputSchema) ]).optional().nullable(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   jobPost: z.union([ z.lazy(() => JobPostRelationFilterSchema),z.lazy(() => JobPostWhereInputSchema) ]).optional(),
 }).strict();
@@ -718,6 +725,7 @@ export const ApplicantOrderByWithRelationInputSchema: z.ZodType<Prisma.Applicant
   availability: z.lazy(() => SortOrderSchema).optional(),
   approvalStatus: z.lazy(() => SortOrderSchema).optional(),
   jobId: z.lazy(() => SortOrderSchema).optional(),
+  resume: z.lazy(() => MediaOrderByWithRelationInputSchema).optional(),
   user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
   jobPost: z.lazy(() => JobPostOrderByWithRelationInputSchema).optional()
 }).strict();
@@ -735,6 +743,7 @@ export const ApplicantWhereUniqueInputSchema: z.ZodType<Prisma.ApplicantWhereUni
   availability: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   approvalStatus: z.union([ z.lazy(() => EnumApprovalStatusFilterSchema),z.lazy(() => ApprovalStatusSchema) ]).optional(),
   jobId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  resume: z.union([ z.lazy(() => MediaNullableRelationFilterSchema),z.lazy(() => MediaWhereInputSchema) ]).optional().nullable(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   jobPost: z.union([ z.lazy(() => JobPostRelationFilterSchema),z.lazy(() => JobPostWhereInputSchema) ]).optional(),
 }).strict());
@@ -983,7 +992,9 @@ export const MediaWhereInputSchema: z.ZodType<Prisma.MediaWhereInput> = z.object
   url: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   mediaName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  applicantId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  applicant: z.union([ z.lazy(() => ApplicantNullableRelationFilterSchema),z.lazy(() => ApplicantWhereInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const MediaOrderByWithRelationInputSchema: z.ZodType<Prisma.MediaOrderByWithRelationInput> = z.object({
@@ -992,14 +1003,26 @@ export const MediaOrderByWithRelationInputSchema: z.ZodType<Prisma.MediaOrderByW
   url: z.lazy(() => SortOrderSchema).optional(),
   mediaName: z.lazy(() => SortOrderSchema).optional(),
   userId: z.lazy(() => SortOrderSchema).optional(),
-  user: z.lazy(() => UserOrderByWithRelationInputSchema).optional()
+  applicantId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
+  applicant: z.lazy(() => ApplicantOrderByWithRelationInputSchema).optional()
 }).strict();
 
-export const MediaWhereUniqueInputSchema: z.ZodType<Prisma.MediaWhereUniqueInput> = z.object({
-  id: z.string().cuid()
-})
+export const MediaWhereUniqueInputSchema: z.ZodType<Prisma.MediaWhereUniqueInput> = z.union([
+  z.object({
+    id: z.string().cuid(),
+    applicantId: z.string()
+  }),
+  z.object({
+    id: z.string().cuid(),
+  }),
+  z.object({
+    applicantId: z.string(),
+  }),
+])
 .and(z.object({
   id: z.string().cuid().optional(),
+  applicantId: z.string().optional(),
   AND: z.union([ z.lazy(() => MediaWhereInputSchema),z.lazy(() => MediaWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => MediaWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => MediaWhereInputSchema),z.lazy(() => MediaWhereInputSchema).array() ]).optional(),
@@ -1008,6 +1031,7 @@ export const MediaWhereUniqueInputSchema: z.ZodType<Prisma.MediaWhereUniqueInput
   mediaName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  applicant: z.union([ z.lazy(() => ApplicantNullableRelationFilterSchema),z.lazy(() => ApplicantWhereInputSchema) ]).optional().nullable(),
 }).strict());
 
 export const MediaOrderByWithAggregationInputSchema: z.ZodType<Prisma.MediaOrderByWithAggregationInput> = z.object({
@@ -1016,6 +1040,7 @@ export const MediaOrderByWithAggregationInputSchema: z.ZodType<Prisma.MediaOrder
   url: z.lazy(() => SortOrderSchema).optional(),
   mediaName: z.lazy(() => SortOrderSchema).optional(),
   userId: z.lazy(() => SortOrderSchema).optional(),
+  applicantId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => MediaCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => MediaMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => MediaMinOrderByAggregateInputSchema).optional()
@@ -1030,6 +1055,7 @@ export const MediaScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.MediaSc
   url: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   mediaName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   userId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  applicantId: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const SessionWhereInputSchema: z.ZodType<Prisma.SessionWhereInput> = z.object({
@@ -1354,6 +1380,7 @@ export const ApplicantCreateInputSchema: z.ZodType<Prisma.ApplicantCreateInput> 
   coverLetter: z.string(),
   availability: z.string(),
   approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
+  resume: z.lazy(() => MediaCreateNestedOneWithoutApplicantInputSchema).optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutAppliedJobsInputSchema),
   jobPost: z.lazy(() => JobPostCreateNestedOneWithoutApplicantsInputSchema)
 }).strict();
@@ -1364,7 +1391,8 @@ export const ApplicantUncheckedCreateInputSchema: z.ZodType<Prisma.ApplicantUnch
   coverLetter: z.string(),
   availability: z.string(),
   approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
-  jobId: z.string()
+  jobId: z.string(),
+  resume: z.lazy(() => MediaUncheckedCreateNestedOneWithoutApplicantInputSchema).optional()
 }).strict();
 
 export const ApplicantUpdateInputSchema: z.ZodType<Prisma.ApplicantUpdateInput> = z.object({
@@ -1372,6 +1400,7 @@ export const ApplicantUpdateInputSchema: z.ZodType<Prisma.ApplicantUpdateInput> 
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  resume: z.lazy(() => MediaUpdateOneWithoutApplicantNestedInputSchema).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutAppliedJobsNestedInputSchema).optional(),
   jobPost: z.lazy(() => JobPostUpdateOneRequiredWithoutApplicantsNestedInputSchema).optional()
 }).strict();
@@ -1383,6 +1412,7 @@ export const ApplicantUncheckedUpdateInputSchema: z.ZodType<Prisma.ApplicantUnch
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
   jobId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  resume: z.lazy(() => MediaUncheckedUpdateOneWithoutApplicantNestedInputSchema).optional()
 }).strict();
 
 export const ApplicantCreateManyInputSchema: z.ZodType<Prisma.ApplicantCreateManyInput> = z.object({
@@ -1613,7 +1643,8 @@ export const MediaCreateInputSchema: z.ZodType<Prisma.MediaCreateInput> = z.obje
   mediaType: z.string(),
   url: z.string(),
   mediaName: z.string(),
-  user: z.lazy(() => UserCreateNestedOneWithoutMediaInputSchema)
+  user: z.lazy(() => UserCreateNestedOneWithoutMediaInputSchema),
+  applicant: z.lazy(() => ApplicantCreateNestedOneWithoutResumeInputSchema).optional()
 }).strict();
 
 export const MediaUncheckedCreateInputSchema: z.ZodType<Prisma.MediaUncheckedCreateInput> = z.object({
@@ -1621,7 +1652,8 @@ export const MediaUncheckedCreateInputSchema: z.ZodType<Prisma.MediaUncheckedCre
   mediaType: z.string(),
   url: z.string(),
   mediaName: z.string(),
-  userId: z.string()
+  userId: z.string(),
+  applicantId: z.string().optional().nullable()
 }).strict();
 
 export const MediaUpdateInputSchema: z.ZodType<Prisma.MediaUpdateInput> = z.object({
@@ -1629,7 +1661,8 @@ export const MediaUpdateInputSchema: z.ZodType<Prisma.MediaUpdateInput> = z.obje
   mediaType: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   url: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   mediaName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  user: z.lazy(() => UserUpdateOneRequiredWithoutMediaNestedInputSchema).optional()
+  user: z.lazy(() => UserUpdateOneRequiredWithoutMediaNestedInputSchema).optional(),
+  applicant: z.lazy(() => ApplicantUpdateOneWithoutResumeNestedInputSchema).optional()
 }).strict();
 
 export const MediaUncheckedUpdateInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateInput> = z.object({
@@ -1638,6 +1671,7 @@ export const MediaUncheckedUpdateInputSchema: z.ZodType<Prisma.MediaUncheckedUpd
   url: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   mediaName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  applicantId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const MediaCreateManyInputSchema: z.ZodType<Prisma.MediaCreateManyInput> = z.object({
@@ -1645,7 +1679,8 @@ export const MediaCreateManyInputSchema: z.ZodType<Prisma.MediaCreateManyInput> 
   mediaType: z.string(),
   url: z.string(),
   mediaName: z.string(),
-  userId: z.string()
+  userId: z.string(),
+  applicantId: z.string().optional().nullable()
 }).strict();
 
 export const MediaUpdateManyMutationInputSchema: z.ZodType<Prisma.MediaUpdateManyMutationInput> = z.object({
@@ -1661,6 +1696,7 @@ export const MediaUncheckedUpdateManyInputSchema: z.ZodType<Prisma.MediaUnchecke
   url: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   mediaName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  applicantId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const SessionCreateInputSchema: z.ZodType<Prisma.SessionCreateInput> = z.object({
@@ -2082,6 +2118,11 @@ export const EnumApprovalStatusFilterSchema: z.ZodType<Prisma.EnumApprovalStatus
   not: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => NestedEnumApprovalStatusFilterSchema) ]).optional(),
 }).strict();
 
+export const MediaNullableRelationFilterSchema: z.ZodType<Prisma.MediaNullableRelationFilter> = z.object({
+  is: z.lazy(() => MediaWhereInputSchema).optional().nullable(),
+  isNot: z.lazy(() => MediaWhereInputSchema).optional().nullable()
+}).strict();
+
 export const JobPostRelationFilterSchema: z.ZodType<Prisma.JobPostRelationFilter> = z.object({
   is: z.lazy(() => JobPostWhereInputSchema).optional(),
   isNot: z.lazy(() => JobPostWhereInputSchema).optional()
@@ -2297,12 +2338,18 @@ export const PerkMinOrderByAggregateInputSchema: z.ZodType<Prisma.PerkMinOrderBy
   jobPostId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
+export const ApplicantNullableRelationFilterSchema: z.ZodType<Prisma.ApplicantNullableRelationFilter> = z.object({
+  is: z.lazy(() => ApplicantWhereInputSchema).optional().nullable(),
+  isNot: z.lazy(() => ApplicantWhereInputSchema).optional().nullable()
+}).strict();
+
 export const MediaCountOrderByAggregateInputSchema: z.ZodType<Prisma.MediaCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   mediaType: z.lazy(() => SortOrderSchema).optional(),
   url: z.lazy(() => SortOrderSchema).optional(),
   mediaName: z.lazy(() => SortOrderSchema).optional(),
-  userId: z.lazy(() => SortOrderSchema).optional()
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  applicantId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const MediaMaxOrderByAggregateInputSchema: z.ZodType<Prisma.MediaMaxOrderByAggregateInput> = z.object({
@@ -2310,7 +2357,8 @@ export const MediaMaxOrderByAggregateInputSchema: z.ZodType<Prisma.MediaMaxOrder
   mediaType: z.lazy(() => SortOrderSchema).optional(),
   url: z.lazy(() => SortOrderSchema).optional(),
   mediaName: z.lazy(() => SortOrderSchema).optional(),
-  userId: z.lazy(() => SortOrderSchema).optional()
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  applicantId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const MediaMinOrderByAggregateInputSchema: z.ZodType<Prisma.MediaMinOrderByAggregateInput> = z.object({
@@ -2318,7 +2366,8 @@ export const MediaMinOrderByAggregateInputSchema: z.ZodType<Prisma.MediaMinOrder
   mediaType: z.lazy(() => SortOrderSchema).optional(),
   url: z.lazy(() => SortOrderSchema).optional(),
   mediaName: z.lazy(() => SortOrderSchema).optional(),
-  userId: z.lazy(() => SortOrderSchema).optional()
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  applicantId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const SessionCountOrderByAggregateInputSchema: z.ZodType<Prisma.SessionCountOrderByAggregateInput> = z.object({
@@ -2594,6 +2643,12 @@ export const ApplicantUncheckedUpdateManyWithoutJobPostNestedInputSchema: z.ZodT
   deleteMany: z.union([ z.lazy(() => ApplicantScalarWhereInputSchema),z.lazy(() => ApplicantScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const MediaCreateNestedOneWithoutApplicantInputSchema: z.ZodType<Prisma.MediaCreateNestedOneWithoutApplicantInput> = z.object({
+  create: z.union([ z.lazy(() => MediaCreateWithoutApplicantInputSchema),z.lazy(() => MediaUncheckedCreateWithoutApplicantInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => MediaCreateOrConnectWithoutApplicantInputSchema).optional(),
+  connect: z.lazy(() => MediaWhereUniqueInputSchema).optional()
+}).strict();
+
 export const UserCreateNestedOneWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutAppliedJobsInput> = z.object({
   create: z.union([ z.lazy(() => UserCreateWithoutAppliedJobsInputSchema),z.lazy(() => UserUncheckedCreateWithoutAppliedJobsInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutAppliedJobsInputSchema).optional(),
@@ -2606,8 +2661,24 @@ export const JobPostCreateNestedOneWithoutApplicantsInputSchema: z.ZodType<Prism
   connect: z.lazy(() => JobPostWhereUniqueInputSchema).optional()
 }).strict();
 
+export const MediaUncheckedCreateNestedOneWithoutApplicantInputSchema: z.ZodType<Prisma.MediaUncheckedCreateNestedOneWithoutApplicantInput> = z.object({
+  create: z.union([ z.lazy(() => MediaCreateWithoutApplicantInputSchema),z.lazy(() => MediaUncheckedCreateWithoutApplicantInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => MediaCreateOrConnectWithoutApplicantInputSchema).optional(),
+  connect: z.lazy(() => MediaWhereUniqueInputSchema).optional()
+}).strict();
+
 export const EnumApprovalStatusFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumApprovalStatusFieldUpdateOperationsInput> = z.object({
   set: z.lazy(() => ApprovalStatusSchema).optional()
+}).strict();
+
+export const MediaUpdateOneWithoutApplicantNestedInputSchema: z.ZodType<Prisma.MediaUpdateOneWithoutApplicantNestedInput> = z.object({
+  create: z.union([ z.lazy(() => MediaCreateWithoutApplicantInputSchema),z.lazy(() => MediaUncheckedCreateWithoutApplicantInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => MediaCreateOrConnectWithoutApplicantInputSchema).optional(),
+  upsert: z.lazy(() => MediaUpsertWithoutApplicantInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => MediaWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => MediaWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => MediaWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => MediaUpdateToOneWithWhereWithoutApplicantInputSchema),z.lazy(() => MediaUpdateWithoutApplicantInputSchema),z.lazy(() => MediaUncheckedUpdateWithoutApplicantInputSchema) ]).optional(),
 }).strict();
 
 export const UserUpdateOneRequiredWithoutAppliedJobsNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutAppliedJobsNestedInput> = z.object({
@@ -2624,6 +2695,16 @@ export const JobPostUpdateOneRequiredWithoutApplicantsNestedInputSchema: z.ZodTy
   upsert: z.lazy(() => JobPostUpsertWithoutApplicantsInputSchema).optional(),
   connect: z.lazy(() => JobPostWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => JobPostUpdateToOneWithWhereWithoutApplicantsInputSchema),z.lazy(() => JobPostUpdateWithoutApplicantsInputSchema),z.lazy(() => JobPostUncheckedUpdateWithoutApplicantsInputSchema) ]).optional(),
+}).strict();
+
+export const MediaUncheckedUpdateOneWithoutApplicantNestedInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateOneWithoutApplicantNestedInput> = z.object({
+  create: z.union([ z.lazy(() => MediaCreateWithoutApplicantInputSchema),z.lazy(() => MediaUncheckedCreateWithoutApplicantInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => MediaCreateOrConnectWithoutApplicantInputSchema).optional(),
+  upsert: z.lazy(() => MediaUpsertWithoutApplicantInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => MediaWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => MediaWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => MediaWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => MediaUpdateToOneWithWhereWithoutApplicantInputSchema),z.lazy(() => MediaUpdateWithoutApplicantInputSchema),z.lazy(() => MediaUncheckedUpdateWithoutApplicantInputSchema) ]).optional(),
 }).strict();
 
 export const SkillCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.SkillCreateNestedManyWithoutUserInput> = z.object({
@@ -2914,12 +2995,28 @@ export const UserCreateNestedOneWithoutMediaInputSchema: z.ZodType<Prisma.UserCr
   connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
 }).strict();
 
+export const ApplicantCreateNestedOneWithoutResumeInputSchema: z.ZodType<Prisma.ApplicantCreateNestedOneWithoutResumeInput> = z.object({
+  create: z.union([ z.lazy(() => ApplicantCreateWithoutResumeInputSchema),z.lazy(() => ApplicantUncheckedCreateWithoutResumeInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => ApplicantCreateOrConnectWithoutResumeInputSchema).optional(),
+  connect: z.lazy(() => ApplicantWhereUniqueInputSchema).optional()
+}).strict();
+
 export const UserUpdateOneRequiredWithoutMediaNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutMediaNestedInput> = z.object({
   create: z.union([ z.lazy(() => UserCreateWithoutMediaInputSchema),z.lazy(() => UserUncheckedCreateWithoutMediaInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutMediaInputSchema).optional(),
   upsert: z.lazy(() => UserUpsertWithoutMediaInputSchema).optional(),
   connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutMediaInputSchema),z.lazy(() => UserUpdateWithoutMediaInputSchema),z.lazy(() => UserUncheckedUpdateWithoutMediaInputSchema) ]).optional(),
+}).strict();
+
+export const ApplicantUpdateOneWithoutResumeNestedInputSchema: z.ZodType<Prisma.ApplicantUpdateOneWithoutResumeNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ApplicantCreateWithoutResumeInputSchema),z.lazy(() => ApplicantUncheckedCreateWithoutResumeInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => ApplicantCreateOrConnectWithoutResumeInputSchema).optional(),
+  upsert: z.lazy(() => ApplicantUpsertWithoutResumeInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => ApplicantWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => ApplicantWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => ApplicantWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => ApplicantUpdateToOneWithWhereWithoutResumeInputSchema),z.lazy(() => ApplicantUpdateWithoutResumeInputSchema),z.lazy(() => ApplicantUncheckedUpdateWithoutResumeInputSchema) ]).optional(),
 }).strict();
 
 export const UserCreateNestedOneWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutSessionsInput> = z.object({
@@ -3302,6 +3399,7 @@ export const ApplicantCreateWithoutJobPostInputSchema: z.ZodType<Prisma.Applican
   coverLetter: z.string(),
   availability: z.string(),
   approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
+  resume: z.lazy(() => MediaCreateNestedOneWithoutApplicantInputSchema).optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutAppliedJobsInputSchema)
 }).strict();
 
@@ -3310,7 +3408,8 @@ export const ApplicantUncheckedCreateWithoutJobPostInputSchema: z.ZodType<Prisma
   userId: z.string(),
   coverLetter: z.string(),
   availability: z.string(),
-  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional()
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
+  resume: z.lazy(() => MediaUncheckedCreateNestedOneWithoutApplicantInputSchema).optional()
 }).strict();
 
 export const ApplicantCreateOrConnectWithoutJobPostInputSchema: z.ZodType<Prisma.ApplicantCreateOrConnectWithoutJobPostInput> = z.object({
@@ -3486,6 +3585,27 @@ export const UserUncheckedUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.U
   sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
+export const MediaCreateWithoutApplicantInputSchema: z.ZodType<Prisma.MediaCreateWithoutApplicantInput> = z.object({
+  id: z.string().cuid().optional(),
+  mediaType: z.string(),
+  url: z.string(),
+  mediaName: z.string(),
+  user: z.lazy(() => UserCreateNestedOneWithoutMediaInputSchema)
+}).strict();
+
+export const MediaUncheckedCreateWithoutApplicantInputSchema: z.ZodType<Prisma.MediaUncheckedCreateWithoutApplicantInput> = z.object({
+  id: z.string().cuid().optional(),
+  mediaType: z.string(),
+  url: z.string(),
+  mediaName: z.string(),
+  userId: z.string()
+}).strict();
+
+export const MediaCreateOrConnectWithoutApplicantInputSchema: z.ZodType<Prisma.MediaCreateOrConnectWithoutApplicantInput> = z.object({
+  where: z.lazy(() => MediaWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => MediaCreateWithoutApplicantInputSchema),z.lazy(() => MediaUncheckedCreateWithoutApplicantInputSchema) ]),
+}).strict();
+
 export const UserCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserCreateWithoutAppliedJobsInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
@@ -3564,6 +3684,33 @@ export const JobPostUncheckedCreateWithoutApplicantsInputSchema: z.ZodType<Prism
 export const JobPostCreateOrConnectWithoutApplicantsInputSchema: z.ZodType<Prisma.JobPostCreateOrConnectWithoutApplicantsInput> = z.object({
   where: z.lazy(() => JobPostWhereUniqueInputSchema),
   create: z.union([ z.lazy(() => JobPostCreateWithoutApplicantsInputSchema),z.lazy(() => JobPostUncheckedCreateWithoutApplicantsInputSchema) ]),
+}).strict();
+
+export const MediaUpsertWithoutApplicantInputSchema: z.ZodType<Prisma.MediaUpsertWithoutApplicantInput> = z.object({
+  update: z.union([ z.lazy(() => MediaUpdateWithoutApplicantInputSchema),z.lazy(() => MediaUncheckedUpdateWithoutApplicantInputSchema) ]),
+  create: z.union([ z.lazy(() => MediaCreateWithoutApplicantInputSchema),z.lazy(() => MediaUncheckedCreateWithoutApplicantInputSchema) ]),
+  where: z.lazy(() => MediaWhereInputSchema).optional()
+}).strict();
+
+export const MediaUpdateToOneWithWhereWithoutApplicantInputSchema: z.ZodType<Prisma.MediaUpdateToOneWithWhereWithoutApplicantInput> = z.object({
+  where: z.lazy(() => MediaWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => MediaUpdateWithoutApplicantInputSchema),z.lazy(() => MediaUncheckedUpdateWithoutApplicantInputSchema) ]),
+}).strict();
+
+export const MediaUpdateWithoutApplicantInputSchema: z.ZodType<Prisma.MediaUpdateWithoutApplicantInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  mediaType: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  url: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  mediaName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutMediaNestedInputSchema).optional()
+}).strict();
+
+export const MediaUncheckedUpdateWithoutApplicantInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateWithoutApplicantInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  mediaType: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  url: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  mediaName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const UserUpsertWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUpsertWithoutAppliedJobsInput> = z.object({
@@ -3684,14 +3831,16 @@ export const MediaCreateWithoutUserInputSchema: z.ZodType<Prisma.MediaCreateWith
   id: z.string().cuid().optional(),
   mediaType: z.string(),
   url: z.string(),
-  mediaName: z.string()
+  mediaName: z.string(),
+  applicant: z.lazy(() => ApplicantCreateNestedOneWithoutResumeInputSchema).optional()
 }).strict();
 
 export const MediaUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.MediaUncheckedCreateWithoutUserInput> = z.object({
   id: z.string().cuid().optional(),
   mediaType: z.string(),
   url: z.string(),
-  mediaName: z.string()
+  mediaName: z.string(),
+  applicantId: z.string().optional().nullable()
 }).strict();
 
 export const MediaCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.MediaCreateOrConnectWithoutUserInput> = z.object({
@@ -3774,6 +3923,7 @@ export const ApplicantCreateWithoutUserInputSchema: z.ZodType<Prisma.ApplicantCr
   coverLetter: z.string(),
   availability: z.string(),
   approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
+  resume: z.lazy(() => MediaCreateNestedOneWithoutApplicantInputSchema).optional(),
   jobPost: z.lazy(() => JobPostCreateNestedOneWithoutApplicantsInputSchema)
 }).strict();
 
@@ -3782,7 +3932,8 @@ export const ApplicantUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.Ap
   coverLetter: z.string(),
   availability: z.string(),
   approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
-  jobId: z.string()
+  jobId: z.string(),
+  resume: z.lazy(() => MediaUncheckedCreateNestedOneWithoutApplicantInputSchema).optional()
 }).strict();
 
 export const ApplicantCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.ApplicantCreateOrConnectWithoutUserInput> = z.object({
@@ -3856,6 +4007,7 @@ export const MediaScalarWhereInputSchema: z.ZodType<Prisma.MediaScalarWhereInput
   url: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   mediaName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  applicantId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const LocationUpsertWithoutUserInputSchema: z.ZodType<Prisma.LocationUpsertWithoutUserInput> = z.object({
@@ -4258,6 +4410,29 @@ export const UserCreateOrConnectWithoutMediaInputSchema: z.ZodType<Prisma.UserCr
   create: z.union([ z.lazy(() => UserCreateWithoutMediaInputSchema),z.lazy(() => UserUncheckedCreateWithoutMediaInputSchema) ]),
 }).strict();
 
+export const ApplicantCreateWithoutResumeInputSchema: z.ZodType<Prisma.ApplicantCreateWithoutResumeInput> = z.object({
+  id: z.string().cuid().optional(),
+  coverLetter: z.string(),
+  availability: z.string(),
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
+  user: z.lazy(() => UserCreateNestedOneWithoutAppliedJobsInputSchema),
+  jobPost: z.lazy(() => JobPostCreateNestedOneWithoutApplicantsInputSchema)
+}).strict();
+
+export const ApplicantUncheckedCreateWithoutResumeInputSchema: z.ZodType<Prisma.ApplicantUncheckedCreateWithoutResumeInput> = z.object({
+  id: z.string().cuid().optional(),
+  userId: z.string(),
+  coverLetter: z.string(),
+  availability: z.string(),
+  approvalStatus: z.lazy(() => ApprovalStatusSchema).optional(),
+  jobId: z.string()
+}).strict();
+
+export const ApplicantCreateOrConnectWithoutResumeInputSchema: z.ZodType<Prisma.ApplicantCreateOrConnectWithoutResumeInput> = z.object({
+  where: z.lazy(() => ApplicantWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => ApplicantCreateWithoutResumeInputSchema),z.lazy(() => ApplicantUncheckedCreateWithoutResumeInputSchema) ]),
+}).strict();
+
 export const UserUpsertWithoutMediaInputSchema: z.ZodType<Prisma.UserUpsertWithoutMediaInput> = z.object({
   update: z.union([ z.lazy(() => UserUpdateWithoutMediaInputSchema),z.lazy(() => UserUncheckedUpdateWithoutMediaInputSchema) ]),
   create: z.union([ z.lazy(() => UserCreateWithoutMediaInputSchema),z.lazy(() => UserUncheckedCreateWithoutMediaInputSchema) ]),
@@ -4301,6 +4476,35 @@ export const UserUncheckedUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUn
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
+export const ApplicantUpsertWithoutResumeInputSchema: z.ZodType<Prisma.ApplicantUpsertWithoutResumeInput> = z.object({
+  update: z.union([ z.lazy(() => ApplicantUpdateWithoutResumeInputSchema),z.lazy(() => ApplicantUncheckedUpdateWithoutResumeInputSchema) ]),
+  create: z.union([ z.lazy(() => ApplicantCreateWithoutResumeInputSchema),z.lazy(() => ApplicantUncheckedCreateWithoutResumeInputSchema) ]),
+  where: z.lazy(() => ApplicantWhereInputSchema).optional()
+}).strict();
+
+export const ApplicantUpdateToOneWithWhereWithoutResumeInputSchema: z.ZodType<Prisma.ApplicantUpdateToOneWithWhereWithoutResumeInput> = z.object({
+  where: z.lazy(() => ApplicantWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => ApplicantUpdateWithoutResumeInputSchema),z.lazy(() => ApplicantUncheckedUpdateWithoutResumeInputSchema) ]),
+}).strict();
+
+export const ApplicantUpdateWithoutResumeInputSchema: z.ZodType<Prisma.ApplicantUpdateWithoutResumeInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutAppliedJobsNestedInputSchema).optional(),
+  jobPost: z.lazy(() => JobPostUpdateOneRequiredWithoutApplicantsNestedInputSchema).optional()
+}).strict();
+
+export const ApplicantUncheckedUpdateWithoutResumeInputSchema: z.ZodType<Prisma.ApplicantUncheckedUpdateWithoutResumeInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  jobId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const UserCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateWithoutSessionsInput> = z.object({
@@ -4610,6 +4814,7 @@ export const ApplicantUpdateWithoutJobPostInputSchema: z.ZodType<Prisma.Applican
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  resume: z.lazy(() => MediaUpdateOneWithoutApplicantNestedInputSchema).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutAppliedJobsNestedInputSchema).optional()
 }).strict();
 
@@ -4619,6 +4824,7 @@ export const ApplicantUncheckedUpdateWithoutJobPostInputSchema: z.ZodType<Prisma
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  resume: z.lazy(() => MediaUncheckedUpdateOneWithoutApplicantNestedInputSchema).optional()
 }).strict();
 
 export const ApplicantUncheckedUpdateManyWithoutJobPostInputSchema: z.ZodType<Prisma.ApplicantUncheckedUpdateManyWithoutJobPostInput> = z.object({
@@ -4639,7 +4845,8 @@ export const MediaCreateManyUserInputSchema: z.ZodType<Prisma.MediaCreateManyUse
   id: z.string().cuid().optional(),
   mediaType: z.string(),
   url: z.string(),
-  mediaName: z.string()
+  mediaName: z.string(),
+  applicantId: z.string().optional().nullable()
 }).strict();
 
 export const JobPostCreateManyPostedByInputSchema: z.ZodType<Prisma.JobPostCreateManyPostedByInput> = z.object({
@@ -4693,6 +4900,7 @@ export const MediaUpdateWithoutUserInputSchema: z.ZodType<Prisma.MediaUpdateWith
   mediaType: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   url: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   mediaName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  applicant: z.lazy(() => ApplicantUpdateOneWithoutResumeNestedInputSchema).optional()
 }).strict();
 
 export const MediaUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateWithoutUserInput> = z.object({
@@ -4700,6 +4908,7 @@ export const MediaUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.MediaU
   mediaType: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   url: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   mediaName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  applicantId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const MediaUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateManyWithoutUserInput> = z.object({
@@ -4707,6 +4916,7 @@ export const MediaUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.Me
   mediaType: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   url: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   mediaName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  applicantId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const JobPostUpdateWithoutPostedByInputSchema: z.ZodType<Prisma.JobPostUpdateWithoutPostedByInput> = z.object({
@@ -4765,6 +4975,7 @@ export const ApplicantUpdateWithoutUserInputSchema: z.ZodType<Prisma.ApplicantUp
   coverLetter: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
+  resume: z.lazy(() => MediaUpdateOneWithoutApplicantNestedInputSchema).optional(),
   jobPost: z.lazy(() => JobPostUpdateOneRequiredWithoutApplicantsNestedInputSchema).optional()
 }).strict();
 
@@ -4774,6 +4985,7 @@ export const ApplicantUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.Ap
   availability: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   approvalStatus: z.union([ z.lazy(() => ApprovalStatusSchema),z.lazy(() => EnumApprovalStatusFieldUpdateOperationsInputSchema) ]).optional(),
   jobId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  resume: z.lazy(() => MediaUncheckedUpdateOneWithoutApplicantNestedInputSchema).optional()
 }).strict();
 
 export const ApplicantUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.ApplicantUncheckedUpdateManyWithoutUserInput> = z.object({

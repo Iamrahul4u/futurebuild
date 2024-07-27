@@ -107,16 +107,6 @@ export default function Page({ params }: { params: { jobid: string } }) {
             },
           });
 
-          const applyJob = await applyToJob(params.jobid);
-          if (applyJob.error) {
-            await fetch(url, {
-              method: "DELETE",
-              body: values.resume,
-              headers: {
-                "Content-Type": values.resume.type,
-              },
-            });
-          }
           toast.success("Applied Successfully!!");
           router.push("/jobs");
         }
@@ -127,8 +117,8 @@ export default function Page({ params }: { params: { jobid: string } }) {
     setPending(false);
   }
   return (
-    <ScrollArea className="w-4/5 py-8 px-12 mx-auto h-full ">
-      <h1 className="text-6xl mb-6 text-black dark:text-white">
+    <ScrollArea className="mx-auto h-full w-4/5 px-12 py-8">
+      <h1 className="mb-6 text-6xl text-black dark:text-white">
         Applying for ~jobname~
       </h1>
       <FormProvider {...form}>
@@ -164,7 +154,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
                       <FormControl>
                         <RadioGroupItem value="Yes" />
                       </FormControl>
-                      <FormLabel className="font-normal  text-black dark:text-white">
+                      <FormLabel className="font-normal text-black dark:text-white">
                         Yes, I am available to join immediately
                       </FormLabel>
                     </FormItem>

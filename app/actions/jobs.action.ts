@@ -51,7 +51,7 @@ export async function getUrl(
     expiresIn: 60,
   });
   const url = presigned.split("?")[0];
-  await prismaMedia({ mediaType, mediaName, url, userId });
+  await prismaMedia({ mediaType, mediaName, url, userId, applicantId: userId });
   return { success: { url: presigned } };
 }
 

@@ -30,7 +30,7 @@ import { Pie, PieChart, CartesianGrid, XAxis, Line, LineChart } from "recharts";
 import DashboardNav from "@/components/shared/DashboardNav";
 import prisma from "@/prisma";
 import { redirect } from "next/navigation";
-import TableList from "@/components/shared/TableList";
+import TableList from "@/components/shared/TablePostedJobs";
 import { JobPost } from "@prisma/client";
 import { z } from "zod";
 import { UserWithJobs } from "@/types/zodValidations";

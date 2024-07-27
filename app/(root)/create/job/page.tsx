@@ -11,22 +11,26 @@ import {
   JobPostOptionalDefaultsSchema,
   JobTypeSchema,
   modeSchema,
+  RoleSchema,
 } from "@/prisma/generated/zod";
 import DatePicker from "@/components/shared/DatePicker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import StateButton from "@/components/shared/StateButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createJob } from "@/app/actions/prisma.action";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import useGetUser from "@/hooks/useGetUser";
+import useGetUserRole from "@/hooks/useGetUserRole";
+import LoadingForm from "@/components/loaders/LoadingForm";
 
 export default function Page() {
   const [pending, setPending] = useState<boolean>(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof JobPostOptionalDefaultsSchema>>({
-    resolver: zodResolver(JobPostOptionalDefaultsSchema),
+    resolver: zodResolver(JobPostOptionalDefaultsSchema.omit({ userId: true })),
     defaultValues: {
       jobTitle: "",
       jobDescription: "",
@@ -41,6 +45,14 @@ export default function Page() {
       whoCanApply: "Anyone",
     },
   });
+  const { role, loading } = useGetUserRole();
+  useEffect(() => {
+    if (loading) return;
+    if (role !== "ADMIN" && role !== "ORGANIZATION") {
+      toast.error("Not Authorized to create Job");
+      router.push("/");
+    }
+  }, [loading, role, router]);
 
   async function onSubmit(
     values: z.infer<typeof JobPostOptionalDefaultsSchema>,
@@ -57,7 +69,7 @@ export default function Page() {
   }
 
   return (
-    <ScrollArea className="w-3/4 py-8 px-12 mx-auto h-full">
+    <ScrollArea className="mx-auto h-full w-3/4 px-12 py-8">
       <CardTitle className="text-3xl font-bold text-black dark:text-white">
         Post a New Job
       </CardTitle>

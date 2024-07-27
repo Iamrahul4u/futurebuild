@@ -112,3 +112,22 @@ export const getUserId = async () => {
   }
   return { user };
 };
+
+export const checkUserRole = async () => {
+  const user = await getUser();
+  if (!user) {
+    return { role: null };
+  }
+  if ("error" in user) {
+    return { role: "error" };
+  }
+  const role = await prisma.user.findFirst({
+    where: {
+      id: user?.id,
+    },
+    select: {
+      role: true,
+    },
+  });
+  return role;
+};

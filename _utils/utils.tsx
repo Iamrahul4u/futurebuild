@@ -51,16 +51,20 @@ export function generateRandomName(length = 20) {
       .substring(0, length);
   }
 }
-
-export function formatNumberToLakh(number: number): string {
-  if (number < 100000) {
-    return number.toString(); // Return as is if less than 1 lakh
+export function formatNumber(number: number): string {
+  if (number < 100) {
+    return number.toString(); // Return as is if less than 100
+  } else if (number < 1000) {
+    return number.toFixed(0); // Return as is if less than 1000
+  } else if (number < 100000) {
+    const thousands = number / 1000;
+    return thousands.toFixed(1) + "K"; // Format to thousands (e.g., 1.5K)
   } else {
     const lakh = number / 100000; // Convert number to lakh
     if (Number.isInteger(lakh)) {
-      return lakh.toFixed(0); // Return as integer lakh
+      return lakh.toFixed(0) + "LPA"; // Return as integer lakh
     } else {
-      return lakh.toFixed(1); // Return with one decimal place
+      return lakh.toFixed(1) + "LPA"; // Return with one decimal place
     }
   }
 }
