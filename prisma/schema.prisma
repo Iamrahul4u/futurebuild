@@ -48,7 +48,7 @@ model Applicant {
   coverLetter    String
   availability   String
   approvalStatus ApprovalStatus @default(Pending)
-  resume         Media[]
+  resume         Media?
   user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   jobId          String
   jobPost        JobPost        @relation(fields: [jobId], references: [id])
@@ -102,7 +102,7 @@ model Media {
   mediaName   String
   userId      String
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  applicantId String?
+  applicantId String?    @unique
   applicant   Applicant? @relation(fields: [applicantId], references: [id])
 }
 

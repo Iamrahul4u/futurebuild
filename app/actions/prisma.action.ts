@@ -16,14 +16,26 @@ const mediaOptional = MediaOptionalDefaultsSchema.omit({
 }).extend({
   applicantId: z.string().optional(),
 });
+type PrismaMediaResponse =
+  | {
+      id: string;
+      url: string;
+      userId: string;
+      mediaType: string;
+      mediaName: string;
+      applicantId: string | null;
+    }
+  | { error: string };
+
 export async function prismaMedia({
   mediaType,
   url,
   mediaName,
   userId,
   applicantId,
-}: z.infer<typeof mediaOptional>) {
+}: z.infer<typeof mediaOptional>): Promise<PrismaMediaResponse> {
   const user = await getUser();
+  console.log("prismaUserId", user);
   if (!user || "error" in user) {
     return { error: "User Not Authenticated" };
   }
@@ -33,14 +45,30 @@ export async function prismaMedia({
       url: url,
       userId: userId,
       mediaName: mediaName,
-      applicantId: applicantId ? applicantId : null,
+      applicantId: applicantId || null,
     };
     const media = await prisma.media.create({
       data: filter,
     });
-    return;
+    if (applicantId) {
+      await prisma.applicant.update({
+        where: {
+          id: applicantId,
+        },
+        data: {
+          resume: {
+            connect: {
+              id: media.id,
+            },
+          },
+        },
+      });
+    }
+
+    console.log("media", media);
+    return media;
   } catch (error) {
-    return { error: "Prisma Database Insertion Failed" };
+    return { error: `Prisma Database Insertion Failed :${error}` };
   }
 }
 

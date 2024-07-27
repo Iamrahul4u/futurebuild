@@ -28,6 +28,7 @@ export async function getUrl(
   fileSize: number,
   mediaType: string,
   mediaName: string,
+  applicantId: string | undefined,
 ) {
   const user = await getUser();
   if (!user) {
@@ -41,7 +42,7 @@ export async function getUrl(
     return { error: "Invalid File Type" };
   }
   // @ts-ignore
-  const userId = user.id;
+  const userId = user?.id;
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: fileName,
@@ -51,11 +52,28 @@ export async function getUrl(
     expiresIn: 60,
   });
   const url = presigned.split("?")[0];
-  await prismaMedia({ mediaType, mediaName, url, userId, applicantId: userId });
+  const mediaRes = await prismaMedia({
+    mediaType,
+    mediaName,
+    url,
+    userId,
+    applicantId,
+  });
+  if ("error" in mediaRes) {
+    return { error: mediaRes.error };
+  }
   return { success: { url: presigned } };
 }
 
-export async function applyToJob(jobId: string) {
+export async function applyToJob({
+  jobId,
+  coverLetter,
+  availability,
+}: {
+  jobId: string;
+  coverLetter: string;
+  availability: string;
+}) {
   const user = await getUser();
   if (!user || "error" in user) {
     return { error: "User not authenticated" };
@@ -68,9 +86,6 @@ export async function applyToJob(jobId: string) {
     });
     if (!existingUser) {
       return { error: "User not found in database" };
-    }
-    if (existingUser.role !== "ORGANIZATION" && existingUser.role !== "ADMIN") {
-      return { error: "You Are Not Authorized To Create Jobs" };
     }
 
     // Ensure the job post exists in the database
@@ -94,25 +109,23 @@ export async function applyToJob(jobId: string) {
     }
 
     // Create a new applicant record linking the user to the job post
-    await prisma.applicant.create({
+    const applicantId = await prisma.applicant.create({
       data: {
         userId: user.id,
         jobId: jobId,
-        coverLetter: "Default cover letter", // Replace with actual cover letter data
-        availability: "Immediate", // Replace with actual availability data
+        coverLetter: coverLetter, // Replace with actual cover letter data
+        availability: availability, // Replace with actual availability data
+      },
+      select: {
+        id: true,
       },
     });
 
-    return { success: true };
+    return { success: { applicantId } };
   } catch (error) {
     console.error("Error applying to job:", error);
     return { error: "Failed to apply to job" };
   }
-}
-interface ErrorResponse {
-  error: {
-    message: string;
-  };
 }
 
 interface JobsResponse {

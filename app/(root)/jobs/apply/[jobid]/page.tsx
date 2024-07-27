@@ -88,11 +88,22 @@ export default function Page({ params }: { params: { jobid: string } }) {
     }
 
     try {
+      const applicant = await applyToJob({
+        jobId: params.jobid,
+        coverLetter: values.coverLetter,
+        availability: values.availability,
+      });
+      if (applicant.error) {
+        toast.error(applicant.error);
+        throw new Error(applicant.error);
+      }
+      const applicantId = applicant.success?.applicantId.id;
       if (values.resume) {
         const signedUrl = await getUrl(
           values.resume.size,
           values.resume.type,
           MediaNameSchema.options[0],
+          applicantId,
         );
         if (signedUrl.error) {
           toast.error(signedUrl.error);
@@ -111,9 +122,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
           router.push("/jobs");
         }
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
     setPending(false);
   }
   return (
