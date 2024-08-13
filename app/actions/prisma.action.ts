@@ -101,3 +101,20 @@ export async function createJob(props: JobPostOptionalDefaults) {
     return { error: "Error Occured" };
   }
 }
+
+export async function deleteUser(id: string) {
+  const user = await getUser();
+  if (!user || "error" in user) {
+    return { error: "User Not Authenticated" };
+  }
+  try {
+    const deletedUser = await prisma.user.delete({
+      where: {
+        id: id,
+      },
+    });
+    return deletedUser;
+  } catch (error) {
+    return { error: "Couldn't Complete Request" };
+  }
+}

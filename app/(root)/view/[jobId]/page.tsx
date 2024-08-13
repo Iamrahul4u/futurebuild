@@ -19,6 +19,13 @@ import {
 } from "@/components/ui/table";
 import prisma from "../../../../prisma/index";
 import Link from "next/link";
+import SelectOptions from "@/components/shared/SelectOptions";
+import {
+  MessageCircleIcon,
+  MessageSquareDotIcon,
+  MessageSquareIcon,
+  MessagesSquareIcon,
+} from "lucide-react";
 export default async function Page({ params }: { params: { jobId: string } }) {
   const res = await prisma.applicant.findMany({
     where: {
@@ -58,10 +65,11 @@ export default async function Page({ params }: { params: { jobId: string } }) {
               <TableHead>Email</TableHead>
               <TableHead>Resume</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Chat</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {res.map((applicant) => (
+            {res.map((applicant: any) => (
               <TableRow key={applicant.id}>
                 <TableCell>{applicant.user.firstName}</TableCell>
                 <TableCell>{applicant.user.email}</TableCell>
@@ -73,7 +81,15 @@ export default async function Page({ params }: { params: { jobId: string } }) {
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">Pending</Badge>
+                  <SelectOptions
+                    applicantId={applicant.id}
+                    defaultValue={applicant.approvalStatus}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Link href={`/chat/${applicant.userId}/${applicant.jobId}`}>
+                    <MessagesSquareIcon />
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

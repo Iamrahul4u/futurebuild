@@ -40,6 +40,11 @@ export const DashboardNavLinks: SidebarLink[] = [
   },
   {
     imgURL: "/assets/icons/users.svg",
+    route: "/edit",
+    label: "Edit Profile",
+  },
+  {
+    imgURL: "/assets/icons/users.svg",
     route: "/settings",
     label: "Settings",
   },

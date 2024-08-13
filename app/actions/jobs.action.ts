@@ -2,16 +2,11 @@
 
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { checkUser } from "./auth.action";
 import { getUser } from "../[...authenticate]/lucia";
 import { generateRandomName } from "@/_utils/utils";
 import prisma from "@/prisma";
 import { prismaMedia } from "./prisma.action";
-import { headers } from "next/headers";
 import rateLimiter from "@/lib/rateLimit";
-import { JobPost, JobPostOptionalDefaults } from "@/prisma/generated/zod";
-import { redirect } from "next/navigation";
-import { cache } from "react";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -194,7 +189,7 @@ export const getjobs: ({
               },
             },
           },
-          cacheStrategy: { ttl: 60, swr: 60 },
+          // cacheStrategy: { ttl: 60, swr: 60 },
         });
     return { jobs };
   } catch (error) {
@@ -202,27 +197,37 @@ export const getjobs: ({
   }
 };
 
-export async function changePendingStatus({
+import { ApprovalStatus } from "@prisma/client";
+export async function changeJobApprovalStatus({
+  applicantId,
   status,
 }: {
+  applicantId: string;
   status: ApprovalStatus;
-}) {}
-export async function deleteUser({ id }: { id: string }) {
+}) {
   try {
-    await prisma.user.delete({
+    const res = await prisma.applicant.update({
       where: {
-        id: id,
+        id: applicantId,
+      },
+      data: {
+        approvalStatus: status,
+      },
+      select: {
+        id: true,
       },
     });
-  } catch (error) {}
+    return { success: true };
+  } catch (error) {
+    return { error: "Error Occured" };
+  }
 }
+
 import { revalidatePath } from "next/cache";
-import { ApprovalStatus } from "@prisma/client";
 import {
   leftSidebarfilterProps,
   leftSidebarfilterPropsTypes,
 } from "@/types/sharedTypes";
-import { max } from "date-fns";
 import { JobPostSelectType } from "@/types/zodValidations";
 
 export default async function revalidatePathname(pathname: string) {

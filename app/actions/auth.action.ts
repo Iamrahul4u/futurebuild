@@ -57,6 +57,9 @@ export async function signIn({
   values: z.infer<typeof signInSchema>;
 }) {
   try {
+    console.log(process.env.DATABASE_URL);
+    const users = await prisma.user.findMany({});
+    console.log(users);
     const user = await prisma.user.findFirst({
       where: {
         email: values.email,

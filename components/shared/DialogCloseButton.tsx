@@ -1,3 +1,4 @@
+"use client";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,18 +10,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 export function DialogCloseButton({
   title,
   description,
+  userId,
   buttonText,
   buttonVariant,
+  onClickFn,
 }: {
   title: string;
   description: string;
   buttonText: string;
+  userId?: string;
   buttonVariant?:
     | "default"
     | "secondary"
@@ -30,6 +32,7 @@ export function DialogCloseButton({
     | "link"
     | null
     | undefined;
+  onClickFn: (id: string) => Promise<void>;
 }) {
   return (
     <Dialog>
@@ -42,6 +45,7 @@ export function DialogCloseButton({
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <Button
+          onClick={() => userId && onClickFn(userId)}
           type="submit"
           size="sm"
           variant={buttonVariant}

@@ -8,9 +8,9 @@ const useGetUser = () => {
     async function verifyUser() {
       try {
         const getUser: any = await getUserId();
-        setUser(getUser.user.id);
+        setUser(getUser?.user?.id);
       } catch (error) {
-        console.error("Failed to fetch user", error);
+        return { error: "Failed to fetch user" };
       }
     }
     verifyUser();

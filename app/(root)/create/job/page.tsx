@@ -1,5 +1,5 @@
 "use client";
-import { CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { CardTitle, CardDescription } from "@/components/ui/card";
 import z from "zod";
 import InputText from "@/components/shared/InputText";
 import { FormProvider, useForm } from "react-hook-form";
@@ -11,19 +11,15 @@ import {
   JobPostOptionalDefaultsSchema,
   JobTypeSchema,
   modeSchema,
-  RoleSchema,
 } from "@/prisma/generated/zod";
 import DatePicker from "@/components/shared/DatePicker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import StateButton from "@/components/shared/StateButton";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { createJob } from "@/app/actions/prisma.action";
 import { toast } from "sonner";
-import { redirect, useRouter } from "next/navigation";
-import useGetUser from "@/hooks/useGetUser";
+import { useRouter } from "next/navigation";
 import useGetUserRole from "@/hooks/useGetUserRole";
-import LoadingForm from "@/components/loaders/LoadingForm";
 
 export default function Page() {
   const [pending, setPending] = useState<boolean>(false);

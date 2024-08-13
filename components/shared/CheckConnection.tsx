@@ -39,11 +39,13 @@ export const ShowConnection = () => {
   }, []);
   return (
     !online && (
-      <div className="flex absolute w-full min-h-screen items-center z-[9999999] justify-center bg-[rgba(0,0,0,0.5)]">
+      <div className="absolute z-[9999999] flex min-h-screen w-full items-center justify-center bg-[rgba(0,0,0,0.5)]">
         <div className="rounded-lg bg-background p-8 shadow-lg">
           <div className="flex flex-col items-center gap-4">
             <WifiOffIcon className="h-12 w-12 text-primary" />
-            <h1 className="text-2xl font-bold">Oops, you're offline!</h1>
+            <h1 className="text-3xl font-bold dark:text-white">
+              Oops, you're offline!
+            </h1>
             <p className="text-muted-foreground">
               It looks like you're not connected to the internet. Please check
               your connection and try again.

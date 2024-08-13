@@ -28,10 +28,10 @@ model JobPost {
   jobDescription   String
   organisationName String
   modeOfWork       mode?
-  minExperience    Int            @default(0) ///@zod.custom.use(z.coerce.number())
-  maxExperience    Int ///@zod.custom.use(z.coerce.number())
-  minSalary        Int            @default(0) ///@zod.custom.use(z.coerce.number())
-  maxSalary        Int ///@zod.custom.use(z.coerce.number())
+  minExperience    Int            @default(0)
+  maxExperience    Int
+  minSalary        Int            @default(0)
+  maxSalary        Int
   skills           Skill[]
   perks            Perk[]
   jobType          JobType        @default(Full_Time)
@@ -63,8 +63,8 @@ enum ApprovalStatus {
 model User {
   id             String      @id @unique @default(cuid())
   username       String
-  firstName      String
-  secondName     String
+  firstName      String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
+  secondName     String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
   email          String      @unique
   hashedPassword String
   createdAt      DateTime    @default(now())
@@ -115,19 +115,13 @@ model Session {
 }
 
 model Location {
-  id         String  @id @unique @default(cuid())
-  address    String?
-  postalCode Int
-  cityId     String
-  User       User[]
-  city       City    @relation(fields: [cityId], references: [id], onDelete: Cascade)
-}
-
-model City {
-  id       String     @id @unique @default(cuid())
-  name     String
-  state    String
-  location Location[]
+  id          String  @id @unique @default(cuid())
+  address     String? /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
+  postalCode  Int
+  state       String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
+  city        String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
+  phoneNumber Int
+  User        User[]
 }
 
 model JobProfile {

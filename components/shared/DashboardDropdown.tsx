@@ -35,16 +35,12 @@ export function DashboardDropdownMenu() {
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-32">
-          <DropdownMenuGroup className="gap-2">
-            <DropdownMenuItem>
-              <Link href={`/dashboard/user/${userId}`}>Dashboard</Link>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Link href={"/authenticate/signin"} onClick={() => signout()}>
-              Logout
-            </Link>
-          </DropdownMenuItem>
+          <Link href={`/dashboard/user/${userId}`}>
+            <DropdownMenuItem>Dashboard</DropdownMenuItem>
+          </Link>
+          <Link href={"/authenticate/signin"} onClick={() => signout()}>
+            <DropdownMenuItem>Logout</DropdownMenuItem>
+          </Link>
         </DropdownMenuContent>
       </DropdownMenu>
     )

@@ -26,9 +26,7 @@ export const MediaScalarFieldEnumSchema = z.enum(['id','mediaType','url','mediaN
 
 export const SessionScalarFieldEnumSchema = z.enum(['id','userId','expiresAt']);
 
-export const LocationScalarFieldEnumSchema = z.enum(['id','address','postalCode','cityId']);
-
-export const CityScalarFieldEnumSchema = z.enum(['id','name','state']);
+export const LocationScalarFieldEnumSchema = z.enum(['id','address','postalCode','state','city','phoneNumber']);
 
 export const JobProfileScalarFieldEnumSchema = z.enum(['id','jobProfileName']);
 
@@ -78,10 +76,10 @@ export const JobPostSchema = z.object({
   jobTitle: z.string(),
   jobDescription: z.string(),
   organisationName: z.string(),
-  minExperience: z.coerce.number(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int(),
+  maxSalary: z.number().int(),
   postedAt: z.coerce.date(),
   userId: z.string(),
 })
@@ -95,8 +93,8 @@ export const JobPostOptionalDefaultsSchema = JobPostSchema.merge(z.object({
   jobType: JobTypeSchema.optional(),
   whoCanApply: ExperienceEnumSchema.optional(),
   id: z.string().cuid().optional(),
-  minExperience: z.coerce.number().optional(),
-  minSalary: z.coerce.number().optional(),
+  minExperience: z.number().int().optional(),
+  minSalary: z.number().int().optional(),
   postedAt: z.coerce.date().optional(),
 }))
 
@@ -135,8 +133,8 @@ export const UserSchema = z.object({
   role: RoleSchema,
   id: z.string().cuid(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date(),
@@ -252,9 +250,11 @@ export type SessionOptionalDefaults = z.infer<typeof SessionOptionalDefaultsSche
 
 export const LocationSchema = z.object({
   id: z.string().cuid(),
-  address: z.string().nullable(),
+  address: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }).nullable(),
   postalCode: z.number().int(),
-  cityId: z.string(),
+  state: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  city: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  phoneNumber: z.number().int(),
 })
 
 export type Location = z.infer<typeof LocationSchema>
@@ -267,27 +267,6 @@ export const LocationOptionalDefaultsSchema = LocationSchema.merge(z.object({
 }))
 
 export type LocationOptionalDefaults = z.infer<typeof LocationOptionalDefaultsSchema>
-
-/////////////////////////////////////////
-// CITY SCHEMA
-/////////////////////////////////////////
-
-export const CitySchema = z.object({
-  id: z.string().cuid(),
-  name: z.string(),
-  state: z.string(),
-})
-
-export type City = z.infer<typeof CitySchema>
-
-// CITY OPTIONAL DEFAULTS SCHEMA
-//------------------------------------------------------
-
-export const CityOptionalDefaultsSchema = CitySchema.merge(z.object({
-  id: z.string().cuid().optional(),
-}))
-
-export type CityOptionalDefaults = z.infer<typeof CityOptionalDefaultsSchema>
 
 /////////////////////////////////////////
 // JOB PROFILE SCHEMA
@@ -525,7 +504,6 @@ export const SessionSelectSchema: z.ZodType<Prisma.SessionSelect> = z.object({
 
 export const LocationIncludeSchema: z.ZodType<Prisma.LocationInclude> = z.object({
   User: z.union([z.boolean(),z.lazy(() => UserFindManyArgsSchema)]).optional(),
-  city: z.union([z.boolean(),z.lazy(() => CityArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => LocationCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -546,39 +524,11 @@ export const LocationSelectSchema: z.ZodType<Prisma.LocationSelect> = z.object({
   id: z.boolean().optional(),
   address: z.boolean().optional(),
   postalCode: z.boolean().optional(),
-  cityId: z.boolean().optional(),
-  User: z.union([z.boolean(),z.lazy(() => UserFindManyArgsSchema)]).optional(),
-  city: z.union([z.boolean(),z.lazy(() => CityArgsSchema)]).optional(),
-  _count: z.union([z.boolean(),z.lazy(() => LocationCountOutputTypeArgsSchema)]).optional(),
-}).strict()
-
-// CITY
-//------------------------------------------------------
-
-export const CityIncludeSchema: z.ZodType<Prisma.CityInclude> = z.object({
-  location: z.union([z.boolean(),z.lazy(() => LocationFindManyArgsSchema)]).optional(),
-  _count: z.union([z.boolean(),z.lazy(() => CityCountOutputTypeArgsSchema)]).optional(),
-}).strict()
-
-export const CityArgsSchema: z.ZodType<Prisma.CityDefaultArgs> = z.object({
-  select: z.lazy(() => CitySelectSchema).optional(),
-  include: z.lazy(() => CityIncludeSchema).optional(),
-}).strict();
-
-export const CityCountOutputTypeArgsSchema: z.ZodType<Prisma.CityCountOutputTypeDefaultArgs> = z.object({
-  select: z.lazy(() => CityCountOutputTypeSelectSchema).nullish(),
-}).strict();
-
-export const CityCountOutputTypeSelectSchema: z.ZodType<Prisma.CityCountOutputTypeSelect> = z.object({
-  location: z.boolean().optional(),
-}).strict();
-
-export const CitySelectSchema: z.ZodType<Prisma.CitySelect> = z.object({
-  id: z.boolean().optional(),
-  name: z.boolean().optional(),
   state: z.boolean().optional(),
-  location: z.union([z.boolean(),z.lazy(() => LocationFindManyArgsSchema)]).optional(),
-  _count: z.union([z.boolean(),z.lazy(() => CityCountOutputTypeArgsSchema)]).optional(),
+  city: z.boolean().optional(),
+  phoneNumber: z.boolean().optional(),
+  User: z.union([z.boolean(),z.lazy(() => UserFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => LocationCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
 // JOB PROFILE
@@ -649,10 +599,10 @@ export const JobPostWhereUniqueInputSchema: z.ZodType<Prisma.JobPostWhereUniqueI
   jobDescription: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   organisationName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   modeOfWork: z.union([ z.lazy(() => EnummodeNullableFilterSchema),z.lazy(() => modeSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.lazy(() => IntFilterSchema),z.coerce.number() ]).optional(),
-  maxExperience: z.union([ z.lazy(() => IntFilterSchema),z.coerce.number() ]).optional(),
-  minSalary: z.union([ z.lazy(() => IntFilterSchema),z.coerce.number() ]).optional(),
-  maxSalary: z.union([ z.lazy(() => IntFilterSchema),z.coerce.number() ]).optional(),
+  minExperience: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  maxExperience: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  minSalary: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  maxSalary: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
   jobType: z.union([ z.lazy(() => EnumJobTypeFilterSchema),z.lazy(() => JobTypeSchema) ]).optional(),
   postedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   whoCanApply: z.union([ z.lazy(() => EnumExperienceEnumFilterSchema),z.lazy(() => ExperienceEnumSchema) ]).optional(),
@@ -832,8 +782,8 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   OR: z.lazy(() => UserWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => UserWhereInputSchema),z.lazy(() => UserWhereInputSchema).array() ]).optional(),
   username: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  firstName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  secondName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  firstName: z.union([ z.lazy(() => StringFilterSchema),z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }) ]).optional(),
+  secondName: z.union([ z.lazy(() => StringFilterSchema),z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }) ]).optional(),
   hashedPassword: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -1113,18 +1063,20 @@ export const LocationWhereInputSchema: z.ZodType<Prisma.LocationWhereInput> = z.
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   address: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   postalCode: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  cityId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  User: z.lazy(() => UserListRelationFilterSchema).optional(),
-  city: z.union([ z.lazy(() => CityRelationFilterSchema),z.lazy(() => CityWhereInputSchema) ]).optional(),
+  state: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  city: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  phoneNumber: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  User: z.lazy(() => UserListRelationFilterSchema).optional()
 }).strict();
 
 export const LocationOrderByWithRelationInputSchema: z.ZodType<Prisma.LocationOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   address: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   postalCode: z.lazy(() => SortOrderSchema).optional(),
-  cityId: z.lazy(() => SortOrderSchema).optional(),
-  User: z.lazy(() => UserOrderByRelationAggregateInputSchema).optional(),
-  city: z.lazy(() => CityOrderByWithRelationInputSchema).optional()
+  state: z.lazy(() => SortOrderSchema).optional(),
+  city: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional(),
+  User: z.lazy(() => UserOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const LocationWhereUniqueInputSchema: z.ZodType<Prisma.LocationWhereUniqueInput> = z.object({
@@ -1135,18 +1087,21 @@ export const LocationWhereUniqueInputSchema: z.ZodType<Prisma.LocationWhereUniqu
   AND: z.union([ z.lazy(() => LocationWhereInputSchema),z.lazy(() => LocationWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => LocationWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => LocationWhereInputSchema),z.lazy(() => LocationWhereInputSchema).array() ]).optional(),
-  address: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  address: z.union([ z.lazy(() => StringNullableFilterSchema),z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }) ]).optional().nullable(),
   postalCode: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
-  cityId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  User: z.lazy(() => UserListRelationFilterSchema).optional(),
-  city: z.union([ z.lazy(() => CityRelationFilterSchema),z.lazy(() => CityWhereInputSchema) ]).optional(),
+  state: z.union([ z.lazy(() => StringFilterSchema),z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }) ]).optional(),
+  city: z.union([ z.lazy(() => StringFilterSchema),z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }) ]).optional(),
+  phoneNumber: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  User: z.lazy(() => UserListRelationFilterSchema).optional()
 }).strict());
 
 export const LocationOrderByWithAggregationInputSchema: z.ZodType<Prisma.LocationOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   address: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   postalCode: z.lazy(() => SortOrderSchema).optional(),
-  cityId: z.lazy(() => SortOrderSchema).optional(),
+  state: z.lazy(() => SortOrderSchema).optional(),
+  city: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => LocationCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => LocationAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => LocationMaxOrderByAggregateInputSchema).optional(),
@@ -1161,55 +1116,9 @@ export const LocationScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Loca
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   address: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   postalCode: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
-  cityId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-}).strict();
-
-export const CityWhereInputSchema: z.ZodType<Prisma.CityWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => CityWhereInputSchema),z.lazy(() => CityWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => CityWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => CityWhereInputSchema),z.lazy(() => CityWhereInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  state: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  location: z.lazy(() => LocationListRelationFilterSchema).optional()
-}).strict();
-
-export const CityOrderByWithRelationInputSchema: z.ZodType<Prisma.CityOrderByWithRelationInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  state: z.lazy(() => SortOrderSchema).optional(),
-  location: z.lazy(() => LocationOrderByRelationAggregateInputSchema).optional()
-}).strict();
-
-export const CityWhereUniqueInputSchema: z.ZodType<Prisma.CityWhereUniqueInput> = z.object({
-  id: z.string().cuid()
-})
-.and(z.object({
-  id: z.string().cuid().optional(),
-  AND: z.union([ z.lazy(() => CityWhereInputSchema),z.lazy(() => CityWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => CityWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => CityWhereInputSchema),z.lazy(() => CityWhereInputSchema).array() ]).optional(),
-  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  state: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  location: z.lazy(() => LocationListRelationFilterSchema).optional()
-}).strict());
-
-export const CityOrderByWithAggregationInputSchema: z.ZodType<Prisma.CityOrderByWithAggregationInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  state: z.lazy(() => SortOrderSchema).optional(),
-  _count: z.lazy(() => CityCountOrderByAggregateInputSchema).optional(),
-  _max: z.lazy(() => CityMaxOrderByAggregateInputSchema).optional(),
-  _min: z.lazy(() => CityMinOrderByAggregateInputSchema).optional()
-}).strict();
-
-export const CityScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.CityScalarWhereWithAggregatesInput> = z.object({
-  AND: z.union([ z.lazy(() => CityScalarWhereWithAggregatesInputSchema),z.lazy(() => CityScalarWhereWithAggregatesInputSchema).array() ]).optional(),
-  OR: z.lazy(() => CityScalarWhereWithAggregatesInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => CityScalarWhereWithAggregatesInputSchema),z.lazy(() => CityScalarWhereWithAggregatesInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   state: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  city: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  phoneNumber: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
 }).strict();
 
 export const JobProfileWhereInputSchema: z.ZodType<Prisma.JobProfileWhereInput> = z.object({
@@ -1258,10 +1167,10 @@ export const JobPostCreateInputSchema: z.ZodType<Prisma.JobPostCreateInput> = z.
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
@@ -1277,10 +1186,10 @@ export const JobPostUncheckedCreateInputSchema: z.ZodType<Prisma.JobPostUnchecke
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
@@ -1296,10 +1205,10 @@ export const JobPostUpdateInputSchema: z.ZodType<Prisma.JobPostUpdateInput> = z.
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1315,10 +1224,10 @@ export const JobPostUncheckedUpdateInputSchema: z.ZodType<Prisma.JobPostUnchecke
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1334,10 +1243,10 @@ export const JobPostCreateManyInputSchema: z.ZodType<Prisma.JobPostCreateManyInp
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
@@ -1350,10 +1259,10 @@ export const JobPostUpdateManyMutationInputSchema: z.ZodType<Prisma.JobPostUpdat
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1365,10 +1274,10 @@ export const JobPostUncheckedUpdateManyInputSchema: z.ZodType<Prisma.JobPostUnch
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1443,8 +1352,8 @@ export const ApplicantUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Applicant
 export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -1461,8 +1370,8 @@ export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object
 export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreateInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -1479,8 +1388,8 @@ export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreat
 export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1497,8 +1406,8 @@ export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object
 export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdateInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1515,8 +1424,8 @@ export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdat
 export const UserCreateManyInputSchema: z.ZodType<Prisma.UserCreateManyInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -1528,8 +1437,8 @@ export const UserCreateManyInputSchema: z.ZodType<Prisma.UserCreateManyInput> = 
 export const UserUpdateManyMutationInputSchema: z.ZodType<Prisma.UserUpdateManyMutationInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1540,8 +1449,8 @@ export const UserUpdateManyMutationInputSchema: z.ZodType<Prisma.UserUpdateManyM
 export const UserUncheckedUpdateManyInputSchema: z.ZodType<Prisma.UserUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1742,100 +1651,69 @@ export const SessionUncheckedUpdateManyInputSchema: z.ZodType<Prisma.SessionUnch
 
 export const LocationCreateInputSchema: z.ZodType<Prisma.LocationCreateInput> = z.object({
   id: z.string().cuid().optional(),
-  address: z.string().optional().nullable(),
+  address: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }).optional().nullable(),
   postalCode: z.number().int(),
-  User: z.lazy(() => UserCreateNestedManyWithoutAddressInputSchema).optional(),
-  city: z.lazy(() => CityCreateNestedOneWithoutLocationInputSchema)
+  state: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  city: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  phoneNumber: z.number().int(),
+  User: z.lazy(() => UserCreateNestedManyWithoutAddressInputSchema).optional()
 }).strict();
 
 export const LocationUncheckedCreateInputSchema: z.ZodType<Prisma.LocationUncheckedCreateInput> = z.object({
   id: z.string().cuid().optional(),
-  address: z.string().optional().nullable(),
+  address: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }).optional().nullable(),
   postalCode: z.number().int(),
-  cityId: z.string(),
+  state: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  city: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  phoneNumber: z.number().int(),
   User: z.lazy(() => UserUncheckedCreateNestedManyWithoutAddressInputSchema).optional()
 }).strict();
 
 export const LocationUpdateInputSchema: z.ZodType<Prisma.LocationUpdateInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  address: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  address: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   postalCode: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  User: z.lazy(() => UserUpdateManyWithoutAddressNestedInputSchema).optional(),
-  city: z.lazy(() => CityUpdateOneRequiredWithoutLocationNestedInputSchema).optional()
+  state: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  city: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  User: z.lazy(() => UserUpdateManyWithoutAddressNestedInputSchema).optional()
 }).strict();
 
 export const LocationUncheckedUpdateInputSchema: z.ZodType<Prisma.LocationUncheckedUpdateInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  address: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  address: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   postalCode: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  cityId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  state: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  city: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   User: z.lazy(() => UserUncheckedUpdateManyWithoutAddressNestedInputSchema).optional()
 }).strict();
 
 export const LocationCreateManyInputSchema: z.ZodType<Prisma.LocationCreateManyInput> = z.object({
   id: z.string().cuid().optional(),
-  address: z.string().optional().nullable(),
+  address: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }).optional().nullable(),
   postalCode: z.number().int(),
-  cityId: z.string()
+  state: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  city: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  phoneNumber: z.number().int()
 }).strict();
 
 export const LocationUpdateManyMutationInputSchema: z.ZodType<Prisma.LocationUpdateManyMutationInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  address: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  address: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   postalCode: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  state: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  city: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LocationUncheckedUpdateManyInputSchema: z.ZodType<Prisma.LocationUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  address: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  address: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   postalCode: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  cityId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-}).strict();
-
-export const CityCreateInputSchema: z.ZodType<Prisma.CityCreateInput> = z.object({
-  id: z.string().cuid().optional(),
-  name: z.string(),
-  state: z.string(),
-  location: z.lazy(() => LocationCreateNestedManyWithoutCityInputSchema).optional()
-}).strict();
-
-export const CityUncheckedCreateInputSchema: z.ZodType<Prisma.CityUncheckedCreateInput> = z.object({
-  id: z.string().cuid().optional(),
-  name: z.string(),
-  state: z.string(),
-  location: z.lazy(() => LocationUncheckedCreateNestedManyWithoutCityInputSchema).optional()
-}).strict();
-
-export const CityUpdateInputSchema: z.ZodType<Prisma.CityUpdateInput> = z.object({
-  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  state: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  location: z.lazy(() => LocationUpdateManyWithoutCityNestedInputSchema).optional()
-}).strict();
-
-export const CityUncheckedUpdateInputSchema: z.ZodType<Prisma.CityUncheckedUpdateInput> = z.object({
-  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  state: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  location: z.lazy(() => LocationUncheckedUpdateManyWithoutCityNestedInputSchema).optional()
-}).strict();
-
-export const CityCreateManyInputSchema: z.ZodType<Prisma.CityCreateManyInput> = z.object({
-  id: z.string().cuid().optional(),
-  name: z.string(),
-  state: z.string()
-}).strict();
-
-export const CityUpdateManyMutationInputSchema: z.ZodType<Prisma.CityUpdateManyMutationInput> = z.object({
-  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  state: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-}).strict();
-
-export const CityUncheckedUpdateManyInputSchema: z.ZodType<Prisma.CityUncheckedUpdateManyInput> = z.object({
-  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  state: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  state: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  city: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const JobProfileCreateInputSchema: z.ZodType<Prisma.JobProfileCreateInput> = z.object({
@@ -2394,11 +2272,6 @@ export const UserListRelationFilterSchema: z.ZodType<Prisma.UserListRelationFilt
   none: z.lazy(() => UserWhereInputSchema).optional()
 }).strict();
 
-export const CityRelationFilterSchema: z.ZodType<Prisma.CityRelationFilter> = z.object({
-  is: z.lazy(() => CityWhereInputSchema).optional(),
-  isNot: z.lazy(() => CityWhereInputSchema).optional()
-}).strict();
-
 export const UserOrderByRelationAggregateInputSchema: z.ZodType<Prisma.UserOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
@@ -2407,57 +2280,37 @@ export const LocationCountOrderByAggregateInputSchema: z.ZodType<Prisma.Location
   id: z.lazy(() => SortOrderSchema).optional(),
   address: z.lazy(() => SortOrderSchema).optional(),
   postalCode: z.lazy(() => SortOrderSchema).optional(),
-  cityId: z.lazy(() => SortOrderSchema).optional()
+  state: z.lazy(() => SortOrderSchema).optional(),
+  city: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const LocationAvgOrderByAggregateInputSchema: z.ZodType<Prisma.LocationAvgOrderByAggregateInput> = z.object({
-  postalCode: z.lazy(() => SortOrderSchema).optional()
+  postalCode: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const LocationMaxOrderByAggregateInputSchema: z.ZodType<Prisma.LocationMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   address: z.lazy(() => SortOrderSchema).optional(),
   postalCode: z.lazy(() => SortOrderSchema).optional(),
-  cityId: z.lazy(() => SortOrderSchema).optional()
+  state: z.lazy(() => SortOrderSchema).optional(),
+  city: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const LocationMinOrderByAggregateInputSchema: z.ZodType<Prisma.LocationMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   address: z.lazy(() => SortOrderSchema).optional(),
   postalCode: z.lazy(() => SortOrderSchema).optional(),
-  cityId: z.lazy(() => SortOrderSchema).optional()
+  state: z.lazy(() => SortOrderSchema).optional(),
+  city: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const LocationSumOrderByAggregateInputSchema: z.ZodType<Prisma.LocationSumOrderByAggregateInput> = z.object({
-  postalCode: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const LocationListRelationFilterSchema: z.ZodType<Prisma.LocationListRelationFilter> = z.object({
-  every: z.lazy(() => LocationWhereInputSchema).optional(),
-  some: z.lazy(() => LocationWhereInputSchema).optional(),
-  none: z.lazy(() => LocationWhereInputSchema).optional()
-}).strict();
-
-export const LocationOrderByRelationAggregateInputSchema: z.ZodType<Prisma.LocationOrderByRelationAggregateInput> = z.object({
-  _count: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const CityCountOrderByAggregateInputSchema: z.ZodType<Prisma.CityCountOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  state: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const CityMaxOrderByAggregateInputSchema: z.ZodType<Prisma.CityMaxOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  state: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const CityMinOrderByAggregateInputSchema: z.ZodType<Prisma.CityMinOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  state: z.lazy(() => SortOrderSchema).optional()
+  postalCode: z.lazy(() => SortOrderSchema).optional(),
+  phoneNumber: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const JobProfileCountOrderByAggregateInputSchema: z.ZodType<Prisma.JobProfileCountOrderByAggregateInput> = z.object({
@@ -3040,12 +2893,6 @@ export const UserCreateNestedManyWithoutAddressInputSchema: z.ZodType<Prisma.Use
   connect: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
-export const CityCreateNestedOneWithoutLocationInputSchema: z.ZodType<Prisma.CityCreateNestedOneWithoutLocationInput> = z.object({
-  create: z.union([ z.lazy(() => CityCreateWithoutLocationInputSchema),z.lazy(() => CityUncheckedCreateWithoutLocationInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => CityCreateOrConnectWithoutLocationInputSchema).optional(),
-  connect: z.lazy(() => CityWhereUniqueInputSchema).optional()
-}).strict();
-
 export const UserUncheckedCreateNestedManyWithoutAddressInputSchema: z.ZodType<Prisma.UserUncheckedCreateNestedManyWithoutAddressInput> = z.object({
   create: z.union([ z.lazy(() => UserCreateWithoutAddressInputSchema),z.lazy(() => UserCreateWithoutAddressInputSchema).array(),z.lazy(() => UserUncheckedCreateWithoutAddressInputSchema),z.lazy(() => UserUncheckedCreateWithoutAddressInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => UserCreateOrConnectWithoutAddressInputSchema),z.lazy(() => UserCreateOrConnectWithoutAddressInputSchema).array() ]).optional(),
@@ -3067,14 +2914,6 @@ export const UserUpdateManyWithoutAddressNestedInputSchema: z.ZodType<Prisma.Use
   deleteMany: z.union([ z.lazy(() => UserScalarWhereInputSchema),z.lazy(() => UserScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
-export const CityUpdateOneRequiredWithoutLocationNestedInputSchema: z.ZodType<Prisma.CityUpdateOneRequiredWithoutLocationNestedInput> = z.object({
-  create: z.union([ z.lazy(() => CityCreateWithoutLocationInputSchema),z.lazy(() => CityUncheckedCreateWithoutLocationInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => CityCreateOrConnectWithoutLocationInputSchema).optional(),
-  upsert: z.lazy(() => CityUpsertWithoutLocationInputSchema).optional(),
-  connect: z.lazy(() => CityWhereUniqueInputSchema).optional(),
-  update: z.union([ z.lazy(() => CityUpdateToOneWithWhereWithoutLocationInputSchema),z.lazy(() => CityUpdateWithoutLocationInputSchema),z.lazy(() => CityUncheckedUpdateWithoutLocationInputSchema) ]).optional(),
-}).strict();
-
 export const UserUncheckedUpdateManyWithoutAddressNestedInputSchema: z.ZodType<Prisma.UserUncheckedUpdateManyWithoutAddressNestedInput> = z.object({
   create: z.union([ z.lazy(() => UserCreateWithoutAddressInputSchema),z.lazy(() => UserCreateWithoutAddressInputSchema).array(),z.lazy(() => UserUncheckedCreateWithoutAddressInputSchema),z.lazy(() => UserUncheckedCreateWithoutAddressInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => UserCreateOrConnectWithoutAddressInputSchema),z.lazy(() => UserCreateOrConnectWithoutAddressInputSchema).array() ]).optional(),
@@ -3087,48 +2926,6 @@ export const UserUncheckedUpdateManyWithoutAddressNestedInputSchema: z.ZodType<P
   update: z.union([ z.lazy(() => UserUpdateWithWhereUniqueWithoutAddressInputSchema),z.lazy(() => UserUpdateWithWhereUniqueWithoutAddressInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => UserUpdateManyWithWhereWithoutAddressInputSchema),z.lazy(() => UserUpdateManyWithWhereWithoutAddressInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => UserScalarWhereInputSchema),z.lazy(() => UserScalarWhereInputSchema).array() ]).optional(),
-}).strict();
-
-export const LocationCreateNestedManyWithoutCityInputSchema: z.ZodType<Prisma.LocationCreateNestedManyWithoutCityInput> = z.object({
-  create: z.union([ z.lazy(() => LocationCreateWithoutCityInputSchema),z.lazy(() => LocationCreateWithoutCityInputSchema).array(),z.lazy(() => LocationUncheckedCreateWithoutCityInputSchema),z.lazy(() => LocationUncheckedCreateWithoutCityInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => LocationCreateOrConnectWithoutCityInputSchema),z.lazy(() => LocationCreateOrConnectWithoutCityInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => LocationCreateManyCityInputEnvelopeSchema).optional(),
-  connect: z.union([ z.lazy(() => LocationWhereUniqueInputSchema),z.lazy(() => LocationWhereUniqueInputSchema).array() ]).optional(),
-}).strict();
-
-export const LocationUncheckedCreateNestedManyWithoutCityInputSchema: z.ZodType<Prisma.LocationUncheckedCreateNestedManyWithoutCityInput> = z.object({
-  create: z.union([ z.lazy(() => LocationCreateWithoutCityInputSchema),z.lazy(() => LocationCreateWithoutCityInputSchema).array(),z.lazy(() => LocationUncheckedCreateWithoutCityInputSchema),z.lazy(() => LocationUncheckedCreateWithoutCityInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => LocationCreateOrConnectWithoutCityInputSchema),z.lazy(() => LocationCreateOrConnectWithoutCityInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => LocationCreateManyCityInputEnvelopeSchema).optional(),
-  connect: z.union([ z.lazy(() => LocationWhereUniqueInputSchema),z.lazy(() => LocationWhereUniqueInputSchema).array() ]).optional(),
-}).strict();
-
-export const LocationUpdateManyWithoutCityNestedInputSchema: z.ZodType<Prisma.LocationUpdateManyWithoutCityNestedInput> = z.object({
-  create: z.union([ z.lazy(() => LocationCreateWithoutCityInputSchema),z.lazy(() => LocationCreateWithoutCityInputSchema).array(),z.lazy(() => LocationUncheckedCreateWithoutCityInputSchema),z.lazy(() => LocationUncheckedCreateWithoutCityInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => LocationCreateOrConnectWithoutCityInputSchema),z.lazy(() => LocationCreateOrConnectWithoutCityInputSchema).array() ]).optional(),
-  upsert: z.union([ z.lazy(() => LocationUpsertWithWhereUniqueWithoutCityInputSchema),z.lazy(() => LocationUpsertWithWhereUniqueWithoutCityInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => LocationCreateManyCityInputEnvelopeSchema).optional(),
-  set: z.union([ z.lazy(() => LocationWhereUniqueInputSchema),z.lazy(() => LocationWhereUniqueInputSchema).array() ]).optional(),
-  disconnect: z.union([ z.lazy(() => LocationWhereUniqueInputSchema),z.lazy(() => LocationWhereUniqueInputSchema).array() ]).optional(),
-  delete: z.union([ z.lazy(() => LocationWhereUniqueInputSchema),z.lazy(() => LocationWhereUniqueInputSchema).array() ]).optional(),
-  connect: z.union([ z.lazy(() => LocationWhereUniqueInputSchema),z.lazy(() => LocationWhereUniqueInputSchema).array() ]).optional(),
-  update: z.union([ z.lazy(() => LocationUpdateWithWhereUniqueWithoutCityInputSchema),z.lazy(() => LocationUpdateWithWhereUniqueWithoutCityInputSchema).array() ]).optional(),
-  updateMany: z.union([ z.lazy(() => LocationUpdateManyWithWhereWithoutCityInputSchema),z.lazy(() => LocationUpdateManyWithWhereWithoutCityInputSchema).array() ]).optional(),
-  deleteMany: z.union([ z.lazy(() => LocationScalarWhereInputSchema),z.lazy(() => LocationScalarWhereInputSchema).array() ]).optional(),
-}).strict();
-
-export const LocationUncheckedUpdateManyWithoutCityNestedInputSchema: z.ZodType<Prisma.LocationUncheckedUpdateManyWithoutCityNestedInput> = z.object({
-  create: z.union([ z.lazy(() => LocationCreateWithoutCityInputSchema),z.lazy(() => LocationCreateWithoutCityInputSchema).array(),z.lazy(() => LocationUncheckedCreateWithoutCityInputSchema),z.lazy(() => LocationUncheckedCreateWithoutCityInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => LocationCreateOrConnectWithoutCityInputSchema),z.lazy(() => LocationCreateOrConnectWithoutCityInputSchema).array() ]).optional(),
-  upsert: z.union([ z.lazy(() => LocationUpsertWithWhereUniqueWithoutCityInputSchema),z.lazy(() => LocationUpsertWithWhereUniqueWithoutCityInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => LocationCreateManyCityInputEnvelopeSchema).optional(),
-  set: z.union([ z.lazy(() => LocationWhereUniqueInputSchema),z.lazy(() => LocationWhereUniqueInputSchema).array() ]).optional(),
-  disconnect: z.union([ z.lazy(() => LocationWhereUniqueInputSchema),z.lazy(() => LocationWhereUniqueInputSchema).array() ]).optional(),
-  delete: z.union([ z.lazy(() => LocationWhereUniqueInputSchema),z.lazy(() => LocationWhereUniqueInputSchema).array() ]).optional(),
-  connect: z.union([ z.lazy(() => LocationWhereUniqueInputSchema),z.lazy(() => LocationWhereUniqueInputSchema).array() ]).optional(),
-  update: z.union([ z.lazy(() => LocationUpdateWithWhereUniqueWithoutCityInputSchema),z.lazy(() => LocationUpdateWithWhereUniqueWithoutCityInputSchema).array() ]).optional(),
-  updateMany: z.union([ z.lazy(() => LocationUpdateManyWithWhereWithoutCityInputSchema),z.lazy(() => LocationUpdateManyWithWhereWithoutCityInputSchema).array() ]).optional(),
-  deleteMany: z.union([ z.lazy(() => LocationScalarWhereInputSchema),z.lazy(() => LocationScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const NestedStringFilterSchema: z.ZodType<Prisma.NestedStringFilter> = z.object({
@@ -3425,8 +3222,8 @@ export const ApplicantCreateManyJobPostInputEnvelopeSchema: z.ZodType<Prisma.App
 export const UserCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserCreateWithoutPostedJobsInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -3442,8 +3239,8 @@ export const UserCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserCreate
 export const UserUncheckedCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutPostedJobsInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -3554,8 +3351,8 @@ export const UserUpdateToOneWithWhereWithoutPostedJobsInputSchema: z.ZodType<Pri
 export const UserUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUpdateWithoutPostedJobsInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3571,8 +3368,8 @@ export const UserUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUpdate
 export const UserUncheckedUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutPostedJobsInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3609,8 +3406,8 @@ export const MediaCreateOrConnectWithoutApplicantInputSchema: z.ZodType<Prisma.M
 export const UserCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserCreateWithoutAppliedJobsInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -3626,8 +3423,8 @@ export const UserCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserCreat
 export const UserUncheckedCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutAppliedJobsInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -3651,10 +3448,10 @@ export const JobPostCreateWithoutApplicantsInputSchema: z.ZodType<Prisma.JobPost
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
@@ -3669,10 +3466,10 @@ export const JobPostUncheckedCreateWithoutApplicantsInputSchema: z.ZodType<Prism
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
@@ -3727,8 +3524,8 @@ export const UserUpdateToOneWithWhereWithoutAppliedJobsInputSchema: z.ZodType<Pr
 export const UserUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUpdateWithoutAppliedJobsInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3744,8 +3541,8 @@ export const UserUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUpdat
 export const UserUncheckedUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutAppliedJobsInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3775,10 +3572,10 @@ export const JobPostUpdateWithoutApplicantsInputSchema: z.ZodType<Prisma.JobPost
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3793,10 +3590,10 @@ export const JobPostUncheckedUpdateWithoutApplicantsInputSchema: z.ZodType<Prism
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3855,16 +3652,20 @@ export const MediaCreateManyUserInputEnvelopeSchema: z.ZodType<Prisma.MediaCreat
 
 export const LocationCreateWithoutUserInputSchema: z.ZodType<Prisma.LocationCreateWithoutUserInput> = z.object({
   id: z.string().cuid().optional(),
-  address: z.string().optional().nullable(),
+  address: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }).optional().nullable(),
   postalCode: z.number().int(),
-  city: z.lazy(() => CityCreateNestedOneWithoutLocationInputSchema)
+  state: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  city: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  phoneNumber: z.number().int()
 }).strict();
 
 export const LocationUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.LocationUncheckedCreateWithoutUserInput> = z.object({
   id: z.string().cuid().optional(),
-  address: z.string().optional().nullable(),
+  address: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }).optional().nullable(),
   postalCode: z.number().int(),
-  cityId: z.string()
+  state: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  city: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  phoneNumber: z.number().int()
 }).strict();
 
 export const LocationCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.LocationCreateOrConnectWithoutUserInput> = z.object({
@@ -3878,10 +3679,10 @@ export const JobPostCreateWithoutPostedByInputSchema: z.ZodType<Prisma.JobPostCr
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
@@ -3896,10 +3697,10 @@ export const JobPostUncheckedCreateWithoutPostedByInputSchema: z.ZodType<Prisma.
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
@@ -4023,16 +3824,20 @@ export const LocationUpdateToOneWithWhereWithoutUserInputSchema: z.ZodType<Prism
 
 export const LocationUpdateWithoutUserInputSchema: z.ZodType<Prisma.LocationUpdateWithoutUserInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  address: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  address: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   postalCode: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  city: z.lazy(() => CityUpdateOneRequiredWithoutLocationNestedInputSchema).optional()
+  state: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  city: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LocationUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.LocationUncheckedUpdateWithoutUserInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  address: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  address: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   postalCode: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  cityId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  state: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  city: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  phoneNumber: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const JobPostUpsertWithWhereUniqueWithoutPostedByInputSchema: z.ZodType<Prisma.JobPostUpsertWithWhereUniqueWithoutPostedByInput> = z.object({
@@ -4114,8 +3919,8 @@ export const SessionScalarWhereInputSchema: z.ZodType<Prisma.SessionScalarWhereI
 export const UserCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserCreateWithoutSkillsInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4131,8 +3936,8 @@ export const UserCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserCreateWith
 export const UserUncheckedCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutSkillsInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4156,10 +3961,10 @@ export const JobPostCreateWithoutSkillsInputSchema: z.ZodType<Prisma.JobPostCrea
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
@@ -4174,10 +3979,10 @@ export const JobPostUncheckedCreateWithoutSkillsInputSchema: z.ZodType<Prisma.Jo
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
@@ -4205,8 +4010,8 @@ export const UserUpdateToOneWithWhereWithoutSkillsInputSchema: z.ZodType<Prisma.
 export const UserUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUpdateWithoutSkillsInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4222,8 +4027,8 @@ export const UserUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUpdateWith
 export const UserUncheckedUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutSkillsInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4253,10 +4058,10 @@ export const JobPostUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.JobPostUpda
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4271,10 +4076,10 @@ export const JobPostUncheckedUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.Jo
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4289,10 +4094,10 @@ export const JobPostCreateWithoutPerksInputSchema: z.ZodType<Prisma.JobPostCreat
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
@@ -4307,10 +4112,10 @@ export const JobPostUncheckedCreateWithoutPerksInputSchema: z.ZodType<Prisma.Job
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional(),
@@ -4341,10 +4146,10 @@ export const JobPostUpdateWithoutPerksInputSchema: z.ZodType<Prisma.JobPostUpdat
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4359,10 +4164,10 @@ export const JobPostUncheckedUpdateWithoutPerksInputSchema: z.ZodType<Prisma.Job
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4374,8 +4179,8 @@ export const JobPostUncheckedUpdateWithoutPerksInputSchema: z.ZodType<Prisma.Job
 export const UserCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserCreateWithoutMediaInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4391,8 +4196,8 @@ export const UserCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserCreateWitho
 export const UserUncheckedCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutMediaInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4447,8 +4252,8 @@ export const UserUpdateToOneWithWhereWithoutMediaInputSchema: z.ZodType<Prisma.U
 export const UserUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUpdateWithoutMediaInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4464,8 +4269,8 @@ export const UserUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUpdateWitho
 export const UserUncheckedUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutMediaInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4510,8 +4315,8 @@ export const ApplicantUncheckedUpdateWithoutResumeInputSchema: z.ZodType<Prisma.
 export const UserCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateWithoutSessionsInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4527,8 +4332,8 @@ export const UserCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateWi
 export const UserUncheckedCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutSessionsInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4560,8 +4365,8 @@ export const UserUpdateToOneWithWhereWithoutSessionsInputSchema: z.ZodType<Prism
 export const UserUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUpdateWithoutSessionsInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4577,8 +4382,8 @@ export const UserUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUpdateWi
 export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutSessionsInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4594,8 +4399,8 @@ export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
 export const UserCreateWithoutAddressInputSchema: z.ZodType<Prisma.UserCreateWithoutAddressInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4611,8 +4416,8 @@ export const UserCreateWithoutAddressInputSchema: z.ZodType<Prisma.UserCreateWit
 export const UserUncheckedCreateWithoutAddressInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutAddressInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4633,23 +4438,6 @@ export const UserCreateOrConnectWithoutAddressInputSchema: z.ZodType<Prisma.User
 export const UserCreateManyAddressInputEnvelopeSchema: z.ZodType<Prisma.UserCreateManyAddressInputEnvelope> = z.object({
   data: z.union([ z.lazy(() => UserCreateManyAddressInputSchema),z.lazy(() => UserCreateManyAddressInputSchema).array() ]),
   skipDuplicates: z.boolean().optional()
-}).strict();
-
-export const CityCreateWithoutLocationInputSchema: z.ZodType<Prisma.CityCreateWithoutLocationInput> = z.object({
-  id: z.string().cuid().optional(),
-  name: z.string(),
-  state: z.string()
-}).strict();
-
-export const CityUncheckedCreateWithoutLocationInputSchema: z.ZodType<Prisma.CityUncheckedCreateWithoutLocationInput> = z.object({
-  id: z.string().cuid().optional(),
-  name: z.string(),
-  state: z.string()
-}).strict();
-
-export const CityCreateOrConnectWithoutLocationInputSchema: z.ZodType<Prisma.CityCreateOrConnectWithoutLocationInput> = z.object({
-  where: z.lazy(() => CityWhereUniqueInputSchema),
-  create: z.union([ z.lazy(() => CityCreateWithoutLocationInputSchema),z.lazy(() => CityUncheckedCreateWithoutLocationInputSchema) ]),
 }).strict();
 
 export const UserUpsertWithWhereUniqueWithoutAddressInputSchema: z.ZodType<Prisma.UserUpsertWithWhereUniqueWithoutAddressInput> = z.object({
@@ -4682,79 +4470,6 @@ export const UserScalarWhereInputSchema: z.ZodType<Prisma.UserScalarWhereInput> 
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   role: z.union([ z.lazy(() => EnumRoleFilterSchema),z.lazy(() => RoleSchema) ]).optional(),
   locationId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
-}).strict();
-
-export const CityUpsertWithoutLocationInputSchema: z.ZodType<Prisma.CityUpsertWithoutLocationInput> = z.object({
-  update: z.union([ z.lazy(() => CityUpdateWithoutLocationInputSchema),z.lazy(() => CityUncheckedUpdateWithoutLocationInputSchema) ]),
-  create: z.union([ z.lazy(() => CityCreateWithoutLocationInputSchema),z.lazy(() => CityUncheckedCreateWithoutLocationInputSchema) ]),
-  where: z.lazy(() => CityWhereInputSchema).optional()
-}).strict();
-
-export const CityUpdateToOneWithWhereWithoutLocationInputSchema: z.ZodType<Prisma.CityUpdateToOneWithWhereWithoutLocationInput> = z.object({
-  where: z.lazy(() => CityWhereInputSchema).optional(),
-  data: z.union([ z.lazy(() => CityUpdateWithoutLocationInputSchema),z.lazy(() => CityUncheckedUpdateWithoutLocationInputSchema) ]),
-}).strict();
-
-export const CityUpdateWithoutLocationInputSchema: z.ZodType<Prisma.CityUpdateWithoutLocationInput> = z.object({
-  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  state: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-}).strict();
-
-export const CityUncheckedUpdateWithoutLocationInputSchema: z.ZodType<Prisma.CityUncheckedUpdateWithoutLocationInput> = z.object({
-  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  state: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-}).strict();
-
-export const LocationCreateWithoutCityInputSchema: z.ZodType<Prisma.LocationCreateWithoutCityInput> = z.object({
-  id: z.string().cuid().optional(),
-  address: z.string().optional().nullable(),
-  postalCode: z.number().int(),
-  User: z.lazy(() => UserCreateNestedManyWithoutAddressInputSchema).optional()
-}).strict();
-
-export const LocationUncheckedCreateWithoutCityInputSchema: z.ZodType<Prisma.LocationUncheckedCreateWithoutCityInput> = z.object({
-  id: z.string().cuid().optional(),
-  address: z.string().optional().nullable(),
-  postalCode: z.number().int(),
-  User: z.lazy(() => UserUncheckedCreateNestedManyWithoutAddressInputSchema).optional()
-}).strict();
-
-export const LocationCreateOrConnectWithoutCityInputSchema: z.ZodType<Prisma.LocationCreateOrConnectWithoutCityInput> = z.object({
-  where: z.lazy(() => LocationWhereUniqueInputSchema),
-  create: z.union([ z.lazy(() => LocationCreateWithoutCityInputSchema),z.lazy(() => LocationUncheckedCreateWithoutCityInputSchema) ]),
-}).strict();
-
-export const LocationCreateManyCityInputEnvelopeSchema: z.ZodType<Prisma.LocationCreateManyCityInputEnvelope> = z.object({
-  data: z.union([ z.lazy(() => LocationCreateManyCityInputSchema),z.lazy(() => LocationCreateManyCityInputSchema).array() ]),
-  skipDuplicates: z.boolean().optional()
-}).strict();
-
-export const LocationUpsertWithWhereUniqueWithoutCityInputSchema: z.ZodType<Prisma.LocationUpsertWithWhereUniqueWithoutCityInput> = z.object({
-  where: z.lazy(() => LocationWhereUniqueInputSchema),
-  update: z.union([ z.lazy(() => LocationUpdateWithoutCityInputSchema),z.lazy(() => LocationUncheckedUpdateWithoutCityInputSchema) ]),
-  create: z.union([ z.lazy(() => LocationCreateWithoutCityInputSchema),z.lazy(() => LocationUncheckedCreateWithoutCityInputSchema) ]),
-}).strict();
-
-export const LocationUpdateWithWhereUniqueWithoutCityInputSchema: z.ZodType<Prisma.LocationUpdateWithWhereUniqueWithoutCityInput> = z.object({
-  where: z.lazy(() => LocationWhereUniqueInputSchema),
-  data: z.union([ z.lazy(() => LocationUpdateWithoutCityInputSchema),z.lazy(() => LocationUncheckedUpdateWithoutCityInputSchema) ]),
-}).strict();
-
-export const LocationUpdateManyWithWhereWithoutCityInputSchema: z.ZodType<Prisma.LocationUpdateManyWithWhereWithoutCityInput> = z.object({
-  where: z.lazy(() => LocationScalarWhereInputSchema),
-  data: z.union([ z.lazy(() => LocationUpdateManyMutationInputSchema),z.lazy(() => LocationUncheckedUpdateManyWithoutCityInputSchema) ]),
-}).strict();
-
-export const LocationScalarWhereInputSchema: z.ZodType<Prisma.LocationScalarWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => LocationScalarWhereInputSchema),z.lazy(() => LocationScalarWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => LocationScalarWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => LocationScalarWhereInputSchema),z.lazy(() => LocationScalarWhereInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  address: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
-  postalCode: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  cityId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
 
 export const SkillCreateManyJobPostInputSchema: z.ZodType<Prisma.SkillCreateManyJobPostInput> = z.object({
@@ -4855,10 +4570,10 @@ export const JobPostCreateManyPostedByInputSchema: z.ZodType<Prisma.JobPostCreat
   jobDescription: z.string(),
   organisationName: z.string(),
   modeOfWork: z.lazy(() => modeSchema).optional().nullable(),
-  minExperience: z.coerce.number().optional(),
-  maxExperience: z.coerce.number(),
-  minSalary: z.coerce.number().optional(),
-  maxSalary: z.coerce.number(),
+  minExperience: z.number().int().optional(),
+  maxExperience: z.number().int(),
+  minSalary: z.number().int().optional(),
+  maxSalary: z.number().int(),
   jobType: z.lazy(() => JobTypeSchema).optional(),
   postedAt: z.coerce.date().optional(),
   whoCanApply: z.lazy(() => ExperienceEnumSchema).optional()
@@ -4925,10 +4640,10 @@ export const JobPostUpdateWithoutPostedByInputSchema: z.ZodType<Prisma.JobPostUp
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4943,10 +4658,10 @@ export const JobPostUncheckedUpdateWithoutPostedByInputSchema: z.ZodType<Prisma.
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4961,10 +4676,10 @@ export const JobPostUncheckedUpdateManyWithoutPostedByInputSchema: z.ZodType<Pri
   jobDescription: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   organisationName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   modeOfWork: z.union([ z.lazy(() => modeSchema),z.lazy(() => NullableEnummodeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  minExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxExperience: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  minSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  maxSalary: z.union([ z.coerce.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxExperience: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  minSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  maxSalary: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   jobType: z.union([ z.lazy(() => JobTypeSchema),z.lazy(() => EnumJobTypeFieldUpdateOperationsInputSchema) ]).optional(),
   postedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   whoCanApply: z.union([ z.lazy(() => ExperienceEnumSchema),z.lazy(() => EnumExperienceEnumFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5014,8 +4729,8 @@ export const SessionUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.
 export const UserCreateManyAddressInputSchema: z.ZodType<Prisma.UserCreateManyAddressInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
-  firstName: z.string(),
-  secondName: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -5026,8 +4741,8 @@ export const UserCreateManyAddressInputSchema: z.ZodType<Prisma.UserCreateManyAd
 export const UserUpdateWithoutAddressInputSchema: z.ZodType<Prisma.UserUpdateWithoutAddressInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5043,8 +4758,8 @@ export const UserUpdateWithoutAddressInputSchema: z.ZodType<Prisma.UserUpdateWit
 export const UserUncheckedUpdateWithoutAddressInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutAddressInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5060,39 +4775,13 @@ export const UserUncheckedUpdateWithoutAddressInputSchema: z.ZodType<Prisma.User
 export const UserUncheckedUpdateManyWithoutAddressInputSchema: z.ZodType<Prisma.UserUncheckedUpdateManyWithoutAddressInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  firstName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
-}).strict();
-
-export const LocationCreateManyCityInputSchema: z.ZodType<Prisma.LocationCreateManyCityInput> = z.object({
-  id: z.string().cuid().optional(),
-  address: z.string().optional().nullable(),
-  postalCode: z.number().int()
-}).strict();
-
-export const LocationUpdateWithoutCityInputSchema: z.ZodType<Prisma.LocationUpdateWithoutCityInput> = z.object({
-  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  address: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  postalCode: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  User: z.lazy(() => UserUpdateManyWithoutAddressNestedInputSchema).optional()
-}).strict();
-
-export const LocationUncheckedUpdateWithoutCityInputSchema: z.ZodType<Prisma.LocationUncheckedUpdateWithoutCityInput> = z.object({
-  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  address: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  postalCode: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  User: z.lazy(() => UserUncheckedUpdateManyWithoutAddressNestedInputSchema).optional()
-}).strict();
-
-export const LocationUncheckedUpdateManyWithoutCityInputSchema: z.ZodType<Prisma.LocationUncheckedUpdateManyWithoutCityInput> = z.object({
-  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  address: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  postalCode: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 /////////////////////////////////////////
@@ -5595,68 +5284,6 @@ export const LocationFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.LocationFindU
   where: LocationWhereUniqueInputSchema,
 }).strict() ;
 
-export const CityFindFirstArgsSchema: z.ZodType<Prisma.CityFindFirstArgs> = z.object({
-  select: CitySelectSchema.optional(),
-  include: CityIncludeSchema.optional(),
-  where: CityWhereInputSchema.optional(),
-  orderBy: z.union([ CityOrderByWithRelationInputSchema.array(),CityOrderByWithRelationInputSchema ]).optional(),
-  cursor: CityWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  distinct: z.union([ CityScalarFieldEnumSchema,CityScalarFieldEnumSchema.array() ]).optional(),
-}).strict() ;
-
-export const CityFindFirstOrThrowArgsSchema: z.ZodType<Prisma.CityFindFirstOrThrowArgs> = z.object({
-  select: CitySelectSchema.optional(),
-  include: CityIncludeSchema.optional(),
-  where: CityWhereInputSchema.optional(),
-  orderBy: z.union([ CityOrderByWithRelationInputSchema.array(),CityOrderByWithRelationInputSchema ]).optional(),
-  cursor: CityWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  distinct: z.union([ CityScalarFieldEnumSchema,CityScalarFieldEnumSchema.array() ]).optional(),
-}).strict() ;
-
-export const CityFindManyArgsSchema: z.ZodType<Prisma.CityFindManyArgs> = z.object({
-  select: CitySelectSchema.optional(),
-  include: CityIncludeSchema.optional(),
-  where: CityWhereInputSchema.optional(),
-  orderBy: z.union([ CityOrderByWithRelationInputSchema.array(),CityOrderByWithRelationInputSchema ]).optional(),
-  cursor: CityWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  distinct: z.union([ CityScalarFieldEnumSchema,CityScalarFieldEnumSchema.array() ]).optional(),
-}).strict() ;
-
-export const CityAggregateArgsSchema: z.ZodType<Prisma.CityAggregateArgs> = z.object({
-  where: CityWhereInputSchema.optional(),
-  orderBy: z.union([ CityOrderByWithRelationInputSchema.array(),CityOrderByWithRelationInputSchema ]).optional(),
-  cursor: CityWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-}).strict() ;
-
-export const CityGroupByArgsSchema: z.ZodType<Prisma.CityGroupByArgs> = z.object({
-  where: CityWhereInputSchema.optional(),
-  orderBy: z.union([ CityOrderByWithAggregationInputSchema.array(),CityOrderByWithAggregationInputSchema ]).optional(),
-  by: CityScalarFieldEnumSchema.array(),
-  having: CityScalarWhereWithAggregatesInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-}).strict() ;
-
-export const CityFindUniqueArgsSchema: z.ZodType<Prisma.CityFindUniqueArgs> = z.object({
-  select: CitySelectSchema.optional(),
-  include: CityIncludeSchema.optional(),
-  where: CityWhereUniqueInputSchema,
-}).strict() ;
-
-export const CityFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.CityFindUniqueOrThrowArgs> = z.object({
-  select: CitySelectSchema.optional(),
-  include: CityIncludeSchema.optional(),
-  where: CityWhereUniqueInputSchema,
-}).strict() ;
-
 export const JobProfileFindFirstArgsSchema: z.ZodType<Prisma.JobProfileFindFirstArgs> = z.object({
   select: JobProfileSelectSchema.optional(),
   where: JobProfileWhereInputSchema.optional(),
@@ -6080,52 +5707,6 @@ export const LocationUpdateManyArgsSchema: z.ZodType<Prisma.LocationUpdateManyAr
 
 export const LocationDeleteManyArgsSchema: z.ZodType<Prisma.LocationDeleteManyArgs> = z.object({
   where: LocationWhereInputSchema.optional(),
-}).strict() ;
-
-export const CityCreateArgsSchema: z.ZodType<Prisma.CityCreateArgs> = z.object({
-  select: CitySelectSchema.optional(),
-  include: CityIncludeSchema.optional(),
-  data: z.union([ CityCreateInputSchema,CityUncheckedCreateInputSchema ]),
-}).strict() ;
-
-export const CityUpsertArgsSchema: z.ZodType<Prisma.CityUpsertArgs> = z.object({
-  select: CitySelectSchema.optional(),
-  include: CityIncludeSchema.optional(),
-  where: CityWhereUniqueInputSchema,
-  create: z.union([ CityCreateInputSchema,CityUncheckedCreateInputSchema ]),
-  update: z.union([ CityUpdateInputSchema,CityUncheckedUpdateInputSchema ]),
-}).strict() ;
-
-export const CityCreateManyArgsSchema: z.ZodType<Prisma.CityCreateManyArgs> = z.object({
-  data: z.union([ CityCreateManyInputSchema,CityCreateManyInputSchema.array() ]),
-  skipDuplicates: z.boolean().optional(),
-}).strict() ;
-
-export const CityCreateManyAndReturnArgsSchema: z.ZodType<Prisma.CityCreateManyAndReturnArgs> = z.object({
-  data: z.union([ CityCreateManyInputSchema,CityCreateManyInputSchema.array() ]),
-  skipDuplicates: z.boolean().optional(),
-}).strict() ;
-
-export const CityDeleteArgsSchema: z.ZodType<Prisma.CityDeleteArgs> = z.object({
-  select: CitySelectSchema.optional(),
-  include: CityIncludeSchema.optional(),
-  where: CityWhereUniqueInputSchema,
-}).strict() ;
-
-export const CityUpdateArgsSchema: z.ZodType<Prisma.CityUpdateArgs> = z.object({
-  select: CitySelectSchema.optional(),
-  include: CityIncludeSchema.optional(),
-  data: z.union([ CityUpdateInputSchema,CityUncheckedUpdateInputSchema ]),
-  where: CityWhereUniqueInputSchema,
-}).strict() ;
-
-export const CityUpdateManyArgsSchema: z.ZodType<Prisma.CityUpdateManyArgs> = z.object({
-  data: z.union([ CityUpdateManyMutationInputSchema,CityUncheckedUpdateManyInputSchema ]),
-  where: CityWhereInputSchema.optional(),
-}).strict() ;
-
-export const CityDeleteManyArgsSchema: z.ZodType<Prisma.CityDeleteManyArgs> = z.object({
-  where: CityWhereInputSchema.optional(),
 }).strict() ;
 
 export const JobProfileCreateArgsSchema: z.ZodType<Prisma.JobProfileCreateArgs> = z.object({

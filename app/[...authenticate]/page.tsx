@@ -18,8 +18,9 @@ export default function Page() {
         if (pathname === "/authenticate") {
           router.push("/authenticate/signin");
         }
-        if (!pathname.includes("signin") && !pathname.includes("signup"))
+        if (!pathname.includes("signin") && !pathname.includes("signup")) {
           router.push("/authenticate/signin");
+        }
       } else {
         if (pathname.includes("signin") || pathname.includes("signup")) {
           router.push("/");
@@ -29,7 +30,7 @@ export default function Page() {
     handleAuth();
   }, [pathname, router]);
   return (
-    <div className=" overflow-y-scroll ">
+    <div className="overflow-y-scroll">
       {pathname.includes("signin") ? (
         <SignIn />
       ) : pathname.includes("signup") ? (

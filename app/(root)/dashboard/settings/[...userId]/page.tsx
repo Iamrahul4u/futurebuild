@@ -1,44 +1,26 @@
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import {
-  ChartTooltipContent,
-  ChartTooltip,
-  ChartContainer,
-} from "@/components/ui/chart";
-import { Pie, PieChart, CartesianGrid, XAxis, Line, LineChart } from "recharts";
-import DashboardNav from "@/components/shared/DashboardNav";
+"use client";
+import { Card, CardTitle } from "@/components/ui/card";
+
 import prisma from "@/prisma";
 import { redirect } from "next/navigation";
-import TableList from "@/components/shared/TablePostedJobs";
-import { JobPost } from "@prisma/client";
-import { z } from "zod";
-import { UserWithJobs } from "@/types/zodValidations";
 import { DialogCloseButton } from "@/components/shared/DialogCloseButton";
-export default async function Page({ params }: { params: { userId: string } }) {
-  const userDetails = prisma.user;
-  if (!userDetails) {
-    redirect("/authenticate/signin");
+import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import useGetUser from "@/hooks/useGetUser";
+import { deleteUser } from "@/app/actions/prisma.action";
+import { toast } from "sonner";
+import { signout } from "@/app/actions/auth.action";
+import Link from "next/link";
+export default function Page({ params }: { params: { userId: string } }) {
+  const user = useGetUser();
+  async function deleteAcccount(id: string) {
+    const deletedUser = await deleteUser(user || params.userId[0]);
+    if ("error" in deletedUser) {
+      toast.error("Can't Complete Your Request");
+    } else {
+      toast.success("User Deleted Successfully");
+      signout();
+    }
   }
   return (
     <div>
@@ -46,11 +28,15 @@ export default async function Page({ params }: { params: { userId: string } }) {
       <div className="flex flex-col gap-2">
         <Card className="p-4">
           <CardTitle>Edit Your Profile</CardTitle>
-          <Button>Edit Profile</Button>
+          <Link href={"/dashboard/edit"}>
+            <Button>Edit Profile</Button>
+          </Link>
         </Card>
         <Card className="p-4">
           <CardTitle>Delete Your Profile</CardTitle>
           <DialogCloseButton
+            onClickFn={deleteAcccount}
+            userId={params.userId}
             buttonText="Delete"
             description="Are You Sure You Want To Delete Your Account?"
             title="Delete Account"

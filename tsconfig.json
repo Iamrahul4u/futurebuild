@@ -28,7 +28,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "tailwind.config.js"
-  ],
+    "tailwind.config.js",
+    "prisma/**/*.ts",
+    "src/**/*.ts" // adjust according to your project structure
+, "prisma/seed.js", "prisma/seedData.ts"  ],
   "exclude": ["node_modules"]
 }

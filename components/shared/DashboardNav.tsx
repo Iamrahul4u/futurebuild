@@ -18,7 +18,7 @@ const DashboardNav = () => {
   const pathname = usePathname();
   const userId = useGetUser();
   return (
-    <aside className="fixed left-0 z-[9999] flex h-full w-[20%] flex-col border-l border-r border-black bg-background sm:w-64">
+    <aside className="fixed left-0 flex h-full w-[20%] flex-col border-l border-r border-black bg-background sm:w-64">
       <ul className="flex flex-1 flex-col gap-4 px-4 py-6 sm:px-6">
         {DashboardNavLinks.map((item) => {
           const isActive = pathname.includes(`/dashboard${item.route}`);

@@ -58,7 +58,7 @@ const JobCard = async ({ details }: { details: JobPostSelectType }) => {
             {details.modeOfWork}
           </Badge>
           <Badge className="rounded-md bg-orange-200 p-0 px-1 py-1 text-[12px] font-bold text-orange-600 transition-colors duration-300 ease-in-out hover:bg-white hover:outline">
-            {details.jobType}
+            {details.jobType.replace("_", " ")}
           </Badge>
         </CardContent>
         <CardContent>
