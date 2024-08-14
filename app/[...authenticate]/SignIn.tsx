@@ -19,7 +19,8 @@ import Link from "next/link";
 import { clientCheckUser, signIn } from "../actions/auth.action";
 import { redirect, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import StateButton from "@/components/shared/StateButton";
 
 export const signInSchema = z.object({
   email: z.string().min(2, {
@@ -31,6 +32,7 @@ export const signInSchema = z.object({
 });
 
 export default function SignIn() {
+  const [pending, setPending] = useState<boolean>(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -41,6 +43,7 @@ export default function SignIn() {
     },
   });
   async function onSubmit(values: z.infer<typeof signInSchema>) {
+    setPending(true);
     const res = await signIn({ values });
     if (res.success) {
       toast.success("Succesfully Signed In");
@@ -48,6 +51,7 @@ export default function SignIn() {
     } else if (res.error) {
       toast.error(res.error);
     }
+    setPending(false);
   }
 
   return (
@@ -100,7 +104,11 @@ export default function SignIn() {
                   )}
                 />
 
-                <Button type="submit">Submit</Button>
+                <StateButton
+                  pending={pending}
+                  processingWord="Loggin in..."
+                  content="Login"
+                />
               </form>
             </Form>
             <button

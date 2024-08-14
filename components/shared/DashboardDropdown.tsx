@@ -25,24 +25,31 @@ import useGetUser from "@/hooks/useGetUser";
 export function DashboardDropdownMenu() {
   const userId = useGetUser();
 
-  return (
-    userId && (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-32">
-          <Link href={`/dashboard/user/${userId}`}>
-            <DropdownMenuItem>Dashboard</DropdownMenuItem>
-          </Link>
-          <Link href={"/authenticate/signin"} onClick={() => signout()}>
-            <DropdownMenuItem>Logout</DropdownMenuItem>
-          </Link>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    )
+  return userId ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Avatar>
+          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarFallback>U</AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-32">
+        <Link href={`/dashboard/user/${userId}`}>
+          <DropdownMenuItem>Dashboard</DropdownMenuItem>
+        </Link>
+        <Link href={"/authenticate/signin"} onClick={() => signout()}>
+          <DropdownMenuItem>Logout</DropdownMenuItem>
+        </Link>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ) : (
+    <>
+      <Link href={"/authenticate/signin"}>
+        <Button>Login</Button>
+      </Link>
+      <Link href={"/authenticate/signup"}>
+        <Button variant={"outline"}>Sign Up</Button>
+      </Link>
+    </>
   );
 }

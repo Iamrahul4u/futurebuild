@@ -31,6 +31,6 @@
     "tailwind.config.js",
     "prisma/**/*.ts",
     "src/**/*.ts" // adjust according to your project structure
-, "prisma/seed.js", "prisma/seedData.ts"  ],
+, "prisma/seed.js", "prisma/seedData.ts", "components/Chat/ChatBox.jsx"  ],
   "exclude": ["node_modules"]
 }

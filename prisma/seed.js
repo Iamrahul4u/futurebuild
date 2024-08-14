@@ -1,18 +1,33 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 async function main() {
-  const users = await prisma.user.createMany({
-    data: userData,
-  });
-  const jobpost = await prisma.jobPost.createMany({
-    data: jobPosts,
-  });
-  const applicant = await prisma.applicant.createMany({
-    data: applicantSeedData,
-  });
-  const media = await prisma.media.createMany({
-    data: mediaData,
-  });
+  try {
+    await prisma.user.createMany({ data: userData });
+    console.log("Users inserted.");
+  } catch (e) {
+    console.error("Error inserting users:", e);
+  }
+
+  try {
+    await prisma.jobPost.createMany({ data: jobPosts });
+    console.log("Job posts inserted.");
+  } catch (e) {
+    console.error("Error inserting job posts:", e);
+  }
+
+  try {
+    await prisma.applicant.createMany({ data: applicantSeedData });
+    console.log("Applicants inserted.");
+  } catch (e) {
+    console.error("Error inserting applicants:", e);
+  }
+
+  try {
+    await prisma.media.createMany({ data: mediaData });
+    console.log("Media inserted.");
+  } catch (e) {
+    console.error("Error inserting media:", e);
+  }
 }
 
 const ApprovalStatus = {

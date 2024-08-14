@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
 interface buttonProps {
   pending?: boolean;
   processingWord?: string;
@@ -28,7 +29,10 @@ const StateButton: React.FC<buttonProps> = ({
       type="submit"
       disabled={pending}
       variant={variant ?? "default"}
-      className={className ?? ""}
+      className={cn(
+        className,
+        `${pending ? "!disabled:text-gray-400 cursor-not-allowed !bg-gray-600" : ""}`,
+      )}
     >
       {pending ? processingWord : content}
     </Button>

@@ -1,9 +1,10 @@
-import prisma from "@/prisma";
+// import prisma from "@/prisma";
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
 import { Lucia, TimeSpan } from "lucia";
 import { cookies } from "next/headers";
 import { cache } from "react";
-
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 const adapter = new PrismaAdapter(prisma.session, prisma.user);
 export const lucia = new Lucia(adapter, {
   sessionExpiresIn: new TimeSpan(1, "w"),
