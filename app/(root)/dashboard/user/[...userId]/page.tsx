@@ -107,7 +107,12 @@ export default async function Page({ params }: { params: { userId: string } }) {
           {userDetails.appliedJobs.length > 0 ? (
             <TableAppliedJobs details={userDetails?.appliedJobs} />
           ) : (
-            <Card>No Result Found</Card>
+            <div className="flex flex-col items-center justify-between gap-4">
+              <span>No Jobs Found</span>
+              <Link href={"/jobs"}>
+                <Button>Apply?</Button>
+              </Link>
+            </div>
           )}
         </Card>
       )}

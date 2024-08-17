@@ -52,7 +52,6 @@ const applyJob = z.object({
 export default function Page({ params }: { params: { jobid: string } }) {
   const [pending, setPending] = useState<boolean>(false);
   const [availability, setAvailability] = useState<string>("");
-  const [uploading, setUploading] = useState<boolean>(false);
   const router = useRouter();
   useEffect(() => {
     async function getUser() {

@@ -57,15 +57,15 @@ export async function signIn({
   values: z.infer<typeof signInSchema>;
 }) {
   try {
-    console.log(process.env.DATABASE_URL);
-    const users = await prisma.user.findMany({});
-    console.log(users);
     const user = await prisma.user.findFirst({
       where: {
         email: values.email,
       },
       select: {
         id: true,
+        roleSet: true,
+        onboardingCompleted: true,
+        role: true,
       },
     });
     if (!user) {
@@ -79,10 +79,10 @@ export async function signIn({
       sessionCookie.value,
       sessionCookie.attributes,
     );
-    return { success: true };
+    return { user: user };
   } catch (error) {
     console.log(error);
-    return { error: "User SignIn failed", success: false };
+    return { error: "User SignIn failed" };
   }
 }
 
@@ -108,10 +108,10 @@ export const clientCheckUser = async () => {
 export const getUserId = async () => {
   const user = await getUser();
   if (!user) {
-    return { user: null };
+    return { error: null };
   }
   if ("error" in user) {
-    return { user: "error" };
+    return { error: "error" };
   }
   return { user };
 };

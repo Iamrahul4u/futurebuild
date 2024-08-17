@@ -31,7 +31,7 @@ model JobPost {
   maxExperience    Int
   minSalary        Int            @default(0)
   maxSalary        Int
-  skills           Skill[]
+  skills           JobSkill[]
   perks            Perk[]
   jobType          JobType        @default(Full_Time)
   postedAt         DateTime       @default(now())
@@ -60,31 +60,53 @@ enum ApprovalStatus {
 }
 
 model User {
-  id             String      @id @unique @default(cuid())
-  username       String
-  firstName      String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
-  secondName     String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
-  email          String      @unique
-  hashedPassword String
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  role           Role        @default(USER)
-  skills         Skill[]
-  locationId     String?
-  media          Media[]
-  address        Location?   @relation(fields: [locationId], references: [id])
-  postedJobs     JobPost[]   @relation("PostedJobs")
-  appliedJobs    Applicant[]
-  sessions       Session[]
+  id                  String      @id @unique @default(cuid())
+  username            String
+  firstName           String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
+  secondName          String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
+  email               String      @unique
+  hashedPassword      String
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  role                Role        @default(USER)
+  skills              UserSkill[]
+  media               Media[]
+  about               String      @default("About Me")
+  locationId          String?
+  profileCompleted    Boolean?    @default(false)
+  onboardingCompleted Boolean?    @default(false)
+  roleSet             Boolean?    @default(false)
+  address             Location?   @relation(fields: [locationId], references: [id])
+  postedJobs          JobPost[]   @relation("PostedJobs")
+  appliedJobs         Applicant[]
+  sessions            Session[]
 }
 
 model Skill {
-  id        String   @id @unique @default(cuid())
-  name      String
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  JobPost   JobPost? @relation(fields: [jobPostId], references: [id])
-  jobPostId String?
+  id    String      @id @unique @default(cuid())
+  name  String      @unique
+  users UserSkill[]
+  jobs  JobSkill[]
+}
+
+model UserSkill {
+  id      String  @id @unique @default(cuid())
+  userId  String?
+  skillId String
+  user    User?   @relation(fields: [userId], references: [id])
+  skill   Skill?  @relation(fields: [skillId], references: [id])
+
+  @@unique([userId, skillId])
+}
+
+model JobSkill {
+  id      String  @id @unique @default(cuid())
+  jobId   String
+  skillId String
+  jobPost JobPost @relation(fields: [jobId], references: [id])
+  skill   Skill   @relation(fields: [skillId], references: [id])
+
+  @@unique([jobId, skillId]) // Composite key to prevent duplicate skills for a job post
 }
 
 model Perk {
@@ -115,11 +137,11 @@ model Session {
 
 model Location {
   id          String  @id @unique @default(cuid())
-  address     String? /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
+  address     String? /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(50, { message: "Enter Less than 50 characters" })
   postalCode  Int
-  state       String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
-  city        String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
-  phoneNumber Int
+  state       String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(20, { message: "Enter Less than 20 characters" })
+  city        String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(20, { message: "Enter Less than 20 characters" })
+  phoneNumber String
   User        User[]
 }
 

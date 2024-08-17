@@ -75,7 +75,6 @@ export async function applyToJob({
   }
 
   try {
-    // Ensure the user exists in the database
     const existingUser = await prisma.user.findUnique({
       where: { id: user.id },
     });
@@ -83,7 +82,6 @@ export async function applyToJob({
       return { error: "User not found in database" };
     }
 
-    // Ensure the job post exists in the database
     const existingJobPost = await prisma.jobPost.findUnique({
       where: { id: jobId },
     });

@@ -13,10 +13,14 @@ const InputText = ({
   name,
   placeholder,
   label,
+  disabled,
+  isNumeric,
 }: {
   name: string;
   placeholder: string;
   label?: string;
+  disabled?: boolean;
+  isNumeric?: boolean;
 }) => {
   const { control } = useFormContext();
   return (
@@ -24,17 +28,29 @@ const InputText = ({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="flex  flex-col justify-start space-y-0">
+        <FormItem className="flex flex-col justify-start space-y-0">
           {label && (
             <FormLabel
               htmlFor={name}
-              className="mt-4 mb-2 text-black dark:text-white font-semibold text-base"
+              className="mb-2 mt-4 text-base font-semibold text-black dark:text-white"
             >
               {label}
             </FormLabel>
           )}
           <FormControl>
-            <Input placeholder={placeholder} {...field} />
+            <Input
+              placeholder={placeholder}
+              id={name}
+              disabled={disabled}
+              {...field}
+              onChange={(e) => {
+                // Convert value to number if isNumeric is true
+                const value = isNumeric
+                  ? Number(e.target.value)
+                  : e.target.value;
+                field.onChange(value); // Update the form state
+              }}
+            />
           </FormControl>
           <FormMessage className="pt-2" />
         </FormItem>

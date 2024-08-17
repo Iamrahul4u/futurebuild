@@ -4,15 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import RecentJobs from "@/components/shared/RecentJobs";
 import LoadingJobsCard from "@/components/loaders/LoadingJobsCard";
-import { generateFakeData } from "@/_utils/utils";
-import { ApplySheet } from "@/components/shared/ApplySheet";
 import prisma from "@/prisma";
 import { getUser } from "@/app/[...authenticate]/lucia";
-import { redirect } from "next/navigation";
 import { CircleCheck } from "lucide-react";
-import { ApplicantOptionalDefaults } from "@/prisma/generated/zod";
 import { User } from "lucia";
-import { error } from "console";
+import { formatNumber } from "@/_utils/utils";
 //
 export default async function Page({ params }: { params: { jobid: string } }) {
   const user: User | { error: string } | null = await getUser();
@@ -36,40 +32,45 @@ export default async function Page({ params }: { params: { jobid: string } }) {
     applied = !!application;
   }
   return (
-    <div className="grid grid-cols-[260px_1fr_240px] overflow-y-scroll pb-32 gap-6 w-full min-h-screen bg-muted/40 p-6">
-      <div className="flex flex-col gap-4 overflow-y-scroll pr-4 mx-auto">
+    <div className="grid min-h-screen w-full grid-cols-[260px_1fr_240px] gap-6 overflow-y-scroll bg-muted/40 p-6 pb-32">
+      <div className="mx-auto flex flex-col gap-4 overflow-y-scroll pr-4">
         <Suspense fallback={<LoadingJobsCard columns={1} />}>
           <RecentJobs />
         </Suspense>
       </div>
       <div className="flex flex-col gap-6">
-        <div className="bg-background rounded-lg shadow-sm p-6">
+        <div className="rounded-lg bg-background p-6 shadow-sm">
           <h1 className="text-2xl font-bold">{jobData?.jobTitle}</h1>
           <div className="mt-2 flex items-center gap-2">
             <Badge variant="secondary">{jobData?.whoCanApply}</Badge>
-            <Badge variant="secondary">{jobData?.jobType}</Badge>
+            <Badge variant="secondary">
+              {jobData?.jobType.split("_").join(" ")}
+            </Badge>
             <Badge variant="secondary">{jobData?.modeOfWork}</Badge>
           </div>
-          <div className="mt-6 prose text-muted-foreground">
+          <div className="prose mt-6 text-muted-foreground">
             {jobData?.jobDescription}
           </div>
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        <div className="sticky top-6 bg-background rounded-lg shadow-sm p-4">
+        <div className="sticky top-6 rounded-lg bg-background p-4 shadow-sm">
           <h3 className="text-lg font-semibold">Job Details</h3>
           <div className="mt-4 space-y-2 text-sm">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Job Type:</span>
-              <span>Full-time</span>
+              <span>{jobData?.jobType.split("_").join(" ")}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Location:</span>
-              <span>Remote</span>
+              <span>{jobData?.modeOfWork}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Salary Range:</span>
-              <span>$100k - $120k</span>
+              <span>
+                ₹{formatNumber(jobData?.minSalary || 1000)} -
+                {formatNumber(jobData?.maxSalary || 1000)}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Experience:</span>
@@ -90,7 +91,7 @@ export default async function Page({ params }: { params: { jobid: string } }) {
             {user && applied ? (
               <Button
                 variant={"link"}
-                className="text-green-600 gap-1 text-lg p-0"
+                className="gap-1 p-0 text-lg text-green-600"
               >
                 <CircleCheck size={16} />
                 Applied

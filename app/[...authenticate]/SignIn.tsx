@@ -45,9 +45,19 @@ export default function SignIn() {
   async function onSubmit(values: z.infer<typeof signInSchema>) {
     setPending(true);
     const res = await signIn({ values });
-    if (res.success) {
+    if (res?.user?.id) {
       toast.success("Succesfully Signed In");
-      router.push("/jobs");
+      if (res?.user?.roleSet) {
+        if (res?.user?.onboardingCompleted) {
+          router.push("/jobs");
+        } else if (!res.user.onboardingCompleted) {
+          router.push(
+            `/onboarding/${res.user.role.toLowerCase()}/${res.user.id}`,
+          );
+        }
+      } else if (!res.user.roleSet) {
+        router.push("/onboarding");
+      }
     } else if (res.error) {
       toast.error(res.error);
     }

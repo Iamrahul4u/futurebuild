@@ -17,7 +17,9 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { signup } from "../actions/auth.action";
+import { getUserId, signup } from "../actions/auth.action";
+import StateButton from "@/components/shared/StateButton";
+import { useState } from "react";
 export const signUpSchema = z
   .object({
     email: z.string().min(8, {
@@ -43,6 +45,7 @@ export const signUpSchema = z
 
 export default function SignUp() {
   const router = useRouter();
+  const [isPending, setPending] = useState<boolean>(false);
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -50,17 +53,22 @@ export default function SignUp() {
       username: "",
       password: "",
       confirmPassword: "",
+      fullName: "",
     },
   });
   async function onSubmit(values: z.infer<typeof signUpSchema>) {
+    setPending(true);
     const res = await signup({ values });
     if (res.success) {
       toast.success("User Signed Up");
-      router.push("/jobs");
+      const userId = await getUserId();
+
+      router.push(`/onboarding/${userId?.user?.id}`);
     } else {
       toast.error("User SignUp failed");
     }
   }
+  setPending(false);
 
   return (
     <section className="overflow-y-scroll bg-gray-50 dark:bg-gray-900">
@@ -167,7 +175,11 @@ export default function SignUp() {
                   )}
                 />
 
-                <Button type="submit">Submit</Button>
+                <StateButton
+                  pending={isPending}
+                  processingWord="Signin Up..."
+                  content="Sign Up"
+                />
               </form>
             </Form>
             <Link href={"/authenticate/signin"}>

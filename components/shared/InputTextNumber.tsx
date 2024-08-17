@@ -8,16 +8,17 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { useFormContext } from "react-hook-form";
-import { Textarea } from "../ui/textarea";
 
-export const InputTextArea = ({
+const InputText = ({
   name,
   placeholder,
   label,
+  disabled,
 }: {
   name: string;
   placeholder: string;
   label?: string;
+  disabled?: boolean;
 }) => {
   const { control } = useFormContext();
   return (
@@ -25,7 +26,7 @@ export const InputTextArea = ({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="flex flex-col justify-start space-y-0">
           {label && (
             <FormLabel
               htmlFor={name}
@@ -35,7 +36,7 @@ export const InputTextArea = ({
             </FormLabel>
           )}
           <FormControl>
-            <Textarea id={name} placeholder={placeholder} {...field} />
+            <Input placeholder={placeholder} disabled={disabled} {...field} />
           </FormControl>
           <FormMessage className="pt-2" />
         </FormItem>
@@ -43,3 +44,5 @@ export const InputTextArea = ({
     />
   );
 };
+
+export default InputText;

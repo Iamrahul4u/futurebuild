@@ -15,6 +15,14 @@ import prisma from "@/prisma";
 const RecentJobs = async () => {
   const res = await prisma.jobPost.findMany({
     // cacheStrategy: { swr: 60, ttl: 60 },
+
+    include: {
+      _count: {
+        select: {
+          applicants: true,
+        },
+      },
+    },
   });
 
   return (
@@ -36,12 +44,15 @@ const RecentJobs = async () => {
                 <CardTitle className="line-clamp-1 text-base font-bold tracking-wide text-black dark:text-white">
                   {job.jobTitle}
                 </CardTitle>
-                <div className="flex flex-row gap-1">
+                <div className="flex flex-row">
                   <CardDescription className="line-clamp-1 flex w-24 flex-row text-xs">
                     {job.organisationName}
                   </CardDescription>
                   <CardDescription className="flex flex-row text-xs">
-                    &#x2022; <span>Applicants</span>
+                    &#x2022;
+                    <span className="flex w-full flex-row flex-nowrap">
+                      <span>&nbsp;{job._count.applicants}&nbsp;</span>Applicants
+                    </span>
                   </CardDescription>
                 </div>
               </div>

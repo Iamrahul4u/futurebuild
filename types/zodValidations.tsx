@@ -1,8 +1,13 @@
 import {
   ApplicantSchema,
   JobPostSchema,
+  LocationOptionalDefaultsSchema,
+  LocationSchema,
+  SkillOptionalDefaultsSchema,
   UserIncludeSchema,
+  UserOptionalDefaultsSchema,
   UserSchema,
+  UserSkillSchema,
 } from "@/prisma/generated/zod";
 import { z } from "zod";
 
@@ -33,3 +38,29 @@ export const JobPostSelect = JobPostSchema.extend({
 // Type inference for UserWithJobs
 export type UserWithJobs = z.infer<typeof UserWithJobsSchema>;
 export type JobPostSelectType = z.infer<typeof JobPostSelect>;
+export const UserWithSkillsAndAddress = UserOptionalDefaultsSchema.pick({
+  firstName: true,
+  secondName: true,
+  email: true,
+  about: true,
+}).extend({
+  skills: z.array(
+    z.object({ skill: z.object({ name: z.string() }).nullable() }),
+  ),
+  address: z.array(LocationSchema.omit({ id: true })),
+});
+export type UserWithSkillsAndAddressTypes = z.infer<
+  typeof UserWithSkillsAndAddress
+>;
+
+export const UserOnboardingSchema = UserOptionalDefaultsSchema.pick({
+  firstName: true,
+  secondName: true,
+  email: true,
+  about: true,
+}).extend({
+  skills: z.array(SkillOptionalDefaultsSchema.pick({ name: true })),
+  address: z.array(LocationSchema.omit({ id: true })),
+});
+
+export type UserOnboardingSchemaTypes = z.infer<typeof UserOnboardingSchema>;
