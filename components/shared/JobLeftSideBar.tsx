@@ -40,7 +40,6 @@ const JobLeftSideBar = () => {
   });
   async function handleSubmit(values: z.infer<typeof leftSidebarfilterProps>) {
     const newUrl = queryString.stringify(values);
-    console.log(newUrl);
     router.replace(pathname + "?" + newUrl);
     router.refresh();
   }

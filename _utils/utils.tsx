@@ -1,4 +1,4 @@
-import { faker } from "@faker-js/faker";
+import imageCompression from "browser-image-compression";
 const modeOfWorkOptions = ["Work_From_Home", "Work_From_Office"];
 const jobTypeOptions = [
   "Full_Time",
@@ -7,35 +7,6 @@ const jobTypeOptions = [
   "Project_Work",
   "Volunteering",
 ];
-
-export const generateFakeData = async () => {
-  const fakeJobs = [];
-  for (let i = 0; i < 10; i++) {
-    fakeJobs.push({
-      id: faker.number.int().toString(),
-      jobTitle: faker.person.jobTitle(),
-      jobDescription: faker.lorem.paragraph(),
-      organisationName: faker.company.name(),
-
-      minExperience: faker.number.int({ min: 0, max: 5 }),
-      maxExperience: faker.number.int({ min: 6, max: 15 }),
-      minSalary: faker.number.int({ min: 30000, max: 50000 }),
-      maxSalary: faker.number.int({ min: 50001, max: 200000 }),
-      skills: [faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
-      perks: [faker.lorem.sentence(), faker.lorem.sentence()],
-      modeOfWork: faker.helpers.arrayElement(modeOfWorkOptions),
-      jobType: faker.helpers.arrayElement(jobTypeOptions),
-
-      postedAt: faker.date.recent(),
-      whoCanApply: faker.lorem.sentence(),
-      userId: faker.number.int().toString,
-    });
-  }
-  await new Promise((resolve) => {
-    setTimeout(resolve, 2000); // 2 seconds delay
-  });
-  return fakeJobs;
-};
 
 export function generateRandomName(length = 20) {
   if (typeof window === "undefined") {
@@ -105,3 +76,21 @@ export function formatTimeAgo(isoDateString?: string): string {
     return `${secondsAgo} ${unit}${secondsAgo !== 1 ? "s" : ""} ago`;
   }
 }
+
+async function handleImageUpload(event: any) {
+  const imageFile = event.target.files[0];
+
+  const options = {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 1200,
+    useWebWorker: true,
+  };
+  try {
+    const compressedFile = await imageCompression(imageFile, options);
+
+    // await uploadToServer(compressedFile); // write your own logic
+  } catch (error) {
+    console.log(error);
+  }
+}
+export default handleImageUpload;

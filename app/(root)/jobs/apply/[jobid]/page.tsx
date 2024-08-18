@@ -25,6 +25,12 @@ import { checkUser, clientCheckUser } from "@/app/actions/auth.action";
 import StateButton from "@/components/shared/StateButton";
 import { MediaNameSchema } from "@/prisma/generated/zod";
 import { redirect, useRouter } from "next/navigation";
+import {
+  ACCEPTED_FILE_TYPES,
+  MAX_PROFILE_IMG_SIZE,
+  MAX_RESUME_SIZE,
+} from "@/_constants/constants";
+const MAX_SIZE = 2 * 1024 * 1024;
 
 const applyJob = z.object({
   coverLetter: z
@@ -47,7 +53,16 @@ const applyJob = z.object({
     .min(10, { message: "Letter Should be more than 10 Letters" })
     .max(100, { message: "Letter Shouldn't be more than 100 characters" })
     .optional(),
-  resume: z.instanceof(File).optional(),
+  resume: z
+    .instanceof(File)
+    .refine(
+      (file) => file?.size <= MAX_RESUME_SIZE,
+      "File Size Should be less than 5MB",
+    )
+    .refine(
+      (file) => ACCEPTED_FILE_TYPES.includes(file.type),
+      "File Type isn't Allowed",
+    ),
 });
 export default function Page({ params }: { params: { jobid: string } }) {
   const [pending, setPending] = useState<boolean>(false);

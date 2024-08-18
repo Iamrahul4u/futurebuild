@@ -1,4 +1,8 @@
 import {
+  ACCEPTED_IMAGE_TYPES,
+  MAX_PROFILE_IMG_SIZE,
+} from "@/_constants/constants";
+import {
   ApplicantSchema,
   JobPostSchema,
   LocationOptionalDefaultsSchema,
@@ -63,4 +67,17 @@ export const UserOnboardingSchema = UserOptionalDefaultsSchema.pick({
   address: z.array(LocationSchema.omit({ id: true })),
 });
 
+export const OrganisationOnboardingSchema = UserOptionalDefaultsSchema.pick({
+  firstName: true,
+  secondName: true,
+  email: true,
+  about: true,
+}).extend({
+  address: z.array(LocationSchema.omit({ id: true })),
+  media: z.string().optional(),
+});
+
+export type OrganisationOnboardingSchemaTypes = z.infer<
+  typeof OrganisationOnboardingSchema
+>;
 export type UserOnboardingSchemaTypes = z.infer<typeof UserOnboardingSchema>;

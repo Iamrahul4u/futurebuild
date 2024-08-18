@@ -19,7 +19,7 @@ const UploadFile = ({ name }: { name: string }) => {
       name={name}
       render={({ field }) => (
         <FormItem>
-          <h3 className="dark:text-white text-black">Resume</h3>
+          <h3 className="text-black dark:text-white">Resume</h3>
           <FormLabel>Upload Your Resume Seperately?</FormLabel>
           <br />
           <FormControl>

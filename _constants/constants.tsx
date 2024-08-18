@@ -32,6 +32,21 @@ export const sidebarLinks: SidebarLink[] = [
     label: "Practice",
   },
 ];
+export const MAX_RESUME_SIZE = 5 * 1024 * 1024;
+export const MAX_PROFILE_IMG_SIZE = 1 * 500 * 1024;
+export const ACCEPTED_FILE_TYPES = [
+  "application/pdf", // PDF files
+  "application/msword", // DOC files
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX files
+];
+export const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+];
+
 export const DashboardNavLinks: SidebarLink[] = [
   {
     imgURL: "/assets/icons/home.svg",

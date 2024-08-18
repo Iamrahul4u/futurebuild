@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,40 +10,30 @@ import { FormProvider, useForm } from "react-hook-form";
 import InputText from "@/components/shared/InputText";
 import { toast } from "sonner";
 import { InputTextArea } from "@/components/shared/InputTextArea";
-import {
-  checkUser,
-  clientCheckUser,
-  getUserId,
-} from "@/app/actions/auth.action";
+import imageCompression from "browser-image-compression";
+
+import { getUserId } from "@/app/actions/auth.action";
 import {
   LocationSchema,
   MediaNameSchema,
-  User,
-  UserOptionalDefaults,
   UserSchema,
 } from "@/prisma/generated/zod";
 import { redirect, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import prisma from "@/prisma";
 import {
   getUserDetailsOnboarding,
+  updateOnboardingOrganisation,
   updateOnboardingUser,
 } from "@/app/actions/user.action";
 import {
-  UserOnboardingSchema,
-  UserOnboardingSchemaTypes,
+  OrganisationOnboardingSchema,
   UserWithSkillsAndAddressTypes,
 } from "@/types/zodValidations";
-import { getUser } from "@/app/[...authenticate]/lucia";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { ACCEPTED_IMAGE_TYPES } from "@/_constants/constants";
+import { getUrl } from "@/app/actions/jobs.action";
+import StateButton from "../shared/StateButton";
 
-const EditProfileUser = LocationSchema.merge(
-  UserSchema.omit({
-    createdAt: true,
-    hashedPassword: true,
-    id: true,
-    role: true,
-  }),
-);
 export default function OnboardingForm({
   userId,
   type,
@@ -53,11 +43,14 @@ export default function OnboardingForm({
 }) {
   const [pending, setPending] = useState<boolean>(false);
   const [user, setUser] = useState(null);
+  const [compressedImage, setCompressedImage] = useState<any>(null);
+  const [compressedFile, setCompressedFile] = useState<File | null>(null);
+  const uploadImageRef = useRef<HTMLInputElement | null>(null);
   const [userDetails, setUserDetails] =
     useState<UserWithSkillsAndAddressTypes>();
   const router = useRouter();
-  const form = useForm<z.infer<typeof UserOnboardingSchema>>({
-    resolver: zodResolver(UserOnboardingSchema),
+  const form = useForm<z.infer<typeof OrganisationOnboardingSchema>>({
+    resolver: zodResolver(OrganisationOnboardingSchema),
     defaultValues: {
       firstName: "",
       secondName: "",
@@ -73,7 +66,7 @@ export default function OnboardingForm({
         },
       ],
       about: "",
-      skills: [{ name: "" }],
+      media: "",
     },
   });
   useEffect(() => {
@@ -113,14 +106,6 @@ export default function OnboardingForm({
         firstName: userDetails.firstName,
         secondName: userDetails.secondName,
         email: userDetails.email,
-        skills: [
-          {
-            name:
-              userDetails.skills
-                .map((skillObj) => skillObj.skill!.name)
-                .join(",") || "", //
-          },
-        ],
         address: [
           {
             // Default location with one entry
@@ -135,32 +120,73 @@ export default function OnboardingForm({
       });
     }
   }, [userDetails, form]);
-  async function onSubmit(values: z.infer<typeof UserOnboardingSchema>) {
-    setPending(true);
-    const seperateSkills = values.skills[0].name.split(",");
 
-    const updatedskills = seperateSkills.map((value) => {
-      return {
-        name: value.toUpperCase(),
-      };
-    });
+  // ------------------------------------------
+  // Handle Form Submit
+  // ------------------------------------------
+  async function onSubmit(
+    values: z.infer<typeof OrganisationOnboardingSchema>,
+  ) {
+    console.log(values);
+    setPending(true);
 
     try {
-      const updatedValues = { ...values, skills: updatedskills };
-      const updateUser = await updateOnboardingUser(updatedValues);
-      if (updateUser.error) {
-        throw new Error(updateUser.error);
+      if (compressedFile) {
+        const signedUrl = await getUrl(
+          compressedFile.size,
+          compressedFile.type,
+          MediaNameSchema.options[1],
+        );
+        if (signedUrl.error) {
+          toast.error(signedUrl.error);
+          throw new Error(signedUrl.error);
+        } else if (!signedUrl.error && signedUrl.success) {
+          const url = signedUrl.success.url;
+          await fetch(url, {
+            method: "PUT",
+            body: compressedFile,
+            headers: {
+              "Content-Type": compressedFile.type,
+            },
+          });
+        } else {
+          throw new Error("No file uploaded or file compression failed.");
+        }
+        const updateUser = await updateOnboardingOrganisation(values);
+        if (updateUser.error) {
+          throw new Error(updateUser.error);
+        }
+        toast.success("Successfully Submitted");
+        router.push(`/dashboard/user/${user}`);
       }
-      toast.success("Successfully Submitted");
-      router.push(`/dashboard/user/${user}`);
     } catch (error: any) {
       toast.error(error.message);
     }
     setPending(false);
   }
-  const {
-    formState: { errors },
-  } = form;
+
+  // ------------------------------------------
+  // Handle Image Upload
+  // ------------------------------------------
+  const handleImageUpload = async (event: any) => {
+    const imageFile = event.target.files[0];
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 1200,
+      useWebWorker: true,
+    };
+
+    try {
+      const compressedFile1 = await imageCompression(imageFile, options);
+      const compressedImageURL = URL.createObjectURL(compressedFile1);
+      setCompressedImage(compressedImageURL);
+      setCompressedFile(compressedFile);
+      form.setValue("media", compressedImageURL);
+    } catch (error) {
+      console.error("Error compressing image:", error);
+    }
+  };
+  const initials = `${userDetails?.firstName[0] || ""}${userDetails?.secondName[0] || ""}`;
 
   const isDisabled = type === "OnboardingForm" ? false : true;
   return (
@@ -168,21 +194,35 @@ export default function OnboardingForm({
       <h1 className="mx-auto mb-6 text-6xl text-black dark:text-white">
         {isDisabled ? "Edit" : "Complete"} Your Profile
       </h1>
-      {errors && Object.keys(errors).length > 0 && (
-        <div className="error-messages">
-          {Object.entries(errors).map(([key, error]) => (
-            <p key={key} className="text-red-500">
-              {error.message}
-            </p>
-          ))}
-        </div>
-      )}
+
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-4/6 space-y-4 px-2"
         >
-          <div className="flex w-full justify-between space-x-2">
+          <input
+            type="file"
+            accept=".jpeg,.png,.jpg,.webp,.avif"
+            ref={uploadImageRef}
+            hidden={true}
+            onChange={handleImageUpload}
+          />
+          <div className="flex flex-col items-center">
+            <Avatar className="mx-auto mb-4 h-32 w-32 cursor-pointer">
+              <AvatarImage src={compressedImage} alt="@profile_img" />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+            <p
+              className="cursor-pointer text-blue-500 underline"
+              onClick={() =>
+                uploadImageRef.current ? uploadImageRef.current.click() : ""
+              }
+            >
+              Select a Profile Photo
+            </p>
+          </div>
+
+          <div className="flex w-full space-x-2">
             <InputText
               placeholder="Eg. Rahul"
               name="firstName"
@@ -226,11 +266,6 @@ export default function OnboardingForm({
             label="State"
           />
 
-          <InputText
-            placeholder="Html,css,js"
-            name="skills[0].name"
-            label="Skills"
-          />
           <Button>Save Profile</Button>
         </form>
       </FormProvider>

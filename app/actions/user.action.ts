@@ -2,9 +2,13 @@
 
 import prisma from "@/prisma";
 import { getUser } from "../[...authenticate]/lucia";
-import { UserOnboardingSchemaTypes } from "@/types/zodValidations";
+import {
+  OrganisationOnboardingSchemaTypes,
+  UserOnboardingSchemaTypes,
+} from "@/types/zodValidations";
 import { getUserId } from "./auth.action";
 import { Role } from "@prisma/client";
+import { MediaNameSchema } from "@/prisma/generated/zod";
 
 export async function getUserDetailsOnboarding(userId: string) {
   const user = await getUser();
@@ -55,7 +59,7 @@ export const updateOnboardingUser = async (data: UserOnboardingSchemaTypes) => {
   }
   try {
     const skillsId = await Promise.all(
-      data.skills.map(async (skills) => {
+      data.skills.map(async (skills: { name: string }) => {
         const skill = await prisma.skill.upsert({
           where: { name: skills.name },
           update: {},
@@ -66,7 +70,7 @@ export const updateOnboardingUser = async (data: UserOnboardingSchemaTypes) => {
       }),
     );
     const userSkillsId = await Promise.all(
-      skillsId.map(async (skill) => {
+      skillsId.map(async (skill: string) => {
         const userskill = await prisma.userSkill.upsert({
           where: { userId_skillId: { userId: user.user.id, skillId: skill } },
           update: {},
@@ -125,6 +129,67 @@ export const updateOnboardingUser = async (data: UserOnboardingSchemaTypes) => {
   }
 };
 
+export const updateOnboardingOrganisation = async (
+  data: OrganisationOnboardingSchemaTypes,
+) => {
+  const user: any = await getUserId();
+  if (!user || "error" in user) {
+    return { error: "User Not Authenticated" };
+  }
+  try {
+    const existingLocation = await prisma.location.findFirst({
+      where: {
+        address: data.address[0].address,
+        User: {
+          some: {
+            id: data.email,
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+    let locationId;
+    if (existingLocation) {
+      const updatedLocation = await prisma.location.update({
+        where: { id: existingLocation.id },
+        data: {
+          city: data.address[0].city,
+          state: data.address[0].state,
+          postalCode: data.address[0].postalCode,
+          phoneNumber: data.address[0].phoneNumber,
+        },
+        select: { id: true },
+      });
+      locationId = updatedLocation.id;
+    } else {
+      // If the location does not exist, create it
+      const newLocation = await prisma.location.create({
+        data: {
+          city: data.address[0].city,
+          state: data.address[0].state,
+          postalCode: data.address[0].postalCode,
+          phoneNumber: data.address[0].phoneNumber,
+          address: data.address[0].address,
+        },
+        select: { id: true },
+      });
+      locationId = newLocation.id;
+    }
+    const users = await prisma.user.update({
+      where: { id: user.user.id },
+      data: {
+        locationId: locationId,
+        onboardingCompleted: true,
+      },
+    });
+    return { status: "Successfully Submitted" };
+  } catch (error) {
+    console.log(error);
+    return { error: `Failed To Update User Details` };
+  }
+};
 export const assisgnRoleToUser = async ({
   role,
   userId,
@@ -148,4 +213,28 @@ export const assisgnRoleToUser = async ({
   } catch (error: any) {
     return { error: "Unable To Update User Role" };
   }
+};
+
+export const getUserProfile = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      media: {
+        where: {
+          mediaName: MediaNameSchema.options[1],
+        },
+        select: {
+          url: true,
+        },
+      },
+    },
+  });
+  const imgUrl = user?.media.length
+    ? user.media[user.media.length - 1].url
+    : null;
+  console.log(user);
+  console.log("hello", imgUrl);
+  return { imgUrl };
 };

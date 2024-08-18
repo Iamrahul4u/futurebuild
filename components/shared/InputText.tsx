@@ -28,7 +28,7 @@ const InputText = ({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="flex flex-col justify-start space-y-0">
+        <FormItem className="flex w-full flex-col justify-start space-y-0">
           {label && (
             <FormLabel
               htmlFor={name}

@@ -22,6 +22,18 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "recharts",
+      "@material-ui/icons",
+      "date-fns",
+    ],
+  },
 };
+import withBundleAnalyzer from "@next/bundle-analyzer";
 
-export default nextConfig;
+export default withBundleAnalyzer({
+  enabled:
+    process.env.ANALYZE === "true" && process.env.NODE_ENV === "production",
+})(nextConfig);

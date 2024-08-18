@@ -35,7 +35,6 @@ export async function prismaMedia({
   applicantId,
 }: z.infer<typeof mediaOptional>): Promise<PrismaMediaResponse> {
   const user = await getUser();
-  console.log("prismaUserId", user);
   if (!user || "error" in user) {
     return { error: "User Not Authenticated" };
   }
@@ -95,7 +94,6 @@ export async function createJob(props: JobPostOptionalDefaults) {
       },
     });
 
-    console.log(job);
     return { success: true };
   } catch (error) {
     return { error: "Error Occured" };

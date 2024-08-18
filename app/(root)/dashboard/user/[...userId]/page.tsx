@@ -9,7 +9,7 @@ import { UserWithJobs } from "@/types/zodValidations";
 import TablePostedJobs from "@/components/shared/TablePostedJobs";
 import TableAppliedJobs from "@/components/shared/TableAppliedJobs";
 export default async function Page({ params }: { params: { userId: string } }) {
-  const userDetails: UserWithJobs | null = await prisma.user.findFirst({
+  const userDetails = await prisma.user.findFirst({
     where: {
       id: params.userId[0],
     },
@@ -85,20 +85,20 @@ export default async function Page({ params }: { params: { userId: string } }) {
           </Button>
         </CardContent>
       </Card>
-      {userDetails.role === "ORGANIZATION" ||
-        (userDetails.role === "ADMIN" && (
-          <Card className="overflow-y-scroll">
-            <CardHeader>
-              <CardTitle>Posted Jobs</CardTitle>
-            </CardHeader>
-            <TablePostedJobs details={jobDetails} />
-            <div className="flex w-full justify-center">
-              <Link href={"/create/job"}>
-                <Button variant={"default"}>Post New Job</Button>
-              </Link>
-            </div>
-          </Card>
-        ))}
+      {(userDetails.role === "ADMIN" ||
+        userDetails.role === "ORGANIZATION") && (
+        <Card className="overflow-y-scroll">
+          <CardHeader>
+            <CardTitle>Posted Jobs</CardTitle>
+          </CardHeader>
+          <TablePostedJobs details={jobDetails} />
+          <div className="flex h-20 w-full items-end justify-center">
+            <Link href={"/create/job"}>
+              <Button variant={"default"}>Post New Job</Button>
+            </Link>
+          </div>
+        </Card>
+      )}
       {userDetails.role === "USER" && (
         <Card>
           <CardHeader>

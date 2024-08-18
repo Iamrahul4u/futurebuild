@@ -17,13 +17,13 @@ const s3 = new S3Client({
 });
 
 const fileName = generateRandomName();
-const MAX_FILE_SIZE = 1024 * 1024 * 1;
+const MAX_FILE_SIZE = 1024 * 1024 * 5;
 
 export async function getUrl(
   fileSize: number,
   mediaType: string,
   mediaName: string,
-  applicantId: string | undefined,
+  applicantId?: string | undefined,
 ) {
   const user = await getUser();
   if (!user) {
@@ -31,7 +31,7 @@ export async function getUrl(
   }
 
   if (fileSize > MAX_FILE_SIZE) {
-    return { error: "File Size Exceeds Limit 10mb" };
+    return { error: "File Size Exceeds Limit " };
   }
   if (!mediaType) {
     return { error: "Invalid File Type" };
@@ -41,11 +41,18 @@ export async function getUrl(
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: fileName,
-    Metadata: userId || "",
+    Metadata: {
+      userId: userId || "",
+    },
   });
   const presigned = await getSignedUrl(s3, command, {
     expiresIn: 60,
   });
+  let verifiedApplicantId = undefined;
+  if (applicantId) {
+    verifiedApplicantId = applicantId;
+  }
+  console.log("Presigned", presigned);
   const url = presigned.split("?")[0];
   const mediaRes = await prismaMedia({
     mediaType,
@@ -98,7 +105,7 @@ export async function applyToJob({
     });
 
     if (existingApplicant) {
-      return { error: "User has already applied to this job" };
+      return { error: "You have already applied to this job" };
     }
 
     // Create a new applicant record linking the user to the job post
