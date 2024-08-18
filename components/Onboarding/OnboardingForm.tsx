@@ -166,10 +166,11 @@ export default function OnboardingForm({
   } = form;
 
   const isDisabled = type === "OnboardingForm" ? false : true;
+  const editProfile = type === "EditProfileUser" ? false : true;
   return (
     <ScrollArea className="mx-auto h-full w-full px-12 py-8">
       <h1 className="mx-auto mb-6 text-6xl text-black dark:text-white">
-        {isDisabled ? "Edit" : "Complete"} Your Profile
+        {editProfile ? "Edit" : "Complete"} Your Profile
       </h1>
       {errors && Object.keys(errors).length > 0 && (
         <div className="error-messages">

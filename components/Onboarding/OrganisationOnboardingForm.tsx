@@ -34,7 +34,7 @@ import { ACCEPTED_IMAGE_TYPES } from "@/_constants/constants";
 import { getUrl } from "@/app/actions/jobs.action";
 import StateButton from "../shared/StateButton";
 
-export default function OnboardingForm({
+export default function OrganisationOrganisationOnboardingForm({
   userId,
   type,
 }: {
@@ -86,7 +86,7 @@ export default function OnboardingForm({
           router.push("/authenticate/signin");
         } else if (
           user.userDetails.onboardingCompleted &&
-          type === "OnboardingForm"
+          type === "OrganisationOnboardingForm"
         ) {
           toast.success("Onboarding Already Completed");
           router.push(`/dashboard/user/${user.userDetails.id}`);
@@ -94,6 +94,9 @@ export default function OnboardingForm({
           router.push(`/dashboard/user/${user.userDetails.id}`);
         } else {
           setUserDetails(user.userDetails);
+          if (user.userDetails.media) {
+            setCompressedImage(user.userDetails.media);
+          }
         }
       }
     }
@@ -127,7 +130,6 @@ export default function OnboardingForm({
   async function onSubmit(
     values: z.infer<typeof OrganisationOnboardingSchema>,
   ) {
-    console.log(values);
     setPending(true);
 
     try {
@@ -157,11 +159,11 @@ export default function OnboardingForm({
           throw new Error(updateUser.error);
         }
         toast.success("Successfully Submitted");
-        router.push(`/dashboard/user/${user}`);
       }
     } catch (error: any) {
       toast.error(error.message);
     }
+    router.refresh();
     setPending(false);
   }
 
@@ -180,7 +182,7 @@ export default function OnboardingForm({
       const compressedFile1 = await imageCompression(imageFile, options);
       const compressedImageURL = URL.createObjectURL(compressedFile1);
       setCompressedImage(compressedImageURL);
-      setCompressedFile(compressedFile);
+      setCompressedFile(compressedFile1);
       form.setValue("media", compressedImageURL);
     } catch (error) {
       console.error("Error compressing image:", error);
@@ -188,11 +190,12 @@ export default function OnboardingForm({
   };
   const initials = `${userDetails?.firstName[0] || ""}${userDetails?.secondName[0] || ""}`;
 
-  const isDisabled = type === "OnboardingForm" ? false : true;
+  const isDisabled = type === "OrganisationOnboardingForm" ? false : true;
+  const editForm = type === "EditOrganisationOnboardingForm" ? true : false;
   return (
     <ScrollArea className="mx-auto h-full w-full px-12 py-8">
       <h1 className="mx-auto mb-6 text-6xl text-black dark:text-white">
-        {isDisabled ? "Edit" : "Complete"} Your Profile
+        {editForm ? "Edit" : "Complete"} Your Profile
       </h1>
 
       <FormProvider {...form}>
@@ -266,7 +269,11 @@ export default function OnboardingForm({
             label="State"
           />
 
-          <Button>Save Profile</Button>
+          <StateButton
+            content="Save Profile"
+            pending={pending}
+            processingWord="Saving"
+          />
         </form>
       </FormProvider>
     </ScrollArea>

@@ -21,7 +21,6 @@ const InputNumber = ({
   max?: number;
 }) => {
   const { control } = useFormContext();
-  console.log();
   return (
     <FormField
       control={control}

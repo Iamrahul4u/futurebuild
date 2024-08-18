@@ -36,15 +36,25 @@ export async function getUserDetailsOnboarding(userId: string) {
           },
         },
         address: true,
+        media: {
+          where: { mediaName: MediaNameSchema.options[1] },
+          select: {
+            url: true,
+          },
+        },
       },
     });
     if (!userDetails) {
       return { error: "User not found" };
     }
+    const lastMediaUrl = userDetails?.media?.length
+      ? userDetails.media[userDetails.media.length - 1].url
+      : null;
     return {
       userDetails: {
         ...userDetails,
         address: userDetails.address ? [userDetails.address] : [], // Wrap in an array
+        media: lastMediaUrl ? lastMediaUrl : "",
       },
     };
   } catch (error) {
@@ -234,7 +244,6 @@ export const getUserProfile = async (userId: string) => {
   const imgUrl = user?.media.length
     ? user.media[user.media.length - 1].url
     : null;
-  console.log(user);
-  console.log("hello", imgUrl);
+
   return { imgUrl };
 };

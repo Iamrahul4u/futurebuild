@@ -5,7 +5,7 @@ const Page = async ({ params }: { params: { userId: string } }) => {
   return (
     <OrganisationOnboardingForm
       userId={params.userId}
-      type={"OnboardingForm"}
+      type={"OrganisationOnboardingForm"}
     />
   );
 };

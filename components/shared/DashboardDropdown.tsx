@@ -22,7 +22,6 @@ export function DashboardDropdownMenu() {
       }
       const url = await getUserProfile(userId);
       setImg(url.imgUrl);
-      console.log(url);
     }
     profile_img();
   }, [userId]);

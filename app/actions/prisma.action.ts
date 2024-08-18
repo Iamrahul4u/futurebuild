@@ -4,6 +4,7 @@ import prisma from "@/prisma";
 import {
   JobPostOptionalDefaults,
   Media,
+  MediaNameSchema,
   MediaOptionalDefaults,
   MediaOptionalDefaultsSchema,
 } from "@/prisma/generated/zod/index";
@@ -46,6 +47,27 @@ export async function prismaMedia({
       mediaName: mediaName,
       applicantId: applicantId || null,
     };
+    const ImageTypeName = MediaNameSchema.options[1];
+    if (mediaName === ImageTypeName) {
+      const exisitingMedia = await prisma.media.findMany({
+        where: { userId: userId, mediaName: ImageTypeName },
+        select: {
+          id: true,
+        },
+      });
+
+      if (exisitingMedia.length > 0) {
+        const mediaIdsToDelete = exisitingMedia.map((media) => media.id);
+
+        const removeProfileImg = await prisma.media.deleteMany({
+          where: {
+            id: {
+              in: mediaIdsToDelete,
+            },
+          },
+        });
+      }
+    }
     const media = await prisma.media.create({
       data: filter,
     });
@@ -64,7 +86,6 @@ export async function prismaMedia({
       });
     }
 
-    console.log("media", media);
     return media;
   } catch (error) {
     return { error: `Prisma Database Insertion Failed :${error}` };

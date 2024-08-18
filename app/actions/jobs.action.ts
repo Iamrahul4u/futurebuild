@@ -52,7 +52,6 @@ export async function getUrl(
   if (applicantId) {
     verifiedApplicantId = applicantId;
   }
-  console.log("Presigned", presigned);
   const url = presigned.split("?")[0];
   const mediaRes = await prismaMedia({
     mediaType,

@@ -52,6 +52,7 @@ export const UserWithSkillsAndAddress = UserOptionalDefaultsSchema.pick({
     z.object({ skill: z.object({ name: z.string() }).nullable() }),
   ),
   address: z.array(LocationSchema.omit({ id: true })),
+  media: z.string().nullable(),
 });
 export type UserWithSkillsAndAddressTypes = z.infer<
   typeof UserWithSkillsAndAddress
