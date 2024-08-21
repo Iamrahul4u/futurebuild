@@ -9,6 +9,8 @@ import { getUser } from "@/app/[...authenticate]/lucia";
 import { CircleCheck } from "lucide-react";
 import { User } from "lucia";
 import { formatNumber } from "@/_utils/utils";
+import { checkUserRole } from "@/app/actions/auth.action";
+import { RoleSchema } from "@/prisma/generated/zod";
 //
 export default async function Page({ params }: { params: { jobid: string } }) {
   const user: User | { error: string } | null = await getUser();
@@ -19,6 +21,9 @@ export default async function Page({ params }: { params: { jobid: string } }) {
   });
   let applied = false;
   let application: { userId: string } | null = null;
+
+  // @ts-ignore
+  const role = await checkUserRole({ userId: user?.id });
   if (!user || !("error" in user)) {
     application = await prisma.applicant.findFirst({
       where: {
@@ -88,7 +93,10 @@ export default async function Page({ params }: { params: { jobid: string } }) {
             </div>
           </div>
           <div className="mt-4 space-y-2">
-            {user && applied ? (
+            {role?.role !== RoleSchema.options[2] &&
+            role?.role !== RoleSchema.options[0] &&
+            user &&
+            applied ? (
               <Button
                 variant={"link"}
                 className="gap-1 p-0 text-lg text-green-600"
