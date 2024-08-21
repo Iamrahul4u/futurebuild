@@ -94,21 +94,20 @@ export default async function Page({ params }: { params: { jobid: string } }) {
           </div>
           <div className="mt-4 space-y-2">
             {role?.role !== RoleSchema.options[2] &&
-            role?.role !== RoleSchema.options[0] &&
-            user &&
-            applied ? (
-              <Button
-                variant={"link"}
-                className="gap-1 p-0 text-lg text-green-600"
-              >
-                <CircleCheck size={16} />
-                Applied
-              </Button>
-            ) : (
-              <Link href={`/jobs/apply/${params.jobid}`}>
-                <Button>Apply Now</Button>
-              </Link>
-            )}
+              role?.role !== RoleSchema.options[0] &&
+              (user && applied ? (
+                <Button
+                  variant={"link"}
+                  className="gap-1 p-0 text-lg text-green-600"
+                >
+                  <CircleCheck size={16} />
+                  Applied
+                </Button>
+              ) : (
+                <Link href={`/jobs/apply/${params.jobid}`}>
+                  <Button>Apply Now</Button>
+                </Link>
+              ))}
             {jobData?.userId === application?.userId && (
               <Link href={`/view/${params.jobid}`}>
                 <Button>View Aplicants</Button>
