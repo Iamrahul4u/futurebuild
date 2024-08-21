@@ -137,19 +137,27 @@ interface JobsResponse {
 
 export const getjobs: ({
   searchParams,
+  page,
 }: {
   searchParams: leftSidebarfilterPropsTypes;
+  page: number;
 }) => Promise<JobsResponse> = async ({
   searchParams,
+  page = 1,
 }: {
   searchParams?: leftSidebarfilterPropsTypes;
+  page: number;
 }) => {
   const res = await rateLimiter();
   if (res.statusCode === 301) {
     return { error: { message: res.error }, statusCode: res.statusCode };
   }
+
   try {
+    const limit = 6;
     let parseParams = searchParams;
+    const takePosts = page * limit;
+    const skipPosts = (page - 1) * limit;
     if (searchParams?.jobTitle) {
       const parsed = leftSidebarfilterProps.safeParse(searchParams);
       if (!parsed.success) {
@@ -159,7 +167,6 @@ export const getjobs: ({
     }
     const { jobTitle, whoCanApply, maxSalary, minSalary, modeOfWork, jobType } =
       parseParams || {};
-
     const jobs = searchParams
       ? await prisma.jobPost.findMany({
           where: {
@@ -183,7 +190,22 @@ export const getjobs: ({
                 applicants: true,
               },
             },
+            postedBy: {
+              select: {
+                media: {
+                  where: {
+                    mediaName: MediaNameSchema.options[1],
+                  },
+                  select: {
+                    url: true,
+                  },
+                },
+              },
+            },
           },
+          take: takePosts,
+          skip: skipPosts,
+          cacheStrategy: { ttl: 60, swr: 60 },
         })
       : await prisma.jobPost.findMany({
           include: {
@@ -192,9 +214,24 @@ export const getjobs: ({
                 applicants: true,
               },
             },
+            postedBy: {
+              select: {
+                media: {
+                  where: {
+                    mediaName: MediaNameSchema.options[1],
+                  },
+                  select: {
+                    url: true,
+                  },
+                },
+              },
+            },
           },
-          // cacheStrategy: { ttl: 60, swr: 60 },
+          take: takePosts,
+          skip: skipPosts,
+          cacheStrategy: { ttl: 60, swr: 60 },
         });
+    console.log(jobs.length, takePosts, skipPosts);
     return { jobs };
   } catch (error) {
     return { error: { message: "Failed to fetch jobs." }, statusCode: 501 };
@@ -233,7 +270,15 @@ import {
   leftSidebarfilterPropsTypes,
 } from "@/types/sharedTypes";
 import { JobPostSelectType } from "@/types/zodValidations";
+import { MediaNameSchema } from "@/prisma/generated/zod";
 
-export default async function revalidatePathname(pathname: string) {
-  revalidatePath(pathname);
+export default async function getOrganisationName(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      firstName: true,
+      secondName: true,
+    },
+  });
+  return user?.firstName + " " + user?.secondName || "";
 }

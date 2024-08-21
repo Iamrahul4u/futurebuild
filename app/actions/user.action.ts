@@ -130,6 +130,9 @@ export const updateOnboardingUser = async (data: UserOnboardingSchemaTypes) => {
       data: {
         locationId: locationId,
         onboardingCompleted: true,
+        about: data.about,
+        firstName: data.firstName,
+        secondName: data.secondName,
       },
     });
     return { status: "Successfully Submitted" };
@@ -192,6 +195,9 @@ export const updateOnboardingOrganisation = async (
       data: {
         locationId: locationId,
         onboardingCompleted: true,
+        about: data.about,
+        firstName: data.firstName,
+        secondName: data.secondName,
       },
     });
     return { status: "Successfully Submitted" };

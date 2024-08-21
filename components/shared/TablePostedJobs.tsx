@@ -1,22 +1,21 @@
-import React from "react";
+import React, { memo } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "../ui/table";
 import Link from "next/link";
 
-interface TableListTypes {
-  id: string;
-  label: string;
-  applicants: number;
+interface TablePostedJobsProps {
+  details: any[];
 }
-export default function TablePostedJobs({ details }: { details: any }) {
+
+const TablePostedJobs = memo(function TablePostedJobs({
+  details,
+}: TablePostedJobsProps) {
   return (
     <Table className="relative h-full">
       <TableHeader>
@@ -46,4 +45,6 @@ export default function TablePostedJobs({ details }: { details: any }) {
       </TableBody>
     </Table>
   );
-}
+});
+
+export default TablePostedJobs;

@@ -15,22 +15,15 @@ import { JobPost } from "@prisma/client";
 import { JobPostOptionalDefaults } from "@/prisma/generated/zod";
 import { formatNumber, formatTimeAgo } from "@/_utils/utils";
 import { JobPostSelectType } from "@/types/zodValidations";
+import AvatarComponent from "./AvatarComponent";
 
-const JobCard = async ({ details }: { details: JobPostSelectType }) => {
+const JobCard = ({ details }: { details: JobPostSelectType }) => {
   const applicants = details?._count?.applicants;
   return (
     <Link href={`jobs/${details.id}`}>
       <Card className="cursor-pointer -space-y-3 border-[1px] border-solid border-black p-0 transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px] dark:hover:shadow-[4px_4px_0px_gray]">
         <CardHeader className="flex flex-row items-center gap-4">
-          <Image
-            src={
-              "https://i.pinimg.com/736x/f6/97/4e/f6974e017d3f6196c4cbe284ee3eaf4e.jpg"
-            }
-            height={40}
-            width={40}
-            alt="company logo"
-            className="mb-2 h-12 w-12 rounded-full object-cover"
-          />
+          <AvatarComponent url={details.postedBy?.media[0].url} />
           <div className="flex flex-col flex-wrap">
             <CardTitle className="line-clamp-1 text-base font-bold tracking-wide text-black dark:text-white">
               {details.jobTitle}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import {
   Table,
   TableBody,
@@ -19,7 +19,8 @@ import {
 const UserAppliedJobsWithJobDetailsArray = z.array(
   UserAppliedJobsWithJobDetails,
 );
-export default function TableAppliedJobs({
+
+const TableAppliedJobs = memo(function TableAppliedJobs({
   details,
 }: {
   details: z.infer<typeof UserAppliedJobsWithJobDetailsArray>;
@@ -31,6 +32,7 @@ export default function TableAppliedJobs({
           <TableHead className="">Job Title</TableHead>
           <TableHead className="text-right">Posted By</TableHead>
           <TableHead className="text-right">Details</TableHead>
+          <TableHead className="text-right">Status</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody className="overflow-y-scroll">
@@ -50,9 +52,14 @@ export default function TableAppliedJobs({
                 View
               </Link>
             </TableCell>
+            <TableCell className="text-right">
+              {detail.approvalStatus}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
   );
-}
+});
+
+export default TableAppliedJobs;

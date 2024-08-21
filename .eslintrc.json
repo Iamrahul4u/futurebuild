@@ -2,5 +2,8 @@
   "extends": "next/core-web-vitals",
   "rules": {
     "react/no-unescaped-entities": "off"
+    ,
+    "react/display-name": [false, { "ignoreTranspilerName": false, "checkContextObjects": false }]
+
   }
 }

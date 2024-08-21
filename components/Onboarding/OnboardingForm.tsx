@@ -1,49 +1,50 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FormProvider, useForm } from "react-hook-form";
 
 import InputText from "@/components/shared/InputText";
 import { toast } from "sonner";
 import { InputTextArea } from "@/components/shared/InputTextArea";
-import {
-  checkUser,
-  clientCheckUser,
-  getUserId,
-} from "@/app/actions/auth.action";
-import {
-  LocationSchema,
-  MediaNameSchema,
-  User,
-  UserOptionalDefaults,
-  UserSchema,
-} from "@/prisma/generated/zod";
+import imageCompression from "browser-image-compression";
+import { getUserId } from "@/app/actions/auth.action";
+import { MediaNameSchema, UserSchema } from "@/prisma/generated/zod";
 import { redirect, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import prisma from "@/prisma";
 import {
   getUserDetailsOnboarding,
   updateOnboardingUser,
 } from "@/app/actions/user.action";
 import {
   UserOnboardingSchema,
-  UserOnboardingSchemaTypes,
   UserWithSkillsAndAddressTypes,
 } from "@/types/zodValidations";
-import { getUser } from "@/app/[...authenticate]/lucia";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { ACCEPTED_IMAGE_TYPES } from "@/_constants/constants";
+import { getUrl } from "@/app/actions/jobs.action";
+import StateButton from "../shared/StateButton";
 
-const EditProfileUser = LocationSchema.merge(
-  UserSchema.omit({
-    createdAt: true,
-    hashedPassword: true,
-    id: true,
-    role: true,
-  }),
-);
+const defaultFormValues = {
+  firstName: "",
+  secondName: "",
+  email: "",
+  address: [
+    {
+      address: "",
+      postalCode: 0,
+      state: "",
+      city: "",
+      phoneNumber: "",
+    },
+  ],
+  about: "",
+  media: "",
+  skills: [{ name: "" }],
+};
+
 export default function OnboardingForm({
   userId,
   type,
@@ -53,29 +54,17 @@ export default function OnboardingForm({
 }) {
   const [pending, setPending] = useState<boolean>(false);
   const [user, setUser] = useState(null);
+  const [compressedImage, setCompressedImage] = useState<any>(null);
+  const [compressedFile, setCompressedFile] = useState<File | null>(null);
+  const uploadImageRef = useRef<HTMLInputElement | null>(null);
   const [userDetails, setUserDetails] =
     useState<UserWithSkillsAndAddressTypes>();
   const router = useRouter();
   const form = useForm<z.infer<typeof UserOnboardingSchema>>({
     resolver: zodResolver(UserOnboardingSchema),
-    defaultValues: {
-      firstName: "",
-      secondName: "",
-      email: "",
-      address: [
-        {
-          // Default location with one entry
-          address: "",
-          postalCode: 0,
-          state: "",
-          city: "",
-          phoneNumber: "",
-        },
-      ],
-      about: "",
-      skills: [{ name: "" }],
-    },
+    defaultValues: defaultFormValues,
   });
+
   useEffect(() => {
     async function CheckUser() {
       const res: any = await getUserId();
@@ -104,11 +93,14 @@ export default function OnboardingForm({
           router.push(`/dashboard/onganization/${user.userDetails.id}`);
         } else {
           setUserDetails(user.userDetails);
+          if (user.userDetails.media) {
+            setCompressedImage(user.userDetails.media);
+          }
         }
       }
     }
     CheckUser();
-  }, []);
+  }, [router, userId, type]);
 
   useEffect(() => {
     if (userDetails) {
@@ -116,44 +108,91 @@ export default function OnboardingForm({
         firstName: userDetails.firstName,
         secondName: userDetails.secondName,
         email: userDetails.email,
+        media: userDetails.media,
+        address: [
+          {
+            // Default location with one entry
+            address: userDetails?.address[0]?.address || "",
+            postalCode: userDetails?.address[0]?.postalCode || 0,
+            state: userDetails?.address[0]?.state || "",
+            city: userDetails?.address[0]?.city || "",
+            phoneNumber: userDetails?.address[0]?.phoneNumber || "",
+          },
+        ],
+        about: userDetails.about || "",
         skills: [
           {
             name:
               userDetails.skills
                 .map((skillObj) => skillObj.skill!.name)
-                .join(",") || "", //
+                .join(",") || "",
           },
         ],
-        address: [
-          {
-            // Default location with one entry
-            address: userDetails.address[0].address,
-            postalCode: userDetails.address[0].postalCode,
-            state: userDetails.address[0].state,
-            city: userDetails.address[0].city,
-            phoneNumber: userDetails.address[0].phoneNumber,
-          },
-        ],
-        about: userDetails.about,
       });
     }
   }, [userDetails, form]);
+
+  async function uploadFile(compressedFile: File) {
+    try {
+      const signedUrl = await getUrl(
+        compressedFile.size,
+        compressedFile.type,
+        MediaNameSchema.options[1],
+      );
+
+      if (signedUrl.error) {
+        toast.error(signedUrl.error);
+        throw new Error(signedUrl.error);
+      }
+
+      if (signedUrl.success) {
+        const url = signedUrl.success.url;
+        await fetch(url, {
+          method: "PUT",
+          body: compressedFile,
+          headers: {
+            "Content-Type": compressedFile.type,
+          },
+        });
+
+        return signedUrl.success.url; // Assuming the API returns the media URL
+      } else {
+        throw new Error("Failed to upload the file.");
+      }
+    } catch (error) {
+      console.error("File upload failed:", error);
+      throw error;
+    }
+  }
+
   async function onSubmit(values: z.infer<typeof UserOnboardingSchema>) {
     setPending(true);
     const seperateSkills = values.skills[0].name.split(",");
 
-    const updatedskills = seperateSkills.map((value) => {
+    const updatedSkills = seperateSkills.map((value) => {
       return {
         name: value.toUpperCase(),
       };
     });
 
     try {
-      const updatedValues = { ...values, skills: updatedskills };
+      let mediaUrl = userDetails?.media;
+
+      if (compressedFile) {
+        mediaUrl = await uploadFile(compressedFile);
+      }
+
+      const updatedValues = {
+        ...values,
+        skills: updatedSkills,
+        media: mediaUrl,
+      };
       const updateUser = await updateOnboardingUser(updatedValues);
+
       if (updateUser.error) {
         throw new Error(updateUser.error);
       }
+
       toast.success("Successfully Submitted");
       router.push(`/dashboard/user/${user}`);
     } catch (error: any) {
@@ -161,32 +200,67 @@ export default function OnboardingForm({
     }
     setPending(false);
   }
-  const {
-    formState: { errors },
-  } = form;
+
+  const handleImageUpload = async (event: any) => {
+    const imageFile = event.target.files[0];
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 1200,
+      useWebWorker: true,
+    };
+
+    try {
+      const compressedFile1 = await imageCompression(imageFile, options);
+      const compressedImageURL = URL.createObjectURL(compressedFile1);
+      setCompressedImage(compressedImageURL);
+      setCompressedFile(compressedFile1);
+      form.setValue("media", compressedImageURL);
+    } catch (error) {
+      console.error("Error compressing image:", error);
+    }
+  };
+
+  const handleClickRef = () => {
+    uploadImageRef.current?.click();
+  };
+
+  const initials = `${userDetails?.firstName[0] || ""}${userDetails?.secondName[0] || ""}`;
 
   const isDisabled = type === "OnboardingForm" ? false : true;
   const editProfile = type === "EditProfileUser" ? false : true;
+
   return (
     <ScrollArea className="mx-auto h-full w-full px-12 py-8">
       <h1 className="mx-auto mb-6 text-6xl text-black dark:text-white">
         {editProfile ? "Edit" : "Complete"} Your Profile
       </h1>
-      {errors && Object.keys(errors).length > 0 && (
-        <div className="error-messages">
-          {Object.entries(errors).map(([key, error]) => (
-            <p key={key} className="text-red-500">
-              {error.message}
-            </p>
-          ))}
-        </div>
-      )}
+
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-4/6 space-y-4 px-2"
         >
-          <div className="flex w-full justify-between space-x-2">
+          <input
+            type="file"
+            accept=".jpeg,.png,.jpg,.webp,.avif"
+            ref={uploadImageRef}
+            hidden={true}
+            onChange={handleImageUpload}
+          />
+          <div className="flex flex-col items-center">
+            <Avatar className="mx-auto mb-4 h-32 w-32 cursor-pointer">
+              <AvatarImage src={compressedImage} alt="@profile_img" />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+            <p
+              className="cursor-pointer text-blue-500 underline"
+              onClick={handleClickRef}
+            >
+              Select a Profile Photo
+            </p>
+          </div>
+
+          <div className="flex w-full space-x-2">
             <InputText
               placeholder="Eg. Rahul"
               name="firstName"
@@ -235,7 +309,12 @@ export default function OnboardingForm({
             name="skills[0].name"
             label="Skills"
           />
-          <Button>Save Profile</Button>
+
+          <StateButton
+            content="Save Profile"
+            pending={pending}
+            processingWord="Saving"
+          />
         </form>
       </FormProvider>
     </ScrollArea>

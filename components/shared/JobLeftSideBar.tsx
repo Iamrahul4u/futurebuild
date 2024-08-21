@@ -92,13 +92,10 @@ const JobLeftSideBar = () => {
           </div>
 
           <h4 className="mb-2 mt-4 text-black dark:text-white">Experience</h4>
-          <div className="flex gap-2">
             <SelectForm
               name="whoCanApply"
               options={ExperienceEnumSchema.options}
             />
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
             <div className="flex flex-col gap-2">
               <h4 className="mb-2 mt-4 text-black dark:text-white">Job Type</h4>
               <SelectForm name="jobType" options={JobTypeSchema.options} />
@@ -107,7 +104,6 @@ const JobLeftSideBar = () => {
               <h4 className="mb-2 mt-4 text-black dark:text-white">Job Mode</h4>
               <SelectForm name="modeOfWork" options={modeSchema.options} />
             </div>
-          </div>
           <StateButton content="Apply Filters" className="mt-16" />
         </form>
       </FormProvider>

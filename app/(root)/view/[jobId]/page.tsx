@@ -43,12 +43,12 @@ export default async function Page({ params }: { params: { jobId: string } }) {
             select: {
               url: true,
             },
-            take: 1,
           },
         },
       },
     },
   });
+  console.log(res[0].user.media[0].url);
   return (
     <Card className="mt-8">
       <CardHeader>
@@ -74,11 +74,16 @@ export default async function Page({ params }: { params: { jobId: string } }) {
                 <TableCell>{applicant.user.firstName}</TableCell>
                 <TableCell>{applicant.user.email}</TableCell>
                 <TableCell>
-                  <Link href={applicant.user.media[0].url} target="_blank">
-                    <Button variant="link" className="underline">
-                      View Resume
-                    </Button>
-                  </Link>
+                  <Button variant="link" className="underline">
+                    <Link
+                      href={applicant.user.media[0]?.url ?? "#"}
+                      target="_blank"
+                    >
+                      {applicant.user.media[0]?.url
+                        ? "View Resume"
+                        : "No Resume Uploaded"}
+                    </Link>
+                  </Button>
                 </TableCell>
                 <TableCell>
                   <SelectOptions

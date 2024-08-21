@@ -34,6 +34,24 @@ import { ACCEPTED_IMAGE_TYPES } from "@/_constants/constants";
 import { getUrl } from "@/app/actions/jobs.action";
 import StateButton from "../shared/StateButton";
 
+
+const defaultFormValues = {
+  firstName: "",
+  secondName: "",
+  email: "",
+  address: [
+    {
+      address: "",
+      postalCode: 0,
+      state: "",
+      city: "",
+      phoneNumber: "",
+    },
+  ],
+  about: "",
+  media: "",
+};
+
 export default function OrganisationOrganisationOnboardingForm({
   userId,
   type,
@@ -51,23 +69,7 @@ export default function OrganisationOrganisationOnboardingForm({
   const router = useRouter();
   const form = useForm<z.infer<typeof OrganisationOnboardingSchema>>({
     resolver: zodResolver(OrganisationOnboardingSchema),
-    defaultValues: {
-      firstName: "",
-      secondName: "",
-      email: "",
-      address: [
-        {
-          // Default location with one entry
-          address: "",
-          postalCode: 0,
-          state: "",
-          city: "",
-          phoneNumber: "",
-        },
-      ],
-      about: "",
-      media: "",
-    },
+    defaultValues:defaultFormValues 
   });
   useEffect(() => {
     async function CheckUser() {
@@ -78,7 +80,6 @@ export default function OrganisationOrganisationOnboardingForm({
       }
       setUser(res.user.id);
       const user = await getUserDetailsOnboarding(userId);
-
       if (user.error) {
         toast.error(user.error);
       } else {
@@ -101,7 +102,7 @@ export default function OrganisationOrganisationOnboardingForm({
       }
     }
     CheckUser();
-  }, []);
+  }, [router,userId,type]);
 
   useEffect(() => {
     if (userDetails) {
@@ -109,6 +110,7 @@ export default function OrganisationOrganisationOnboardingForm({
         firstName: userDetails.firstName,
         secondName: userDetails.secondName,
         email: userDetails.email,
+        media:userDetails.media,
         address: [
           {
             // Default location with one entry
@@ -124,6 +126,39 @@ export default function OrganisationOrganisationOnboardingForm({
     }
   }, [userDetails, form]);
 
+  async function uploadFile(compressedFile: File) {
+    try {
+      const signedUrl = await getUrl(
+        compressedFile.size,
+        compressedFile.type,
+        MediaNameSchema.options[1],
+      );
+
+      if (signedUrl.error) {
+        toast.error(signedUrl.error);
+        throw new Error(signedUrl.error);
+      }
+
+      if (signedUrl.success) {
+        const url = signedUrl.success.url;
+        await fetch(url, {
+          method: "PUT",
+          body: compressedFile,
+          headers: {
+            "Content-Type": compressedFile.type,
+          },
+        });
+
+        return signedUrl.success.url; // Assuming the API returns the media URL
+      } else {
+        throw new Error("Failed to upload the file.");
+      }
+    } catch (error) {
+      console.error("File upload failed:", error);
+      throw error;
+    }
+  }
+
   // ------------------------------------------
   // Handle Form Submit
   // ------------------------------------------
@@ -133,38 +168,31 @@ export default function OrganisationOrganisationOnboardingForm({
     setPending(true);
 
     try {
+      let mediaUrl = userDetails?.media;
+
       if (compressedFile) {
-        const signedUrl = await getUrl(
-          compressedFile.size,
-          compressedFile.type,
-          MediaNameSchema.options[1],
-        );
-        if (signedUrl.error) {
-          toast.error(signedUrl.error);
-          throw new Error(signedUrl.error);
-        } else if (!signedUrl.error && signedUrl.success) {
-          const url = signedUrl.success.url;
-          await fetch(url, {
-            method: "PUT",
-            body: compressedFile,
-            headers: {
-              "Content-Type": compressedFile.type,
-            },
-          });
-        } else {
-          throw new Error("No file uploaded or file compression failed.");
-        }
-        const updateUser = await updateOnboardingOrganisation(values);
-        if (updateUser.error) {
-          throw new Error(updateUser.error);
-        }
-        toast.success("Successfully Submitted");
+        mediaUrl = await uploadFile(compressedFile);
       }
+
+      const updateUser = await updateOnboardingOrganisation({
+        ...values,
+        media: mediaUrl,
+      });
+
+      if (updateUser.error) {
+        throw new Error(updateUser.error);
+      }
+
+      toast.success("Successfully Submitted");
     } catch (error: any) {
+      console.error("Submission failed:", error);
       toast.error(error.message);
+    } finally {
+      router.refresh();
+    setUserDetails(userDetails); // This will be batched
+
+      setPending(false);
     }
-    router.refresh();
-    setPending(false);
   }
 
   // ------------------------------------------
@@ -188,6 +216,10 @@ export default function OrganisationOrganisationOnboardingForm({
       console.error("Error compressing image:", error);
     }
   };
+  const handleClickRef = () => {
+    uploadImageRef.current?.click();
+  };
+  
   const initials = `${userDetails?.firstName[0] || ""}${userDetails?.secondName[0] || ""}`;
 
   const isDisabled = type === "OrganisationOnboardingForm" ? false : true;
@@ -217,9 +249,7 @@ export default function OrganisationOrganisationOnboardingForm({
             </Avatar>
             <p
               className="cursor-pointer text-blue-500 underline"
-              onClick={() =>
-                uploadImageRef.current ? uploadImageRef.current.click() : ""
-              }
+              onClick={handleClickRef}
             >
               Select a Profile Photo
             </p>

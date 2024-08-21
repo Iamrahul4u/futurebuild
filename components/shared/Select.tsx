@@ -46,13 +46,13 @@ export function SelectForm({ label, options, name }: SelectOptions) {
               {label}
             </FormLabel>
           )}
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange} defaultValue={field.value} >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger >
                 <SelectValue placeholder="Select a Value" />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
+            <SelectContent className="w-full">
               {options.map((option: string) => (
                 <SelectItem key={option} value={option}>
                   {option.split("_").join(" ")}

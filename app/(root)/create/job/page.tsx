@@ -20,26 +20,30 @@ import { createJob } from "@/app/actions/prisma.action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import useGetUserRole from "@/hooks/useGetUserRole";
+import getOrganisationName from "@/app/actions/jobs.action";
+import { getUserId } from "@/app/actions/auth.action";
 
+const defaultFormValues = {
+  jobTitle: "",
+  jobDescription: "",
+  organisationName: "",
+  modeOfWork: modeSchema.options[0] || "",
+  jobType: JobTypeSchema.options[0] || "",
+  minExperience: 0,
+  maxExperience: 1,
+  minSalary: 0,
+  maxSalary: 1,
+  postedAt: new Date(), // Set default date
+  whoCanApply: ExperienceEnumSchema.options[0] || "",
+};
 export default function Page() {
   const [pending, setPending] = useState<boolean>(false);
   const router = useRouter();
+  const [user, setUser] = useState<string | undefined>(undefined);
 
   const form = useForm<z.infer<typeof JobPostOptionalDefaultsSchema>>({
     resolver: zodResolver(JobPostOptionalDefaultsSchema.omit({ userId: true })),
-    defaultValues: {
-      jobTitle: "",
-      jobDescription: "",
-      organisationName: "",
-      modeOfWork: modeSchema.options[0] || "",
-      jobType: JobTypeSchema.options[0] || "",
-      minExperience: 0,
-      maxExperience: 1,
-      minSalary: 0,
-      maxSalary: 1,
-      postedAt: new Date(), // Set default date
-      whoCanApply: "Anyone",
-    },
+    defaultValues: defaultFormValues,
   });
   const { role, loading } = useGetUserRole();
   useEffect(() => {
@@ -48,6 +52,17 @@ export default function Page() {
       toast.error("Not Authorized to create Job");
       router.push("/");
     }
+    async function CheckUser() {
+      const res: any = await getUserId();
+      if (!res) {
+        toast.error("User Not Logged In");
+        router.push("/authenticate/signin");
+      }
+      setUser(res.user.id);
+      const organisationName = await getOrganisationName(res.user.id);
+      form.setValue("organisationName", organisationName);
+    }
+    CheckUser();
   }, [loading, role, router]);
 
   async function onSubmit(
@@ -109,12 +124,14 @@ export default function Page() {
                   name="minExperience"
                   placeholder="1"
                   label="Min Experience"
+                  isNumeric={true}
                 />
               </div>
               <div className="grid gap-2">
                 <InputText
                   name="maxExperience"
                   placeholder="5"
+                  isNumeric={true}
                   label="Max Experience"
                 />
               </div>
@@ -122,6 +139,7 @@ export default function Page() {
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <InputText
+                  isNumeric={true}
                   name="minSalary"
                   placeholder="50000"
                   label="Min Salary"
@@ -129,6 +147,7 @@ export default function Page() {
               </div>
               <div className="grid gap-2">
                 <InputText
+                  isNumeric={true}
                   name="maxSalary"
                   placeholder="100000"
                   label="Max Salary"

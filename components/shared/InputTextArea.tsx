@@ -9,16 +9,16 @@ import {
 import { Input } from "../ui/input";
 import { useFormContext } from "react-hook-form";
 import { Textarea } from "../ui/textarea";
-
-export const InputTextArea = ({
+interface InputTextProps{
+    name: string;
+    placeholder: string;
+    label?: string;
+}
+export const InputTextArea: React.FC<InputTextProps> = React.memo(({
   name,
   placeholder,
   label,
-}: {
-  name: string;
-  placeholder: string;
-  label?: string;
-}) => {
+}:InputTextProps) => {
   const { control } = useFormContext();
   return (
     <FormField
@@ -42,4 +42,4 @@ export const InputTextArea = ({
       )}
     />
   );
-};
+})

@@ -38,6 +38,9 @@ export const UserWithJobsSchema = UserSchema.omit({
 
 export const JobPostSelect = JobPostSchema.extend({
   _count: z.object({ applicants: z.number() }).optional() || z.object({}),
+  postedBy: z
+    .object({ media: z.array(z.object({ url: z.string() })) })
+    .nullable(),
 });
 // Type inference for UserWithJobs
 export type UserWithJobs = z.infer<typeof UserWithJobsSchema>;
@@ -66,6 +69,7 @@ export const UserOnboardingSchema = UserOptionalDefaultsSchema.pick({
 }).extend({
   skills: z.array(SkillOptionalDefaultsSchema.pick({ name: true })),
   address: z.array(LocationSchema.omit({ id: true })),
+  media: z.string().nullable().optional(),
 });
 
 export const OrganisationOnboardingSchema = UserOptionalDefaultsSchema.pick({
@@ -75,7 +79,7 @@ export const OrganisationOnboardingSchema = UserOptionalDefaultsSchema.pick({
   about: true,
 }).extend({
   address: z.array(LocationSchema.omit({ id: true })),
-  media: z.string().optional(),
+  media: z.string().nullable().optional(),
 });
 
 export type OrganisationOnboardingSchemaTypes = z.infer<

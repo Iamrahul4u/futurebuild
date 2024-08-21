@@ -116,17 +116,21 @@ export const getUserId = async () => {
   return { user };
 };
 
-export const checkUserRole = async () => {
-  const user = await getUser();
-  if (!user) {
-    return { role: null };
-  }
-  if ("error" in user) {
-    return { role: "error" };
+export const checkUserRole = async ({ userId }: { userId?: string }) => {
+  let user: any;
+  if (!userId) {
+    user = await getUser();
+    if (!user) {
+      return { role: null };
+    }
+    if ("error" in user) {
+      return { role: "error" };
+    }
+    userId = user.id;
   }
   const role = await prisma.user.findFirst({
     where: {
-      id: user?.id,
+      id: userId,
     },
     select: {
       role: true,

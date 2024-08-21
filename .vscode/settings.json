@@ -14,5 +14,6 @@
       "name": "devcloudx",
       "tabTitle": "DevCloud"
     }
-  ]
+  ],
+  "cursor.cpp.enablePartialAccepts": true
 }

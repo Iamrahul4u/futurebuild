@@ -1,6 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
-
-export async function middleware(request: NextRequest) {
+export async function middleware() {
   // Get the IP address of the user
 }
 export const config = {

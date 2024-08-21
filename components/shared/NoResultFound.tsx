@@ -14,7 +14,7 @@ export default function NoResultFound() {
         <Image
           height={250}
           width={250}
-          src={"/3d-fluency-see-no-evil-monkey.png"}
+          src={"/3d-fluency-see-no-evil-monkey-removebg-preview.png"}
           alt="Not-Found"
         />
       </div>
