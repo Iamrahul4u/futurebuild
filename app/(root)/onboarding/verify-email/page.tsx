@@ -13,7 +13,6 @@ const Page = () => {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
-    console.log(formData.get("Otp"));
   }
   return (
     <div className="mx-auto my-auto flex w-2/5 flex-col gap-4">

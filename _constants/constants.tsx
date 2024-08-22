@@ -9,6 +9,7 @@ interface SidebarLink {
   imgURL: string;
   route: string;
   label: string;
+  target?: string;
 }
 export const sidebarLinks: SidebarLink[] = [
   {
@@ -30,6 +31,12 @@ export const sidebarLinks: SidebarLink[] = [
     imgURL: "/assets/icons/users.svg",
     route: "/practice",
     label: "Practice",
+  },
+  {
+    imgURL: "/assets/icons/users.svg",
+    route: "https://futurbuildoverflow.vercel.app/",
+    target: "_blank",
+    label: "Ask Question",
   },
 ];
 export const MAX_RESUME_SIZE = 5 * 1024 * 1024;

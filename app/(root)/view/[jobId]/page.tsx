@@ -17,7 +17,6 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import prisma from "../../../../prisma/index";
 import Link from "next/link";
 import SelectOptions from "@/components/shared/SelectOptions";
 import {
@@ -26,6 +25,7 @@ import {
   MessageSquareIcon,
   MessagesSquareIcon,
 } from "lucide-react";
+import prisma from "@/prisma";
 export default async function Page({ params }: { params: { jobId: string } }) {
   const res = await prisma.applicant.findMany({
     where: {
@@ -48,7 +48,6 @@ export default async function Page({ params }: { params: { jobId: string } }) {
       },
     },
   });
-  console.log(res[0].user.media[0].url);
   return (
     <Card className="mt-8">
       <CardHeader>

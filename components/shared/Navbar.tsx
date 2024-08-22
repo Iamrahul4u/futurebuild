@@ -38,7 +38,11 @@ export function NavBar() {
                   : ""
               }`}
             >
-              <Link href={item.route} className="text-base font-medium">
+              <Link
+                href={item.route}
+                className="text-base font-medium"
+                target={item.target ?? "_self"}
+              >
                 {item.label}
               </Link>
             </li>

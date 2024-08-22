@@ -205,6 +205,9 @@ export const getjobs: ({
           },
           take: takePosts,
           skip: skipPosts,
+          orderBy: {
+            postedAt: "desc",
+          },
           cacheStrategy: { ttl: 60, swr: 60 },
         })
       : await prisma.jobPost.findMany({
@@ -229,9 +232,11 @@ export const getjobs: ({
           },
           take: takePosts,
           skip: skipPosts,
+          orderBy: {
+            postedAt: "desc",
+          },
           cacheStrategy: { ttl: 60, swr: 60 },
         });
-    console.log(jobs.length, takePosts, skipPosts);
     return { jobs };
   } catch (error) {
     return { error: { message: "Failed to fetch jobs." }, statusCode: 501 };
