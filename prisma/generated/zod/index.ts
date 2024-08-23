@@ -138,7 +138,7 @@ export const UserSchema = z.object({
   id: z.string().cuid(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date(),
@@ -836,7 +836,7 @@ export const UserWhereInputSchema: z.ZodType<Prisma.UserWhereInput> = z.object({
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   username: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   firstName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  secondName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  secondName: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   email: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   hashedPassword: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -859,7 +859,7 @@ export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWit
   id: z.lazy(() => SortOrderSchema).optional(),
   username: z.lazy(() => SortOrderSchema).optional(),
   firstName: z.lazy(() => SortOrderSchema).optional(),
-  secondName: z.lazy(() => SortOrderSchema).optional(),
+  secondName: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   email: z.lazy(() => SortOrderSchema).optional(),
   hashedPassword: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -898,7 +898,7 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   NOT: z.union([ z.lazy(() => UserWhereInputSchema),z.lazy(() => UserWhereInputSchema).array() ]).optional(),
   username: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   firstName: z.union([ z.lazy(() => StringFilterSchema),z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }) ]).optional(),
-  secondName: z.union([ z.lazy(() => StringFilterSchema),z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }) ]).optional(),
+  secondName: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   hashedPassword: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -920,7 +920,7 @@ export const UserOrderByWithAggregationInputSchema: z.ZodType<Prisma.UserOrderBy
   id: z.lazy(() => SortOrderSchema).optional(),
   username: z.lazy(() => SortOrderSchema).optional(),
   firstName: z.lazy(() => SortOrderSchema).optional(),
-  secondName: z.lazy(() => SortOrderSchema).optional(),
+  secondName: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   email: z.lazy(() => SortOrderSchema).optional(),
   hashedPassword: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -943,7 +943,7 @@ export const UserScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.UserScal
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   username: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   firstName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  secondName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  secondName: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   email: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   hashedPassword: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
@@ -1601,7 +1601,7 @@ export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -1623,7 +1623,7 @@ export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreat
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -1645,7 +1645,7 @@ export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1667,7 +1667,7 @@ export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdat
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1689,7 +1689,7 @@ export const UserCreateManyInputSchema: z.ZodType<Prisma.UserCreateManyInput> = 
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -1706,7 +1706,7 @@ export const UserUpdateManyMutationInputSchema: z.ZodType<Prisma.UserUpdateManyM
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1722,7 +1722,7 @@ export const UserUncheckedUpdateManyInputSchema: z.ZodType<Prisma.UserUncheckedU
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -2395,13 +2395,6 @@ export const EnumApprovalStatusWithAggregatesFilterSchema: z.ZodType<Prisma.Enum
   _max: z.lazy(() => NestedEnumApprovalStatusFilterSchema).optional()
 }).strict();
 
-export const EnumRoleFilterSchema: z.ZodType<Prisma.EnumRoleFilter> = z.object({
-  equals: z.lazy(() => RoleSchema).optional(),
-  in: z.lazy(() => RoleSchema).array().optional(),
-  notIn: z.lazy(() => RoleSchema).array().optional(),
-  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleFilterSchema) ]).optional(),
-}).strict();
-
 export const StringNullableFilterSchema: z.ZodType<Prisma.StringNullableFilter> = z.object({
   equals: z.string().optional().nullable(),
   in: z.string().array().optional().nullable(),
@@ -2415,6 +2408,13 @@ export const StringNullableFilterSchema: z.ZodType<Prisma.StringNullableFilter> 
   endsWith: z.string().optional(),
   mode: z.lazy(() => QueryModeSchema).optional(),
   not: z.union([ z.string(),z.lazy(() => NestedStringNullableFilterSchema) ]).optional().nullable(),
+}).strict();
+
+export const EnumRoleFilterSchema: z.ZodType<Prisma.EnumRoleFilter> = z.object({
+  equals: z.lazy(() => RoleSchema).optional(),
+  in: z.lazy(() => RoleSchema).array().optional(),
+  notIn: z.lazy(() => RoleSchema).array().optional(),
+  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleFilterSchema) ]).optional(),
 }).strict();
 
 export const BoolNullableFilterSchema: z.ZodType<Prisma.BoolNullableFilter> = z.object({
@@ -2518,16 +2518,6 @@ export const UserMinOrderByAggregateInputSchema: z.ZodType<Prisma.UserMinOrderBy
   roleSet: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const EnumRoleWithAggregatesFilterSchema: z.ZodType<Prisma.EnumRoleWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => RoleSchema).optional(),
-  in: z.lazy(() => RoleSchema).array().optional(),
-  notIn: z.lazy(() => RoleSchema).array().optional(),
-  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleWithAggregatesFilterSchema) ]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedEnumRoleFilterSchema).optional(),
-  _max: z.lazy(() => NestedEnumRoleFilterSchema).optional()
-}).strict();
-
 export const StringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.StringNullableWithAggregatesFilter> = z.object({
   equals: z.string().optional().nullable(),
   in: z.string().array().optional().nullable(),
@@ -2544,6 +2534,16 @@ export const StringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.StringNu
   _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
   _min: z.lazy(() => NestedStringNullableFilterSchema).optional(),
   _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
+}).strict();
+
+export const EnumRoleWithAggregatesFilterSchema: z.ZodType<Prisma.EnumRoleWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => RoleSchema).optional(),
+  in: z.lazy(() => RoleSchema).array().optional(),
+  notIn: z.lazy(() => RoleSchema).array().optional(),
+  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumRoleFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumRoleFilterSchema).optional()
 }).strict();
 
 export const BoolNullableWithAggregatesFilterSchema: z.ZodType<Prisma.BoolNullableWithAggregatesFilter> = z.object({
@@ -3071,6 +3071,10 @@ export const SessionUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<P
   connect: z.union([ z.lazy(() => SessionWhereUniqueInputSchema),z.lazy(() => SessionWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = z.object({
+  set: z.string().optional().nullable()
+}).strict();
+
 export const EnumRoleFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumRoleFieldUpdateOperationsInput> = z.object({
   set: z.lazy(() => RoleSchema).optional()
 }).strict();
@@ -3157,10 +3161,6 @@ export const SessionUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.Ses
   update: z.union([ z.lazy(() => SessionUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => SessionUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => SessionUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => SessionUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => SessionScalarWhereInputSchema),z.lazy(() => SessionScalarWhereInputSchema).array() ]).optional(),
-}).strict();
-
-export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = z.object({
-  set: z.string().optional().nullable()
 }).strict();
 
 export const UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.UserSkillUncheckedUpdateManyWithoutUserNestedInput> = z.object({
@@ -3652,13 +3652,6 @@ export const NestedEnumApprovalStatusWithAggregatesFilterSchema: z.ZodType<Prism
   _max: z.lazy(() => NestedEnumApprovalStatusFilterSchema).optional()
 }).strict();
 
-export const NestedEnumRoleFilterSchema: z.ZodType<Prisma.NestedEnumRoleFilter> = z.object({
-  equals: z.lazy(() => RoleSchema).optional(),
-  in: z.lazy(() => RoleSchema).array().optional(),
-  notIn: z.lazy(() => RoleSchema).array().optional(),
-  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleFilterSchema) ]).optional(),
-}).strict();
-
 export const NestedStringNullableFilterSchema: z.ZodType<Prisma.NestedStringNullableFilter> = z.object({
   equals: z.string().optional().nullable(),
   in: z.string().array().optional().nullable(),
@@ -3673,19 +3666,16 @@ export const NestedStringNullableFilterSchema: z.ZodType<Prisma.NestedStringNull
   not: z.union([ z.string(),z.lazy(() => NestedStringNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
-export const NestedBoolNullableFilterSchema: z.ZodType<Prisma.NestedBoolNullableFilter> = z.object({
-  equals: z.boolean().optional().nullable(),
-  not: z.union([ z.boolean(),z.lazy(() => NestedBoolNullableFilterSchema) ]).optional().nullable(),
-}).strict();
-
-export const NestedEnumRoleWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumRoleWithAggregatesFilter> = z.object({
+export const NestedEnumRoleFilterSchema: z.ZodType<Prisma.NestedEnumRoleFilter> = z.object({
   equals: z.lazy(() => RoleSchema).optional(),
   in: z.lazy(() => RoleSchema).array().optional(),
   notIn: z.lazy(() => RoleSchema).array().optional(),
-  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleWithAggregatesFilterSchema) ]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedEnumRoleFilterSchema).optional(),
-  _max: z.lazy(() => NestedEnumRoleFilterSchema).optional()
+  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleFilterSchema) ]).optional(),
+}).strict();
+
+export const NestedBoolNullableFilterSchema: z.ZodType<Prisma.NestedBoolNullableFilter> = z.object({
+  equals: z.boolean().optional().nullable(),
+  not: z.union([ z.boolean(),z.lazy(() => NestedBoolNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
 export const NestedStringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedStringNullableWithAggregatesFilter> = z.object({
@@ -3703,6 +3693,16 @@ export const NestedStringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.Ne
   _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
   _min: z.lazy(() => NestedStringNullableFilterSchema).optional(),
   _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
+}).strict();
+
+export const NestedEnumRoleWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumRoleWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => RoleSchema).optional(),
+  in: z.lazy(() => RoleSchema).array().optional(),
+  notIn: z.lazy(() => RoleSchema).array().optional(),
+  not: z.union([ z.lazy(() => RoleSchema),z.lazy(() => NestedEnumRoleWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumRoleFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumRoleFilterSchema).optional()
 }).strict();
 
 export const NestedBoolNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedBoolNullableWithAggregatesFilter> = z.object({
@@ -3785,7 +3785,7 @@ export const UserCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserCreate
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -3806,7 +3806,7 @@ export const UserUncheckedCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.U
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -3921,7 +3921,7 @@ export const UserUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUpdate
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3942,7 +3942,7 @@ export const UserUncheckedUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.U
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3984,7 +3984,7 @@ export const UserCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserCreat
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4005,7 +4005,7 @@ export const UserUncheckedCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4110,7 +4110,7 @@ export const UserUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUpdat
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4131,7 +4131,7 @@ export const UserUncheckedUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4592,7 +4592,7 @@ export const UserCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserCreateWith
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4613,7 +4613,7 @@ export const UserUncheckedCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserU
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4667,7 +4667,7 @@ export const UserUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUpdateWith
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4688,7 +4688,7 @@ export const UserUncheckedUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserU
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4948,7 +4948,7 @@ export const UserCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserCreateWitho
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -4969,7 +4969,7 @@ export const UserUncheckedCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserUn
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -5029,7 +5029,7 @@ export const UserUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUpdateWitho
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5050,7 +5050,7 @@ export const UserUncheckedUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUn
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5100,7 +5100,7 @@ export const UserCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateWi
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -5121,7 +5121,7 @@ export const UserUncheckedCreateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -5158,7 +5158,7 @@ export const UserUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUpdateWi
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5179,7 +5179,7 @@ export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5200,7 +5200,7 @@ export const UserCreateWithoutAddressInputSchema: z.ZodType<Prisma.UserCreateWit
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -5221,7 +5221,7 @@ export const UserUncheckedCreateWithoutAddressInputSchema: z.ZodType<Prisma.User
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -5271,7 +5271,7 @@ export const UserScalarWhereInputSchema: z.ZodType<Prisma.UserScalarWhereInput> 
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   username: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   firstName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  secondName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  secondName: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   email: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   hashedPassword: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -5574,7 +5574,7 @@ export const UserCreateManyAddressInputSchema: z.ZodType<Prisma.UserCreateManyAd
   id: z.string().cuid().optional(),
   username: z.string(),
   firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
-  secondName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
   email: z.string(),
   hashedPassword: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -5590,7 +5590,7 @@ export const UserUpdateWithoutAddressInputSchema: z.ZodType<Prisma.UserUpdateWit
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5611,7 +5611,7 @@ export const UserUncheckedUpdateWithoutAddressInputSchema: z.ZodType<Prisma.User
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -5632,7 +5632,7 @@ export const UserUncheckedUpdateManyWithoutAddressInputSchema: z.ZodType<Prisma.
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  secondName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),

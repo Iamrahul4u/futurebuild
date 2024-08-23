@@ -23,7 +23,7 @@ const JobCard = ({ details }: { details: JobPostSelectType }) => {
     <Link href={`jobs/${details.id}`}>
       <Card className="cursor-pointer -space-y-3 border-[1px] border-solid border-black p-0 transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px] dark:hover:shadow-[4px_4px_0px_gray]">
         <CardHeader className="flex flex-row items-center gap-4">
-          <AvatarComponent url={details.postedBy?.media[0].url} />
+          <AvatarComponent url={details.postedBy?.media[0]?.url ?? ""} />
           <div className="flex flex-col flex-wrap">
             <CardTitle className="line-clamp-1 text-base font-bold tracking-wide text-black dark:text-white">
               {details.jobTitle}

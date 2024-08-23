@@ -63,7 +63,7 @@ model User {
   id                  String      @id @unique @default(cuid())
   username            String
   firstName           String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
-  secondName          String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
+  secondName          String? 
   email               String      @unique
   hashedPassword      String
   createdAt           DateTime    @default(now())
