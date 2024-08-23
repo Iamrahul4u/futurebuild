@@ -25,7 +25,7 @@ const Page = async () => {
         <RoleLink
           role={Role.ORGANIZATION}
           userId={userId.user.id}
-          href={`/onboarding/organisation/${userId.user.id}`}
+          href={`/onboarding/organization/${userId.user.id}`}
           icon={<BriefcaseBusinessIcon height={80} width={80} />}
           label="Organisation/Recruiter"
         />

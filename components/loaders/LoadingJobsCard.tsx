@@ -9,7 +9,7 @@ const LoadingJobsCard = ({ columns }: { columns: number }) => {
         columns > 1 ? "md:grid-col-2 grid-cols-1 lg:grid-cols-3" : ""
       } gap-4`}
     >
-      {Array.from({ length: 9 }).map((_, index) => (
+      {Array.from({ length: 6 }).map((_, index) => (
         <Card
           key={index}
           className="cursor-pointer -space-y-3 border-[1px] border-solid border-gray-400 p-0 transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_gray] active:translate-x-[0px] active:translate-y-[0px]"

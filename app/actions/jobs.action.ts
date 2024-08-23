@@ -139,7 +139,7 @@ export const getjobs: ({
   searchParams,
   page,
 }: {
-  searchParams: leftSidebarfilterPropsTypes;
+  searchParams?: leftSidebarfilterPropsTypes;
   page: number;
 }) => Promise<JobsResponse> = async ({
   searchParams,
@@ -158,9 +158,19 @@ export const getjobs: ({
     let parseParams = searchParams;
     const takePosts = page * limit;
     const skipPosts = (page - 1) * limit;
+    if (searchParams) {
+      if (searchParams.minSalary) {
+        searchParams.minSalary = Number(searchParams.minSalary);
+      }
+      if (searchParams.maxSalary) {
+        searchParams.maxSalary = Number(searchParams.maxSalary);
+      }
+    }
+
     if (searchParams?.jobTitle) {
       const parsed = leftSidebarfilterProps.safeParse(searchParams);
       if (!parsed.success) {
+        console.log("Validation failed:", parsed.error);
         return { jobs: [] };
       }
       parseParams = parsed.data;
@@ -286,4 +296,14 @@ export default async function getOrganisationName(userId: string) {
     },
   });
   return user?.firstName + " " + user?.secondName || "";
+}
+
+export async function getJobTitle(jobId: string) {
+  const job = await prisma.jobPost.findUnique({
+    where: { id: jobId },
+    select: {
+      jobTitle: true,
+    },
+  });
+  return job?.jobTitle;
 }

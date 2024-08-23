@@ -23,6 +23,7 @@ import { SelectForm } from "./Select";
 import { CardTitle } from "../ui/card";
 import { leftSidebarfilterProps } from "@/types/sharedTypes";
 import { usePathname, useRouter } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 const JobLeftSideBar = () => {
   const router = useRouter();
@@ -41,7 +42,7 @@ const JobLeftSideBar = () => {
   async function handleSubmit(values: z.infer<typeof leftSidebarfilterProps>) {
     const newUrl = queryString.stringify(values);
     router.replace(pathname + "?" + newUrl);
-    router.refresh();
+    router.push(pathname + "?" + newUrl);
   }
   const isFormBlank = !Object.values(form.getValues()).some(
     (value) => value !== "" && value !== undefined && value !== 0,
@@ -57,7 +58,8 @@ const JobLeftSideBar = () => {
     });
     // Remove query parameters from URL
     const params = pathname.split("?")[0];
-    router.push(params);
+    router.replace(params);
+    router.refresh();
   };
   return (
     <div className="custom-scrollbar h-full min-w-[25%] overflow-y-scroll px-8 py-6 pb-24">
@@ -87,23 +89,23 @@ const JobLeftSideBar = () => {
             Annual Expectations
           </h4>
           <div className="flex gap-2">
-            <InputNumber name="minSalary" placeholder="Min" />
-            <InputNumber name="maxSalary" placeholder="Max" />
+            <InputText isNumeric={true} name="minSalary" placeholder="Min" />
+            <InputText isNumeric={true} name="maxSalary" placeholder="Max" />
           </div>
 
           <h4 className="mb-2 mt-4 text-black dark:text-white">Experience</h4>
-            <SelectForm
-              name="whoCanApply"
-              options={ExperienceEnumSchema.options}
-            />
-            <div className="flex flex-col gap-2">
-              <h4 className="mb-2 mt-4 text-black dark:text-white">Job Type</h4>
-              <SelectForm name="jobType" options={JobTypeSchema.options} />
-            </div>
-            <div className="flex flex-col gap-2">
-              <h4 className="mb-2 mt-4 text-black dark:text-white">Job Mode</h4>
-              <SelectForm name="modeOfWork" options={modeSchema.options} />
-            </div>
+          <SelectForm
+            name="whoCanApply"
+            options={ExperienceEnumSchema.options}
+          />
+          <div className="flex flex-col gap-2">
+            <h4 className="mb-2 mt-4 text-black dark:text-white">Job Type</h4>
+            <SelectForm name="jobType" options={JobTypeSchema.options} />
+          </div>
+          <div className="flex flex-col gap-2">
+            <h4 className="mb-2 mt-4 text-black dark:text-white">Job Mode</h4>
+            <SelectForm name="modeOfWork" options={modeSchema.options} />
+          </div>
           <StateButton content="Apply Filters" className="mt-16" />
         </form>
       </FormProvider>

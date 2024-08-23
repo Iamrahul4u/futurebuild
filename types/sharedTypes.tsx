@@ -19,13 +19,13 @@ export const leftSidebarfilterProps = z.object({
     .string()
     .min(2, "Type more than 2 Letters")
     .max(30, "Length shouldn't be more than 30 letters"),
-  minSalary: z.coerce
+  minSalary: z
     .number()
-    .min(0, "Type more than 2 Letters")
+    .min(0, "Type more than 0")
     .max(30000000, "Length shouldn't be more than 30 letters"),
-  maxSalary: z.coerce
+  maxSalary: z
     .number()
-    .min(0, "Type more than 2 Letters")
+    .min(0, "Type more than 0")
     .max(30000000, "Length shouldn't be more than 30 letters"),
   whoCanApply: ExperienceEnumSchema,
   jobType: JobTypeSchema,

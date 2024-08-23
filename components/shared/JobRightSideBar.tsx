@@ -8,6 +8,7 @@ import ToasterShow from "./ToasterShow";
 import { leftSidebarfilterPropsTypes } from "@/types/sharedTypes";
 import NoResultFound from "./NoResultFound";
 import LoadingJobsCard from "../loaders/LoadingJobsCard";
+import { useRouter } from "next/navigation";
 
 const JobRightSideBar = ({
   searchParams,
@@ -20,14 +21,29 @@ const JobRightSideBar = ({
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [initialLoad, setInitialLoad] = useState<boolean>(true);
-
+  const router = useRouter();
   const { ref, inView } = useInView();
 
-  const loadPosts = useCallback(async () => {
+  const loadPosts = async (reset = false) => {
     if (isLoading || !hasMore) return;
 
     setIsLoading(true);
-    const res = await getjobs({ searchParams, page });
+    let res;
+    if (searchParams) {
+      if (searchParams.minSalary) {
+        searchParams.minSalary = Number(searchParams.minSalary);
+      }
+      if (searchParams.maxSalary) {
+        searchParams.maxSalary = Number(searchParams.maxSalary);
+      }
+    }
+
+    // Fetch jobs
+    if (Object.keys(searchParams).length === 0) {
+      res = await getjobs({ page });
+    } else {
+      res = await getjobs({ searchParams, page });
+    }
 
     if (res?.statusCode === 301) {
       setRateLimitReached(true);
@@ -36,26 +52,42 @@ const JobRightSideBar = ({
     }
 
     const newJobs = res?.jobs || [];
-    setJobs((prevJobs) => {
-      const existingJobIds = new Set(prevJobs.map((job) => job.id));
-      const filteredJobs = newJobs.filter((job) => !existingJobIds.has(job.id));
-      return [...prevJobs, ...filteredJobs];
-    });
+
+    if (reset || page === 1) {
+      setJobs(newJobs);
+    } else {
+      setJobs((prevJobs) => {
+        const existingJobIds = new Set(prevJobs.map((job) => job.id));
+        const filteredJobs = newJobs.filter(
+          (job) => !existingJobIds.has(job.id),
+        );
+        return [...prevJobs, ...filteredJobs];
+      });
+    }
 
     setHasMore(newJobs.length === 6);
     setIsLoading(false);
     setInitialLoad(false);
-  }, [searchParams, page, isLoading, hasMore]);
+  };
 
   useEffect(() => {
-    loadPosts();
-  }, [page, searchParams]);
+    setPage(1);
+    setJobs([]);
+    setIsLoading(false);
+    setHasMore(true);
+    setInitialLoad(true);
+    loadPosts(true);
+  }, [searchParams]);
 
   useEffect(() => {
     if (inView && hasMore && !isLoading) {
       setPage((prevPage) => prevPage + 1);
     }
   }, [inView, hasMore, isLoading]);
+
+  useEffect(() => {
+    loadPosts();
+  }, [page]);
 
   if (rateLimitReached) {
     return <ToasterShow />;

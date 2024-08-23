@@ -8,6 +8,7 @@ import { getUser, lucia } from "../[...authenticate]/lucia";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { signInSchema } from "../[...authenticate]/SignIn";
+import { revalidatePath } from "next/cache";
 
 export async function signup({
   values,
@@ -89,6 +90,7 @@ export async function signIn({
 export const signout = async () => {
   const session = lucia.createBlankSessionCookie();
   cookies().set(session.name, session.value, session.attributes);
+  revalidatePath("/", "layout");
   redirect("/authenticate/signin");
 };
 

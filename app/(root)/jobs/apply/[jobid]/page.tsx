@@ -17,7 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import DatePicker from "@/components/shared/DatePicker";
 import InputText from "@/components/shared/InputText";
-import { applyToJob, getUrl } from "@/app/actions/jobs.action";
+import { applyToJob, getJobTitle, getUrl } from "@/app/actions/jobs.action";
 import { toast } from "sonner";
 import { InputTextArea } from "@/components/shared/InputTextArea";
 import UploadFile from "@/components/shared/UploadFile";
@@ -30,6 +30,7 @@ import {
   MAX_PROFILE_IMG_SIZE,
   MAX_RESUME_SIZE,
 } from "@/_constants/constants";
+import prisma from "@/prisma";
 const MAX_SIZE = 2 * 1024 * 1024;
 
 const applyJob = z.object({
@@ -67,10 +68,15 @@ const applyJob = z.object({
 export default function Page({ params }: { params: { jobid: string } }) {
   const [pending, setPending] = useState<boolean>(false);
   const [availability, setAvailability] = useState<string>("");
+  const [jobTitle, setJobTitle] = useState<string>("");
   const router = useRouter();
   useEffect(() => {
     async function getUser() {
       const res = await clientCheckUser();
+      const jobTitle = await getJobTitle(params.jobid);
+      if (jobTitle) {
+        setJobTitle(jobTitle);
+      }
       if (!res) {
         toast.error("User Not Logged In");
         router.push("/authenticate/signin");
@@ -142,7 +148,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
   return (
     <ScrollArea className="mx-auto h-full w-4/5 px-12 py-8">
       <h1 className="mb-6 text-6xl text-black dark:text-white">
-        Applying for ~jobname~
+        Applying for ~{jobTitle}~
       </h1>
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-2">
