@@ -20,6 +20,7 @@
     "@aws-sdk/s3-request-presigner": "^3.614.0",
     "@hookform/resolvers": "^3.9.0",
     "@lucia-auth/adapter-prisma": "^4.0.1",
+    "@monaco-editor/react": "^4.6.0",
     "@next/bundle-analyzer": "^14.2.5",
     "@node-rs/argon2": "^1.8.3",
     "@node-rs/bcrypt": "^1.10.4",

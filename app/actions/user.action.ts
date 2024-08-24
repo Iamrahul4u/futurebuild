@@ -61,7 +61,17 @@ export async function getUserDetailsOnboarding(userId: string) {
     return { error: "Couldn't Fetch User Details" };
   }
 }
-
+export async function getUserOnboardingCompleted(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      onboardingCompleted: true,
+      role: true,
+    },
+  });
+  return user;
+}
 export const updateOnboardingUser = async (data: UserOnboardingSchemaTypes) => {
   const user: any = await getUserId();
   if (!user || "error" in user) {

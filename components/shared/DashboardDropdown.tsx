@@ -32,7 +32,7 @@ export function DashboardDropdownMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar>
-          <AvatarImage src={imgUrl || undefined} alt="@profileImg" />
+          <AvatarImage src={imgUrl ?? ""} alt="@profileImg" />
           <AvatarFallback>U</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

@@ -98,3 +98,70 @@ export const BADGE_CRITERIA = {
     GOLD: 100000,
   },
 };
+
+export const Languages = [
+  { value: "python", label: "Python" },
+  { value: "java", label: "Java" },
+  { value: "cpp", label: "C++" },
+  { value: "javascript", label: "JavaScript" },
+];
+
+export const TemplateCode = {
+  python: `
+class Solution:
+    def your_function_name(self, params):
+        # Write your code here
+        pass
+
+# Example usage:
+# solution = Solution()
+# print(solution.your_function_name(params))
+
+  `,
+  java: `
+public class Solution {
+    public returnType yourFunctionName(parameters) {
+        // Write your code here
+    }
+
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        // Example usage:
+        // System.out.println(solution.yourFunctionName(params));
+    }
+}
+
+  `,
+  cpp: `
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    returnType yourFunctionName(parameters) {
+        // Write your code here
+    }
+};
+
+int main() {
+    Solution solution;
+    // Example usage:
+    // cout << solution.yourFunctionName(params) << endl;
+    return 0;
+}
+
+  `,
+  javascript: `
+class Solution {
+  yourFunctionName(params) {
+    // Write your code here
+  }
+}
+
+// Example usage:
+const solution = new Solution();
+// console.log(solution.yourFunctionName(params));
+
+  `,
+};

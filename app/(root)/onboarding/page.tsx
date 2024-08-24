@@ -4,11 +4,18 @@ import { BriefcaseBusinessIcon, User } from "lucide-react";
 import { redirect } from "next/navigation";
 import React from "react";
 import RoleLink from "@/components/shared/RoleLink";
+import { getUserOnboardingCompleted } from "@/app/actions/user.action";
 const Page = async () => {
   const userId = await getUserId();
-
+  if ("error" in userId) {
+    redirect("/authenticate/signin");
+  }
   if (!userId?.user?.id) {
     redirect("/authenticate/signin");
+  }
+  const user = await getUserOnboardingCompleted(userId?.user?.id ?? "");
+  if (user?.onboardingCompleted) {
+    redirect(`/dashboard/${user?.role.toLowerCase()}/${user?.id}`);
   }
 
   return (

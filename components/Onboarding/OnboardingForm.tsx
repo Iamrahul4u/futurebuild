@@ -86,11 +86,8 @@ export default function OnboardingForm({
         ) {
           toast.success("Onboarding Already Completed");
           router.push(`/dashboard/user/${user.userDetails.id}`);
-        } else if (
-          user.userDetails.role === "ORGANIZATION" ||
-          user.userDetails.role === "ADMIN"
-        ) {
-          router.push(`/dashboard/onganization/${user.userDetails.id}`);
+        } else if (user.userDetails.role === "USER") {
+          router.push(`/dashboard/user/${user.userDetails.id}`);
         } else {
           setUserDetails(user.userDetails);
           if (user.userDetails.media) {

@@ -34,7 +34,6 @@ import { ACCEPTED_IMAGE_TYPES } from "@/_constants/constants";
 import { getUrl } from "@/app/actions/jobs.action";
 import StateButton from "../shared/StateButton";
 
-
 const defaultFormValues = {
   firstName: "",
   secondName: "",
@@ -69,7 +68,7 @@ export default function OrganisationOrganisationOnboardingForm({
   const router = useRouter();
   const form = useForm<z.infer<typeof OrganisationOnboardingSchema>>({
     resolver: zodResolver(OrganisationOnboardingSchema),
-    defaultValues:defaultFormValues 
+    defaultValues: defaultFormValues,
   });
   useEffect(() => {
     async function CheckUser() {
@@ -93,6 +92,11 @@ export default function OrganisationOrganisationOnboardingForm({
           router.push(`/dashboard/user/${user.userDetails.id}`);
         } else if (user.userDetails.role === "USER") {
           router.push(`/dashboard/user/${user.userDetails.id}`);
+        } else if (
+          user.userDetails.role === "ORGANIZATION" ||
+          user.userDetails.role === "ADMIN"
+        ) {
+          router.push(`/dashboard/onganization/${user.userDetails.id}`);
         } else {
           setUserDetails(user.userDetails);
           if (user.userDetails.media) {
@@ -102,7 +106,7 @@ export default function OrganisationOrganisationOnboardingForm({
       }
     }
     CheckUser();
-  }, [router,userId,type]);
+  }, [router, userId, type]);
 
   useEffect(() => {
     if (userDetails) {
@@ -110,7 +114,7 @@ export default function OrganisationOrganisationOnboardingForm({
         firstName: userDetails.firstName,
         secondName: userDetails.secondName,
         email: userDetails.email,
-        media:userDetails.media,
+        media: userDetails.media,
         address: [
           {
             // Default location with one entry
@@ -189,7 +193,7 @@ export default function OrganisationOrganisationOnboardingForm({
       toast.error(error.message);
     } finally {
       router.refresh();
-    setUserDetails(userDetails); // This will be batched
+      setUserDetails(userDetails); // This will be batched
 
       setPending(false);
     }
@@ -219,11 +223,11 @@ export default function OrganisationOrganisationOnboardingForm({
   const handleClickRef = () => {
     uploadImageRef.current?.click();
   };
-  
-  const initials = `${userDetails?.firstName[0] || ""}${userDetails?.secondName[0] || ""}`;
 
-  const isDisabled = type === "OrganisationOnboardingForm" ? false : true;
-  const editForm = type === "EditOrganisationOnboardingForm" ? true : false;
+  const initials = `${userDetails?.firstName?.[0] || ""}${userDetails?.secondName?.[0] || ""}`;
+
+  const isDisabled = type !== "OrganisationOnboardingForm";
+  const editForm = type === "EditOrganisationOnboardingForm";
   return (
     <ScrollArea className="mx-auto h-full w-full px-12 py-8">
       <h1 className="mx-auto mb-6 text-6xl text-black dark:text-white">
