@@ -41,6 +41,7 @@ export function NavBar() {
               <Link
                 href={item.route}
                 className="text-base font-medium"
+                prefetch={true}
                 target={item.target ?? "_self"}
               >
                 {item.label}

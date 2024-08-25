@@ -100,12 +100,17 @@ export const BADGE_CRITERIA = {
 };
 
 export const Languages = [
-  { value: "python", label: "Python" },
-  { value: "java", label: "Java" },
-  { value: "cpp", label: "C++" },
-  { value: "javascript", label: "JavaScript" },
+  { value: "python", label: "Python", version: "3.10.0" },
+  { value: "java", label: "Java", version: "15.0.2" },
+  { value: "cpp", label: "C++", version: "10.2.0" },
+  { value: "javascript", label: "JavaScript", version: "1.32.3" },
 ];
-
+export const languageFileNames = {
+  python: "main.py",
+  java: "Solution.java",
+  cpp: "main.cpp",
+  javascript: "main.js",
+};
 export const TemplateCode = {
   python: `
 class Solution:

@@ -17,6 +17,7 @@ export default async function Page({
 }: {
   searchParams: leftSidebarfilterPropsTypes;
 }) {
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   return (
     <>
       <ResizablePanelGroup direction="horizontal">
