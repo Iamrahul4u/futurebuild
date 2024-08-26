@@ -21,9 +21,7 @@ export default async function Page({
     <>
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel minSize={20} defaultSize={20} maxSize={35}>
-          <Suspense fallback={<p>Loading...</p>}>
-            <JobLeftSideBar />
-          </Suspense>
+          <JobLeftSideBar />
         </ResizablePanel>
         <ResizableHandle withHandle className="bg-slate-700" />
         <ResizablePanel defaultSize={70}>
