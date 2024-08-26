@@ -76,7 +76,7 @@ const JobRightSideBar = ({
     setIsLoading(false);
     setHasMore(true);
     setInitialLoad(true);
-    loadPosts(true);
+  loadPosts(true);
   }, [searchParams]);
 
   useEffect(() => {
