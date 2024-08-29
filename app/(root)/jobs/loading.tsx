@@ -1,12 +1,11 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import LoadingJobsCard from "@/components/loaders/LoadingJobsCard";
 
 export default function loading() {
   return (
     <div className="flex w-full flex-row gap-8 px-4 py-8">
-      <div className="w-[28%] space-y-6">
+      <div className="w-[27%] space-y-6">
         <Skeleton className="h-4 w-20" />
         <Skeleton className="h-8 w-full" />
         <Skeleton className="h-8 w-full" />

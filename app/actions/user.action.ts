@@ -263,3 +263,62 @@ export const getUserProfile = async (userId: string) => {
 
   return { imgUrl };
 };
+
+export const getResume = async (): Promise<
+  { url: string; mediaType: string } | { error: string } | null
+> => {
+  try {
+    const userId = await getUserId();
+    if (!userId || "error" in userId) {
+      return { error: "User Not Authenticated" };
+    }
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId.user.id,
+      },
+      include: {
+        media: {
+          where: {
+            mediaName: MediaNameSchema.options[0],
+          },
+          select: {
+            url: true,
+            mediaType: true,
+          },
+          take: 1,
+        },
+      },
+    });
+    return user?.media[0] || null;
+  } catch (error) {
+    return { error: "Unable To Fetch Resume" };
+  }
+};
+
+export const getUserChatRoomsDetails = async ({
+  userId,
+}: {
+  userId: string[];
+}) => {
+  const userDetails = await prisma.user.findMany({
+    where: {
+      id: {
+        in: userId,
+      },
+    },
+    select: {
+      id: true,
+      firstName: true,
+      secondName: true,
+      media: {
+        where: {
+          mediaName: MediaNameSchema.options[1],
+        },
+        select: {
+          url: true,
+        },
+      },
+    },
+  });
+  return userDetails;
+};

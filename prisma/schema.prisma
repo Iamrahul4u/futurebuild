@@ -1,182 +1,202 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+  // This is your Prisma schema file,
+  // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+  // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+  // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["omitApi"]
-}
+  generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["omitApi","tracing"]
 
-generator zod {
-  provider                         = "zod-prisma-types"
-  output                           = "./generated/zod" // default is ./generated/zod
-  createOptionalDefaultValuesTypes = true
-}
+  }
 
-datasource db {
-  provider  = "postgresql"
-  url       = env("DIRECT_DATABASE_URL")
-  directUrl = env("DATABASE_URL")
-}
+  generator zod {
+    provider                         = "zod-prisma-types"
+    output                           = "./generated/zod" // default is ./generated/zod
+    createOptionalDefaultValuesTypes = true
+  }
 
-model JobPost {
-  id               String         @id @unique @default(cuid())
-  jobTitle         String
-  jobDescription   String
-  organisationName String
-  modeOfWork       mode?
-  minExperience    Int            @default(0)
-  maxExperience    Int
-  minSalary        Int            @default(0)
-  maxSalary        Int
-  skills           JobSkill[]
-  perks            Perk[]
-  jobType          JobType        @default(Full_Time)
-  postedAt         DateTime       @default(now())
-  whoCanApply      ExperienceEnum @default(Anyone)
-  applicants       Applicant[]
-  postedBy         User           @relation("PostedJobs", fields: [userId], references: [id], onDelete: Cascade)
-  userId           String
-}
+  datasource db {
+    provider  = "postgresql"
+    url       = env("DIRECT_DATABASE_URL")
+    directUrl = env("DATABASE_URL")
+  }
 
-model Applicant {
-  id             String         @id @unique @default(cuid())
-  userId         String
-  coverLetter    String
-  availability   String
-  approvalStatus ApprovalStatus @default(Pending)
-  resume         Media?
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobId          String
-  jobPost        JobPost        @relation(fields: [jobId], references: [id])
-}
+  model JobPost {
+    id               String         @id @unique @default(cuid())
+    jobTitle         String
+    jobDescription   String
+    organisationName String
+    modeOfWork       mode?
+    minExperience    Int            @default(0)
+    maxExperience    Int
+    minSalary        Int            @default(0)
+    maxSalary        Int
+    skills           JobSkill[]
+    perks            Perk[]
+    jobType          JobType        @default(Full_Time)
+    postedAt         DateTime       @default(now())
+    whoCanApply      ExperienceEnum @default(Anyone)
+    applicants       Applicant[]
+    postedBy         User           @relation("PostedJobs", fields: [userId], references: [id], onDelete: Cascade)
+    userId           String
+    @@index(fields: [jobTitle], type: BTree)
+    @@index(fields: [userId], type: Hash)
+    @@index(fields: [postedAt])
+  }
 
-enum ApprovalStatus {
-  Pending
-  Rejected
-  Accepted
-}
+  model Applicant {
+    id             String         @id @unique @default(cuid())
+    userId         String
+    coverLetter    String
+    availability   String
+    approvalStatus ApprovalStatus @default(Pending)
+    resume         Media?
+    user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+    jobId          String
+    jobPost        JobPost        @relation(fields: [jobId], references: [id])
+    @@index(fields: [userId])
+    @@index(fields: [jobId])
+  }
 
-model User {
-  id                  String      @id @unique @default(cuid())
-  username            String
-  firstName           String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
-  secondName          String? 
-  email               String      @unique
-  hashedPassword      String
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
-  role                Role        @default(USER)
-  skills              UserSkill[]
-  media               Media[]
-  about               String      @default("About Me")
-  locationId          String?
-  profileCompleted    Boolean?    @default(false)
-  onboardingCompleted Boolean?    @default(false)
-  roleSet             Boolean?    @default(false)
-  address             Location?   @relation(fields: [locationId], references: [id])
-  postedJobs          JobPost[]   @relation("PostedJobs")
-  appliedJobs         Applicant[]
-  sessions            Session[]
-}
+  enum ApprovalStatus {
+    Pending
+    Rejected
+    Accepted
+  }
 
-model Skill {
-  id    String      @id @unique @default(cuid())
-  name  String      @unique
-  users UserSkill[]
-  jobs  JobSkill[]
-}
+  model User {
+    id                  String      @id @unique @default(cuid())
+    username            String      @unique
+    firstName           String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" })
+    secondName          String? 
+    email               String      @unique
+    hashedPassword      String
+    createdAt           DateTime    @default(now())
+    updatedAt           DateTime    @updatedAt
+    role                Role        @default(USER)
+    skills              UserSkill[]
+    media               Media[]
+    about               String      @default("About Me")
+    locationId          String?
+    profileCompleted    Boolean?    @default(false)
+    onboardingCompleted Boolean?    @default(false)
+    roleSet             Boolean?    @default(false)
+    address             Location?   @relation(fields: [locationId], references: [id])
+    postedJobs          JobPost[]   @relation("PostedJobs")
+    appliedJobs         Applicant[]
+    sessions            Session[]
+    @@index(fields: [email], type:Hash)
+    @@index(fields: [role])
+  }
 
-model UserSkill {
-  id      String  @id @unique @default(cuid())
-  userId  String?
-  skillId String
-  user    User?   @relation(fields: [userId], references: [id])
-  skill   Skill?  @relation(fields: [skillId], references: [id])
+  model Skill {
+    id    String      @id @unique @default(cuid())
+    name  String      @unique
+    users UserSkill[]
+    jobs  JobSkill[]
+    @@index(fields: [name], type: BTree)
+  }
 
-  @@unique([userId, skillId])
-}
+  model UserSkill {
+    id      String  @id @unique @default(cuid())
+    userId  String?
+    skillId String
+    user    User?   @relation(fields: [userId], references: [id])
+    skill   Skill?  @relation(fields: [skillId], references: [id])
 
-model JobSkill {
-  id      String  @id @unique @default(cuid())
-  jobId   String
-  skillId String
-  jobPost JobPost @relation(fields: [jobId], references: [id])
-  skill   Skill   @relation(fields: [skillId], references: [id])
+    @@unique([userId, skillId])
+    @@index(fields: [userId])
+    @@index(fields: [skillId])
+  }
 
-  @@unique([jobId, skillId]) // Composite key to prevent duplicate skills for a job post
-}
+  model JobSkill {
+    id      String  @id @unique @default(cuid())
+    jobId   String
+    skillId String
+    jobPost JobPost @relation(fields: [jobId], references: [id])
+    skill   Skill   @relation(fields: [skillId], references: [id])
 
-model Perk {
-  id        String   @id @unique @default(cuid())
-  name      String
-  JobPost   JobPost? @relation(fields: [jobPostId], references: [id])
-  jobPostId String?
-}
+    @@unique([jobId, skillId]) // Composite key to prevent duplicate skills for a job post
+    @@index(fields: [jobId])
+    @@index(fields: [skillId])
+  }
 
-model Media {
-  id          String     @id @unique @default(cuid())
-  mediaType   String
-  url         String
-  mediaName   String
-  userId      String
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  applicantId String?    @unique
-  applicant   Applicant? @relation(fields: [applicantId], references: [id])
-}
+  model Perk {
+    id        String   @id @unique @default(cuid())
+    name      String
+    JobPost   JobPost? @relation(fields: [jobPostId], references: [id])
+    jobPostId String?
+    @@index(fields: [jobPostId])
+    @@index(fields: [name], type: Hash)
+  }
 
-model Session {
-  id        String   @id @unique @default(cuid())
-  userId    String
-  expiresAt DateTime
+  model Media {
+    id          String     @id @unique @default(cuid())
+    mediaType   String
+    url         String
+    mediaName   String
+    userId      String
+    user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    applicantId String?    @unique
+    applicant   Applicant? @relation(fields: [applicantId], references: [id])
+    @@index(fields: [userId])
+    @@index(fields: [applicantId])
+  }
 
-  user User @relation(references: [id], fields: [userId], onDelete: Cascade)
-}
+  model Session {
+    id        String   @id @unique @default(cuid())
+    userId    String
+    expiresAt DateTime
 
-model Location {
-  id          String  @id @unique @default(cuid())
-  address     String? /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(50, { message: "Enter Less than 50 characters" })
-  postalCode  Int
-  state       String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(20, { message: "Enter Less than 20 characters" })
-  city        String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(20, { message: "Enter Less than 20 characters" })
-  phoneNumber String
-  User        User[]
-}
+    user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+    @@index(fields: [userId])
+  }
 
-model JobProfile {
-  id             String @id @unique @default(cuid())
-  jobProfileName String
-}
+  model Location {
+    id          String  @id @unique @default(cuid())
+    address     String? /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(50, { message: "Enter Less than 50 characters" })
+    postalCode  Int
+    state       String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(20, { message: "Enter Less than 20 characters" })
+    city        String /// @zod.string.min(3, { message: "Enter more than 3 characters" }).max(20, { message: "Enter Less than 20 characters" })
+    phoneNumber String
+    User        User[]
+    @@index(fields: [postalCode], type: Hash)
+  }
 
-enum mode {
-  Remote
-  Hybrid
-}
+  model JobProfile {
+    id             String @id @unique @default(cuid())
+    jobProfileName String
 
-enum Role {
-  ADMIN
-  USER
-  ORGANIZATION
-}
+  }
 
-enum ExperienceEnum {
-  Anyone
-  Fresher
-  Intermediate
-  Experienced
-}
+  enum mode {
+    Remote
+    Hybrid
+  }
 
-enum JobType {
-  Full_Time
-  Part_Time
-  InternShip
-  Project_Work
-  Volunteering
-}
+  enum Role {
+    ADMIN
+    USER
+    ORGANIZATION
+  }
 
-enum MediaName {
-  Resume
-  Profile_Img
-}
+  enum ExperienceEnum {
+    Anyone
+    Fresher
+    Intermediate
+    Experienced
+  }
+
+  enum JobType {
+    Full_Time
+    Part_Time
+    InternShip
+    Project_Work
+    Volunteering
+  }
+
+  enum MediaName {
+    Resume
+    Profile_Img
+  }

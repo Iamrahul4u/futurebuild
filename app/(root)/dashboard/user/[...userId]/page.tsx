@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
   Card,
@@ -9,8 +9,18 @@ import {
 } from "@/components/ui/card";
 import prisma from "@/prisma";
 import { redirect } from "next/navigation";
-import TablePostedJobs from "@/components/shared/TablePostedJobs";
-import TableAppliedJobs from "@/components/shared/TableAppliedJobs";
+// import TablePostedJobs from "@/components/shared/TablePostedJobs";
+// import TableAppliedJobs from "@/components/shared/TableAppliedJobs";
+import dynamic from "next/dynamic";
+const TablePostedJobs = dynamic(
+  () => import("@/components/shared/TablePostedJobs"),
+);
+const TableAppliedJobs = dynamic(
+  () => import("@/components/shared/TableAppliedJobs"),
+);
+const Button = dynamic(() =>
+  import("@/components/ui/button").then((mod) => mod.Button),
+);
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { MediaNameSchema } from "@/prisma/generated/zod";
 
@@ -52,6 +62,11 @@ export default async function Page({ params }: { params: { userId: string } }) {
         },
       },
     },
+
+    cacheStrategy: {
+      ttl: 60,
+      swr: 100,
+    },
   });
   const jobDetails = await prisma.jobPost.findMany({
     where: {
@@ -68,6 +83,10 @@ export default async function Page({ params }: { params: { userId: string } }) {
         },
       },
     },
+    cacheStrategy: {
+      ttl: 60,
+      swr: 100,
+    },
   });
   if (!userDetails) {
     redirect("/authenticate/signin");
@@ -78,11 +97,13 @@ export default async function Page({ params }: { params: { userId: string } }) {
     <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
       <Card className="col-span-full">
         <CardContent className="flex flex-col gap-4 p-2 sm:flex-row">
-          <Avatar className="h-24 w-24 sm:h-32 sm:w-32">
+          <Avatar className="h-18 w-18 overflow-hidden object-contain sm:h-32 sm:w-32">
             <AvatarImage
               src={userDetails?.media[userDetails.media.length - 1]?.url || ""}
               alt="@profileImg"
               className="object-cover"
+              width={300}
+              height={300}
             />
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
@@ -95,13 +116,17 @@ export default async function Page({ params }: { params: { userId: string } }) {
               <span>{userDetails.about}</span>
             </CardDescription>
             <CardDescription className="mt-2">
-              <span className="font-semibold">Skills:</span>{" "}
-              {userDetails.skills.map((skill, index) => (
-                <span key={skill.skill?.id ?? index} className="mr-2">
-                  {skill.skill?.name ?? "Unknown"}
-                  {index !== userDetails.skills.length - 1 && ","}
-                </span>
-              ))}
+              {userDetails.role === "USER" && (
+                <>
+                  <span className="font-semibold">Skills:</span>
+                  {userDetails.skills.map((skill, index) => (
+                    <span key={skill.skill?.id ?? index} className="mr-2">
+                      {skill.skill?.name ?? "Unknown"}
+                      {index !== userDetails.skills.length - 1 && ","}
+                    </span>
+                  ))}
+                </>
+              )}
             </CardDescription>
           </div>
         </CardContent>

@@ -1,14 +1,13 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import JobCard from "./JobCard";
 import { JobPostOptionalDefaults } from "@/prisma/generated/zod";
 import { getjobs } from "@/app/actions/jobs.action";
-import ToasterShow from "./ToasterShow";
 import { leftSidebarfilterPropsTypes } from "@/types/sharedTypes";
-import NoResultFound from "./NoResultFound";
+import dynamic from "next/dynamic";
 import LoadingJobsCard from "../loaders/LoadingJobsCard";
-import { useRouter } from "next/navigation";
+import JobCard from "./JobCard";
+const NoResultFound = dynamic(() =>import("./NoResultFound"))
 
 const JobRightSideBar = ({
   searchParams,
@@ -16,59 +15,59 @@ const JobRightSideBar = ({
   searchParams: leftSidebarfilterPropsTypes;
 }) => {
   const [jobs, setJobs] = useState<JobPostOptionalDefaults[]>([]);
-  const [rateLimitReached, setRateLimitReached] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [initialLoad, setInitialLoad] = useState<boolean>(true);
-  const router = useRouter();
   const { ref, inView } = useInView();
 
-  const loadPosts = async (reset = false) => {
-    if (isLoading || !hasMore) return;
+  const loadPosts = useCallback(
+    async (reset = false) => {
+      if (isLoading || !hasMore) return;
 
-    setIsLoading(true);
-    let res;
-    if (searchParams) {
-      if (searchParams.minSalary) {
-        searchParams.minSalary = Number(searchParams.minSalary);
+      setIsLoading(true);
+      let res;
+      if (searchParams) {
+        if (searchParams.minSalary) {
+          searchParams.minSalary = Number(searchParams.minSalary);
+        }
+        if (searchParams.maxSalary) {
+          searchParams.maxSalary = Number(searchParams.maxSalary);
+        }
       }
-      if (searchParams.maxSalary) {
-        searchParams.maxSalary = Number(searchParams.maxSalary);
+
+      // Fetch jobs
+      if (Object.keys(searchParams).length === 0) {
+        res = await getjobs({ page });
+      } else {
+        res = await getjobs({ searchParams, page });
       }
-    }
 
-    // Fetch jobs
-    if (Object.keys(searchParams).length === 0) {
-      res = await getjobs({ page });
-    } else {
-      res = await getjobs({ searchParams, page });
-    }
+      if (res?.statusCode === 301) {
+        setIsLoading(false);
+        return;
+      }
 
-    if (res?.statusCode === 301) {
-      setRateLimitReached(true);
+      const newJobs = res?.jobs || [];
+
+      if (reset || page === 1) {
+        setJobs(newJobs);
+      } else {
+        setJobs((prevJobs) => {
+          const existingJobIds = new Set(prevJobs.map((job) => job.id));
+          const filteredJobs = newJobs.filter(
+            (job) => !existingJobIds.has(job.id),
+          );
+          return [...prevJobs, ...filteredJobs];
+        });
+      }
+
+      setHasMore(newJobs.length === 6);
       setIsLoading(false);
-      return;
-    }
-
-    const newJobs = res?.jobs || [];
-
-    if (reset || page === 1) {
-      setJobs(newJobs);
-    } else {
-      setJobs((prevJobs) => {
-        const existingJobIds = new Set(prevJobs.map((job) => job.id));
-        const filteredJobs = newJobs.filter(
-          (job) => !existingJobIds.has(job.id),
-        );
-        return [...prevJobs, ...filteredJobs];
-      });
-    }
-
-    setHasMore(newJobs.length === 6);
-    setIsLoading(false);
-    setInitialLoad(false);
-  };
+      setInitialLoad(false);
+    },
+    [isLoading, hasMore, page, searchParams],
+  );
 
   useEffect(() => {
     setPage(1);
@@ -76,7 +75,7 @@ const JobRightSideBar = ({
     setIsLoading(false);
     setHasMore(true);
     setInitialLoad(true);
-  loadPosts(true);
+    loadPosts(true);
   }, [searchParams]);
 
   useEffect(() => {
@@ -88,10 +87,6 @@ const JobRightSideBar = ({
   useEffect(() => {
     loadPosts();
   }, [page]);
-
-  if (rateLimitReached) {
-    return <ToasterShow />;
-  }
 
   return (
     <div className="h-full overflow-y-auto px-8 py-4">

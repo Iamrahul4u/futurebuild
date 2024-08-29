@@ -1,17 +1,12 @@
-import { getUserId } from "@/app/actions/auth.action";
-import LoadingJobsCard from "@/components/loaders/LoadingJobsCard";
-import JobLeftSideBar from "@/components/shared/JobLeftSideBar";
+
+
+import {  leftSidebarfilterPropsTypes } from "@/types/sharedTypes";
+import dynamic from "next/dynamic";
+const JobLeftSideBar=dynamic(()=>import("@/components/shared/JobLeftSideBar"))
+const ResizablePanelGroup=dynamic(()=>import("@/components/ui/resizable").then(mod=>mod.ResizablePanelGroup))
+const ResizablePanel=dynamic(()=>import("@/components/ui/resizable").then(mod=>mod.ResizablePanel))
+const ResizableHandle=dynamic(()=>import("@/components/ui/resizable").then(mod=>mod.ResizableHandle))
 import JobRightSideBar from "@/components/shared/JobRightSideBar";
-
-import ResizableJobsLayout from "@/components/shared/ResizableJobsLayout";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { getJobsProps, leftSidebarfilterPropsTypes } from "@/types/sharedTypes";
-import { Suspense } from "react";
-
 export default async function Page({
   searchParams,
 }: {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import {
   Card,
   CardContent,
@@ -7,15 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import Image from "next/image";
 import { Badge } from "../ui/badge";
 import { Clock } from "lucide-react";
 import Link from "next/link";
-import { JobPost } from "@prisma/client";
-import { JobPostOptionalDefaults } from "@/prisma/generated/zod";
 import { formatNumber, formatTimeAgo } from "@/_utils/utils";
 import { JobPostSelectType } from "@/types/zodValidations";
+import dynamic from "next/dynamic";
 import AvatarComponent from "./AvatarComponent";
+
 
 const JobCard = ({ details }: { details: JobPostSelectType }) => {
   const applicants = details?._count?.applicants;
@@ -23,6 +22,7 @@ const JobCard = ({ details }: { details: JobPostSelectType }) => {
     <Link href={`jobs/${details.id}`}>
       <Card className="cursor-pointer -space-y-3 border-[1px] border-solid border-black p-0 transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px] dark:hover:shadow-[4px_4px_0px_gray]">
         <CardHeader className="flex flex-row items-center gap-4">
+
           <AvatarComponent url={details.postedBy?.media[0]?.url ?? ""} />
           <div className="flex flex-col flex-wrap">
             <CardTitle className="line-clamp-1 text-base font-bold tracking-wide text-black dark:text-white">

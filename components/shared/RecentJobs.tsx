@@ -14,8 +14,7 @@ import prisma from "@/prisma";
 
 const RecentJobs = async () => {
   const res = await prisma.jobPost.findMany({
-    // cacheStrategy: { swr: 60, ttl: 60 },
-
+    
     include: {
       _count: {
         select: {
@@ -23,6 +22,8 @@ const RecentJobs = async () => {
         },
       },
     },
+    take: 10,
+    cacheStrategy: { swr: 60, ttl: 60 },
   });
 
   return (

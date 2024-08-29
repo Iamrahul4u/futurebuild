@@ -5,7 +5,7 @@ const prismaClientSingleton = () => {
   return new PrismaClient({
     log:
       process.env.NODE_ENV === "development"
-        ? ["error", "warn", "info"]
+        ? ["error", "warn", "info", "query"]
         : ["error"],
   }).$extends(withAccelerate());
 };

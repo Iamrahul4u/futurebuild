@@ -2,36 +2,41 @@
 import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import {
-  FormControl,
+  // FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  // FormItem,
+  // FormLabel,
+  // FormMessage,
 } from "../../../../../components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
+const FormControl=dynamic(()=>import("@/components/ui/form").then(mod=>mod.FormControl))
+// const FormField=dynamic(()=>import("@/components/ui/form").then(mod=>mod.FormField))
+const FormItem=dynamic(()=>import("@/components/ui/form").then(mod=>mod.FormItem))
+const FormLabel=dynamic(()=>import("@/components/ui/form").then(mod=>mod.FormLabel))
+const FormMessage=dynamic(()=>import("@/components/ui/form").then(mod=>mod.FormMessage))
 
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { zodResolver } from "@hookform/resolvers/zod";
+import dynamic from "next/dynamic";
+const ScrollArea=dynamic(()=>import("@/components/ui/scroll-area").then(mod=>mod.ScrollArea))
 import { FormProvider, useForm } from "react-hook-form";
 
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
-import DatePicker from "@/components/shared/DatePicker";
+const RadioGroup=dynamic(()=>import("@/components/ui/radio-group").then(mod=>mod.RadioGroup))
+const RadioGroupItem=dynamic(()=>import("@/components/ui/radio-group").then(mod=>mod.RadioGroupItem))
+const DatePicker=dynamic(()=>import("@/components/shared/DatePicker"))
 import InputText from "@/components/shared/InputText";
-import { applyToJob, getJobTitle, getUrl } from "@/app/actions/jobs.action";
+const InputTextArea=dynamic(()=>import("@/components/shared/InputTextArea").then(mod=>mod.InputTextArea));
+const UploadResume=dynamic(()=>import("@/components/shared/UploadResume"));
+const StateButton=dynamic(()=>import("@/components/shared/StateButton"));
 import { toast } from "sonner";
-import { InputTextArea } from "@/components/shared/InputTextArea";
-import UploadFile from "@/components/shared/UploadFile";
-import { checkUser, clientCheckUser } from "@/app/actions/auth.action";
-import StateButton from "@/components/shared/StateButton";
+import { checkUser, clientCheckUser, getUserId } from "@/app/actions/auth.action";
 import { MediaNameSchema } from "@/prisma/generated/zod";
-import { redirect, useRouter } from "next/navigation";
+import {  useRouter } from "next/navigation";
+import { applyToJob, getJobTitle, getUrl } from "@/app/actions/jobs.action";
 import {
   ACCEPTED_FILE_TYPES,
-  MAX_PROFILE_IMG_SIZE,
   MAX_RESUME_SIZE,
 } from "@/_constants/constants";
-import prisma from "@/prisma";
-const MAX_SIZE = 2 * 1024 * 1024;
+import { getResume } from "@/app/actions/user.action";
+import { prismaMedia } from "@/app/actions/prisma.action";
 
 const applyJob = z.object({
   coverLetter: z
@@ -63,23 +68,45 @@ const applyJob = z.object({
     .refine(
       (file) => ACCEPTED_FILE_TYPES.includes(file.type),
       "File Type isn't Allowed",
-    ),
+    ).optional(),
 });
+
+
 export default function Page({ params }: { params: { jobid: string } }) {
   const [pending, setPending] = useState<boolean>(false);
   const [availability, setAvailability] = useState<string>("");
   const [jobTitle, setJobTitle] = useState<string>("");
+  const [user,setUser] = useState<string | null>(null);
   const router = useRouter();
+  const [resume, setResume] = useState<string| null>(null);
+  const [resumeType, setResumeType] = useState<string| null>(null);
+
   useEffect(() => {
     async function getUser() {
-      const res = await clientCheckUser();
-      const jobTitle = await getJobTitle(params.jobid);
-      if (jobTitle) {
-        setJobTitle(jobTitle);
-      }
-      if (!res) {
+      const res = await getUserId();
+      if ("error" in res) {
         toast.error("User Not Logged In");
         router.push("/authenticate/signin");
+      }
+      if (!res.user?.id) {
+        toast.error("User Not Logged In");
+        router.push("/authenticate/signin");
+      }
+      setUser(res.user?.id || "");
+      const jobTitle = await getJobTitle(params.jobid);
+      const resumeRes  = await getResume();
+      if (resumeRes && typeof resumeRes === 'object' && 'error' in resumeRes) {
+        setResume(null);
+        setResumeType(null);
+      } else if (resumeRes && typeof resumeRes === 'object' && 'url' in resumeRes && 'mediaType' in resumeRes) {
+        setResume(resumeRes.url);
+        setResumeType(resumeRes.mediaType);
+      } else {
+        setResume(null);
+        setResumeType(null);
+      }
+      if (jobTitle) {
+        setJobTitle(jobTitle);
       }
     }
     getUser();
@@ -118,7 +145,20 @@ export default function Page({ params }: { params: { jobid: string } }) {
         throw new Error(applicant.error);
       }
       const applicantId = applicant.success?.applicantId.id;
-      if (values.resume) {
+      if(resume && !values.resume){
+        const mediaRes = await prismaMedia({
+          mediaType: resumeType || "",
+          mediaName: MediaNameSchema.options[0],
+          url: resume || "",
+          userId: user || "",
+          applicantId: applicantId || "",
+        })
+        if ("error" in mediaRes) {
+          toast.error(mediaRes.error);
+          throw new Error(mediaRes.error);
+        } 
+      }
+      else if (values.resume) {
         const signedUrl = await getUrl(
           values.resume.size,
           values.resume.type,
@@ -137,12 +177,15 @@ export default function Page({ params }: { params: { jobid: string } }) {
               "Content-Type": values.resume.type,
             },
           });
-
-          toast.success("Applied Successfully!!");
-          router.push("/jobs");
+          setResume(url);
+          setResumeType(values.resume.type);
         }
       }
-    } catch (error) {}
+      toast.success("Applied Successfully!!");
+      router.push("/jobs");
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
     setPending(false);
   }
   return (
@@ -237,8 +280,8 @@ export default function Page({ params }: { params: { jobid: string } }) {
               </FormItem>
             )}
           />
-
-          <UploadFile name="resume" />
+          
+          <UploadResume name="resume" resume={resume} />
           <StateButton
             content="Submit"
             processingWord="Submitting..."

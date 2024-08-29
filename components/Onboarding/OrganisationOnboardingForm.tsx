@@ -92,11 +92,6 @@ export default function OrganisationOrganisationOnboardingForm({
           router.push(`/dashboard/user/${user.userDetails.id}`);
         } else if (user.userDetails.role === "USER") {
           router.push(`/dashboard/user/${user.userDetails.id}`);
-        } else if (
-          user.userDetails.role === "ORGANIZATION" ||
-          user.userDetails.role === "ADMIN"
-        ) {
-          router.push(`/dashboard/onganization/${user.userDetails.id}`);
         } else {
           setUserDetails(user.userDetails);
           if (user.userDetails.media) {
@@ -188,6 +183,7 @@ export default function OrganisationOrganisationOnboardingForm({
       }
 
       toast.success("Successfully Submitted");
+      router.push(`/dashboard/user/${userId}`);
     } catch (error: any) {
       console.error("Submission failed:", error);
       toast.error(error.message);

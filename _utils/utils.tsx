@@ -94,3 +94,29 @@ async function handleImageUpload(event: any) {
   }
 }
 export default handleImageUpload;
+
+export const convertTimestampToTime = (timestamp: number) => {
+  const date = new Date(timestamp);
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: userTimeZone,
+  };
+  const time = new Intl.DateTimeFormat([], options).format(date);
+
+  return time;
+};
+
+export const pushNotification = (title: string, message: string) => {
+  if (Notification.permission === "granted") {
+    new Notification(title, { body: message });
+  } else if (Notification.permission !== "denied") {
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        new Notification(title, { body: message });
+      }
+    });
+  }
+};

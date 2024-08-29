@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,11 +14,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+
 import Link from "next/link";
-import { clientCheckUser, signIn } from "../actions/auth.action";
-import { redirect, useRouter } from "next/navigation";
+import { signIn } from "../actions/auth.action";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import StateButton from "@/components/shared/StateButton";
 
 export const signInSchema = z.object({

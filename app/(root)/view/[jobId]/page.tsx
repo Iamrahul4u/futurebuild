@@ -26,7 +26,13 @@ import {
   MessagesSquareIcon,
 } from "lucide-react";
 import prisma from "@/prisma";
+import CreateChat from "@/components/chats/CreateChat";
+import { getUser } from "@/app/[...authenticate]/lucia";
 export default async function Page({ params }: { params: { jobId: string } }) {
+  const currentUser = await getUser();
+  if (!currentUser || "error" in currentUser) {
+    throw new Error("User not authenticated");
+  }
   const res = await prisma.applicant.findMany({
     where: {
       jobId: params.jobId,
@@ -48,6 +54,7 @@ export default async function Page({ params }: { params: { jobId: string } }) {
       },
     },
   });
+
   return (
     <Card className="mt-8">
       <CardHeader>
@@ -91,9 +98,7 @@ export default async function Page({ params }: { params: { jobId: string } }) {
                   />
                 </TableCell>
                 <TableCell>
-                  <Link href={`/chat/${applicant.userId}/${applicant.jobId}`}>
-                    <MessagesSquareIcon />
-                  </Link>
+                  <CreateChat applicant={applicant} currentUser={currentUser} />
                 </TableCell>
               </TableRow>
             ))}

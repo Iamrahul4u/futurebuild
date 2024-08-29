@@ -1,10 +1,11 @@
 import React from "react";
 // eslint-disable-next-line camelcase
 import { Metadata } from "next";
-import DashboardNav from "@/components/shared/DashboardNav";
-
+// import DashboardNav from "@/components/shared/DashboardNav";
+import dynamic from "next/dynamic";
+const DashboardNav = dynamic(() => import("@/components/shared/DashboardNav"));
 export const metadata: Metadata = {
-  title: "Create New Job",
+  title: "Dashboard",
 };
 export default function CreateLayout({
   children,

@@ -12,8 +12,7 @@ import { InputTextArea } from "@/components/shared/InputTextArea";
 import imageCompression from "browser-image-compression";
 import { getUserId } from "@/app/actions/auth.action";
 import { MediaNameSchema, UserSchema } from "@/prisma/generated/zod";
-import { redirect, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import {
   getUserDetailsOnboarding,
   updateOnboardingUser,
@@ -22,10 +21,9 @@ import {
   UserOnboardingSchema,
   UserWithSkillsAndAddressTypes,
 } from "@/types/zodValidations";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { ACCEPTED_IMAGE_TYPES } from "@/_constants/constants";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUrl } from "@/app/actions/jobs.action";
-import StateButton from "../shared/StateButton";
+import StateButton from "@/components/shared/StateButton";
 
 const defaultFormValues = {
   firstName: "",
@@ -86,7 +84,10 @@ export default function OnboardingForm({
         ) {
           toast.success("Onboarding Already Completed");
           router.push(`/dashboard/user/${user.userDetails.id}`);
-        } else if (user.userDetails.role === "USER") {
+        } else if (
+          user.userDetails.role === "ADMIN" ||
+          user.userDetails.role === "ORGANIZATION"
+        ) {
           router.push(`/dashboard/user/${user.userDetails.id}`);
         } else {
           setUserDetails(user.userDetails);
@@ -191,6 +192,7 @@ export default function OnboardingForm({
       }
 
       toast.success("Successfully Submitted");
+
       router.push(`/dashboard/user/${user}`);
     } catch (error: any) {
       toast.error(error.message);
@@ -221,10 +223,10 @@ export default function OnboardingForm({
     uploadImageRef.current?.click();
   };
 
-  const initials = `${userDetails?.firstName[0] || ""}${userDetails?.secondName[0] || ""}`;
+  const initials = `${userDetails?.firstName[0] || ""}${userDetails?.secondName?.[0] || ""}`;
 
   const isDisabled = type === "OnboardingForm" ? false : true;
-  const editProfile = type === "EditProfileUser" ? false : true;
+  const editProfile = type === "EditOnboardingForm" ? true : false;
 
   return (
     <ScrollArea className="mx-auto h-full w-full px-12 py-8">

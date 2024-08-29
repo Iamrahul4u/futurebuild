@@ -2,10 +2,10 @@
 import React, { useEffect } from "react";
 import "../globals.css";
 import { usePathname, useRouter } from "next/navigation";
-import SignIn from "./SignIn";
-import SignUp from "./Signup";
-import { getUser } from "./lucia";
-import { checkUser, clientCheckUser } from "../actions/auth.action";
+import dynamic from "next/dynamic";
+const SignIn = dynamic(() => import("./SignIn"));
+const SignUp = dynamic(() => import("./Signup"));
+import { clientCheckUser } from "../actions/auth.action";
 
 export default function Page() {
   const pathname = usePathname();

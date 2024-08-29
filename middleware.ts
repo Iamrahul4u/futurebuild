@@ -10,7 +10,7 @@ const redis = new Redis({
 
 const ratelimit = new Ratelimit({
   redis: redis,
-  limiter: Ratelimit.slidingWindow(8, "10 s"),
+  limiter: Ratelimit.slidingWindow(50, "60 s"),
 });
 
 export default async function middleware(
@@ -26,5 +26,5 @@ export default async function middleware(
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|app/favicon.ico).*)"],
 };

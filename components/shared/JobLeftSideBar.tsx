@@ -1,16 +1,8 @@
 "use client";
 import React from "react";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import RangeSlider from "./RangeSlider";
 import { FormProvider, useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { InputTextArea } from "./InputTextArea";
-import InputText from "./InputText";
-import StateButton from "./StateButton";
-import InputNumber from "./InputNumber";
-import { CheckboxGroup } from "@radix-ui/themes";
 import queryString from "query-string";
 
 import {
@@ -18,12 +10,13 @@ import {
   JobTypeSchema,
   modeSchema,
 } from "@/prisma/generated/zod";
-import CheckBoxes from "./CheckBoxes";
-import { SelectForm } from "./Select";
-import { CardTitle } from "../ui/card";
+// import { SelectForm } from "./Select";
 import { leftSidebarfilterProps } from "@/types/sharedTypes";
 import { usePathname, useRouter } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import dynamic from "next/dynamic";
+const InputText=dynamic(()=>import("./InputText"))
+const SelectForm=dynamic(()=>import("./Select").then(mod=>mod.SelectForm))
+const StateButton=dynamic(()=>import("./StateButton"))
 
 const JobLeftSideBar = () => {
   const router = useRouter();

@@ -20,7 +20,7 @@ const Page = async ({ params }: { params: { userId: string } }) => {
       type="EditOrganisationOnboardingForm"
     />
   ) : (
-    <OnboardingForm userId={params.userId[0]} type="EditProfileUser" />
+    <OnboardingForm userId={params.userId[0]} type="EditOnboardingForm" />
   );
 };
 

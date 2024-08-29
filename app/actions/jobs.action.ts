@@ -279,7 +279,6 @@ export async function changeJobApprovalStatus({
   }
 }
 
-import { revalidatePath } from "next/cache";
 import {
   leftSidebarfilterProps,
   leftSidebarfilterPropsTypes,

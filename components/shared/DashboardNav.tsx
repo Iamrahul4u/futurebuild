@@ -27,6 +27,7 @@ const DashboardNav = () => {
               key={item.route}
               href={`/dashboard${item.route}/${userId}`}
               className="w-full text-base font-medium"
+              prefetch={true}
             >
               <li
                 className={`rounded-xl px-3 py-2 text-black transition-colors ease-in-out hover:bg-black hover:text-white hover:duration-300 dark:text-white dark:hover:bg-white dark:hover:text-black ${

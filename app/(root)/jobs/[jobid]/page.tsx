@@ -1,9 +1,12 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import RecentJobs from "@/components/shared/RecentJobs";
-import LoadingJobsCard from "@/components/loaders/LoadingJobsCard";
+
+import dynamic from "next/dynamic";
+const LoadingJobsCard=dynamic(()=>import("@/components/loaders/LoadingJobsCard"))
+const RecentJobs=dynamic(()=>import("@/components/shared/RecentJobs"))
+const Badge=dynamic(()=>import("@/components/ui/badge").then(mod=>mod.Badge))
+const Button=dynamic(()=>import("@/components/ui/button").then(mod=>mod.Button))
+
 import prisma from "@/prisma";
 import { getUser } from "@/app/[...authenticate]/lucia";
 import { CircleCheck } from "lucide-react";
