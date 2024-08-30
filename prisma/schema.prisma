@@ -82,6 +82,7 @@
     profileCompleted    Boolean?    @default(false)
     onboardingCompleted Boolean?    @default(false)
     roleSet             Boolean?    @default(false)
+    
     address             Location?   @relation(fields: [locationId], references: [id])
     postedJobs          JobPost[]   @relation("PostedJobs")
     appliedJobs         Applicant[]

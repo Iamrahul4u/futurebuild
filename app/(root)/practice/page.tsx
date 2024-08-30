@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { TriangleAlertIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function Component() {
@@ -43,6 +44,12 @@ export default function Component() {
 
   return (
     <div className="max-h-screen overflow-y-scroll bg-background">
+      <div className="flex h-10 w-full animate-pulse items-center justify-center gap-2 bg-red-500 from-red-300 to-red-500 pb-0 transition-colors delay-200 duration-1000 ease-in-out">
+        <TriangleAlertIcon />
+        <p className="mb-0 text-white">
+          This Part of the Website is under Development.{" "}
+        </p>
+      </div>
       <div className="container mx-auto px-4 py-8">
         <header className="sticky top-0 z-10 border-b bg-background">
           <h1>Practice Questions</h1>
