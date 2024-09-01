@@ -170,3 +170,94 @@ const solution = new Solution();
 
   `,
 };
+
+export const ResumeProfileSectionDummyData = {
+  name: "Rahul Gupta",
+  quickSummary1: "President and CEO: Manufacturing Start-Ups and Turnarounds",
+  quickSummary2:
+    "P&L up to $150M | Global Teams of 400+ | 300% Revenue Growth in 4 Years",
+  address: "1234 Main St, Anytown, USA",
+  phoneNumber: "(555) 555-1234",
+  email: "rahul@example.com",
+  linkedIn: "linkedin.com/in/iamrahul4u/",
+  education: [
+    {
+      degree: "Bachelor's in Computer Science",
+      institution: "ABC University",
+      location: "New York, NY",
+      year: "2015-2019",
+      cgpa: "8.5",
+    },
+  ],
+  experience: [
+    {
+      company: "ABC Company",
+      jobTitle: "Full Stack Developer",
+      startDate: "2019",
+      location: "New York, NY",
+      endDate: "2021",
+      description:
+        "Developed and maintained web applications using Python, JavaScript, and various frameworks.",
+    },
+  ],
+  skills: ["Python", "JavaScript", "React", "Node.js", "SQL"],
+  certifications: [
+    {
+      name: "AWS Certified Developer",
+      issuer: "Amazon Web Services",
+      year: "2020",
+    },
+  ],
+  languages: ["English", "Hindi", "Spanish"],
+  hobbies: "Reading, Traveling, Photography",
+  projects: [
+    {
+      name: "Chatbot Development",
+      description:
+        "Built a chatbot for a startup using Python and various frameworks.",
+      role: "Full Stack Developer",
+      year: "2020",
+    },
+    {
+      name: "E-commerce Website",
+      description:
+        "Developed a responsive e-commerce website using React and Node.js.",
+      role: "Full Stack Developer",
+      year: "2020",
+    },
+  ],
+  awards: [],
+
+  references: "",
+  summary:
+    "A highly motivated and detail-oriented software developer with a passion for creating innovative solutions. Proficient in Python, JavaScript, and various web technologies. Strong problem-solving skills and a quick learner.",
+  interests: "Machine Learning, Blockchain, Cybersecurity",
+  careerObjective:
+    "Seeking a position in a dynamic company that values innovation and continuous learning, where I can contribute my skills and grow with the organization.",
+};
+
+// Empty Data for Resume Profile Section
+export const ResumeProfileSectionEmptyData = {
+  name: "",
+  quickSummary1: "",
+  quickSummary2: "",
+  address: "",
+  phoneNumber: "",
+  email: "",
+  linkedIn: "",
+  education: [],
+  experience: [],
+  skills: [],
+  certifications: [],
+  languages: [],
+  hobbies: "",
+  projects: [],
+  awards: [],
+  references: "",
+  summary: "",
+  interests: "",
+  careerObjective: "",
+};
+
+export const ResumeBuilderInputFieldsClassname =
+  "focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none";

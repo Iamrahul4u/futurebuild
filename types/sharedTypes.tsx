@@ -35,3 +35,44 @@ export const leftSidebarfilterProps = z.object({
 export type leftSidebarfilterPropsTypes = z.infer<
   typeof leftSidebarfilterProps
 >;
+
+export type Education = {
+  degree: string;
+  institution: string;
+  year: string;
+  cgpa: string;
+};
+
+export type Experience = {
+  company: string;
+  position: string;
+  year: string;
+  description: string;
+};
+
+export type Project = {
+  name: string;
+  description: string;
+};
+
+export type ResumeProfileSectionDummyDataTypes = {
+  name: string;
+  quickSummary1: string;
+  quickSummary2: string;
+  address: string;
+  phoneNumber: string;
+  email: string;
+  linkedIn: string;
+  education: Education[];
+  experience: Experience[];
+  skills: string[];
+  certifications: string[];
+  languages: string[];
+  hobbies: string;
+  projects: Project[];
+  awards: string[];
+  references: string;
+  summary: string;
+  interests: string;
+  careerObjective: string;
+};

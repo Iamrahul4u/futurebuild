@@ -1,4 +1,4 @@
-export default function ViewProfileLayout({
+export default function ResumeLayout({
   children,
 }: {
   children: React.ReactNode;
