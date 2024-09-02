@@ -297,12 +297,13 @@ export default async function getOrganisationName(userId: string) {
   return user?.firstName + " " + user?.secondName || "";
 }
 
-export async function getJobTitle(jobId: string) {
+export async function getJobDetails(jobId: string) {
   const job = await prisma.jobPost.findUnique({
     where: { id: jobId },
     select: {
       jobTitle: true,
+      jobDescription: true,
     },
   });
-  return job?.jobTitle;
+  return job;
 }

@@ -16,6 +16,8 @@ export const JobPostScalarFieldEnumSchema = z.enum(['id','jobTitle','jobDescript
 
 export const ApplicantScalarFieldEnumSchema = z.enum(['id','userId','coverLetter','availability','approvalStatus','jobId']);
 
+export const CreditsScalarFieldEnumSchema = z.enum(['id','userId','credits']);
+
 export const UserScalarFieldEnumSchema = z.enum(['id','username','firstName','secondName','email','hashedPassword','createdAt','updatedAt','role','about','locationId','profileCompleted','onboardingCompleted','roleSet']);
 
 export const SkillScalarFieldEnumSchema = z.enum(['id','name']);
@@ -128,6 +130,28 @@ export const ApplicantOptionalDefaultsSchema = ApplicantSchema.merge(z.object({
 }))
 
 export type ApplicantOptionalDefaults = z.infer<typeof ApplicantOptionalDefaultsSchema>
+
+/////////////////////////////////////////
+// CREDITS SCHEMA
+/////////////////////////////////////////
+
+export const CreditsSchema = z.object({
+  id: z.string().cuid(),
+  userId: z.string(),
+  credits: z.number().int(),
+})
+
+export type Credits = z.infer<typeof CreditsSchema>
+
+// CREDITS OPTIONAL DEFAULTS SCHEMA
+//------------------------------------------------------
+
+export const CreditsOptionalDefaultsSchema = CreditsSchema.merge(z.object({
+  id: z.string().cuid().optional(),
+  credits: z.number().int().optional(),
+}))
+
+export type CreditsOptionalDefaults = z.infer<typeof CreditsOptionalDefaultsSchema>
 
 /////////////////////////////////////////
 // USER SCHEMA
@@ -417,6 +441,25 @@ export const ApplicantSelectSchema: z.ZodType<Prisma.ApplicantSelect> = z.object
   jobPost: z.union([z.boolean(),z.lazy(() => JobPostArgsSchema)]).optional(),
 }).strict()
 
+// CREDITS
+//------------------------------------------------------
+
+export const CreditsIncludeSchema: z.ZodType<Prisma.CreditsInclude> = z.object({
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+}).strict()
+
+export const CreditsArgsSchema: z.ZodType<Prisma.CreditsDefaultArgs> = z.object({
+  select: z.lazy(() => CreditsSelectSchema).optional(),
+  include: z.lazy(() => CreditsIncludeSchema).optional(),
+}).strict();
+
+export const CreditsSelectSchema: z.ZodType<Prisma.CreditsSelect> = z.object({
+  id: z.boolean().optional(),
+  userId: z.boolean().optional(),
+  credits: z.boolean().optional(),
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+}).strict()
+
 // USER
 //------------------------------------------------------
 
@@ -427,6 +470,7 @@ export const UserIncludeSchema: z.ZodType<Prisma.UserInclude> = z.object({
   postedJobs: z.union([z.boolean(),z.lazy(() => JobPostFindManyArgsSchema)]).optional(),
   appliedJobs: z.union([z.boolean(),z.lazy(() => ApplicantFindManyArgsSchema)]).optional(),
   sessions: z.union([z.boolean(),z.lazy(() => SessionFindManyArgsSchema)]).optional(),
+  credits: z.union([z.boolean(),z.lazy(() => CreditsArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -468,6 +512,7 @@ export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
   postedJobs: z.union([z.boolean(),z.lazy(() => JobPostFindManyArgsSchema)]).optional(),
   appliedJobs: z.union([z.boolean(),z.lazy(() => ApplicantFindManyArgsSchema)]).optional(),
   sessions: z.union([z.boolean(),z.lazy(() => SessionFindManyArgsSchema)]).optional(),
+  credits: z.union([z.boolean(),z.lazy(() => CreditsArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -829,6 +874,65 @@ export const ApplicantScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.App
   jobId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
+export const CreditsWhereInputSchema: z.ZodType<Prisma.CreditsWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => CreditsWhereInputSchema),z.lazy(() => CreditsWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CreditsWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CreditsWhereInputSchema),z.lazy(() => CreditsWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  credits: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+}).strict();
+
+export const CreditsOrderByWithRelationInputSchema: z.ZodType<Prisma.CreditsOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  credits: z.lazy(() => SortOrderSchema).optional(),
+  user: z.lazy(() => UserOrderByWithRelationInputSchema).optional()
+}).strict();
+
+export const CreditsWhereUniqueInputSchema: z.ZodType<Prisma.CreditsWhereUniqueInput> = z.union([
+  z.object({
+    id: z.string().cuid(),
+    userId: z.string()
+  }),
+  z.object({
+    id: z.string().cuid(),
+  }),
+  z.object({
+    userId: z.string(),
+  }),
+])
+.and(z.object({
+  id: z.string().cuid().optional(),
+  userId: z.string().optional(),
+  AND: z.union([ z.lazy(() => CreditsWhereInputSchema),z.lazy(() => CreditsWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CreditsWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CreditsWhereInputSchema),z.lazy(() => CreditsWhereInputSchema).array() ]).optional(),
+  credits: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+}).strict());
+
+export const CreditsOrderByWithAggregationInputSchema: z.ZodType<Prisma.CreditsOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  credits: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => CreditsCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => CreditsAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => CreditsMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => CreditsMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => CreditsSumOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const CreditsScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.CreditsScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => CreditsScalarWhereWithAggregatesInputSchema),z.lazy(() => CreditsScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CreditsScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CreditsScalarWhereWithAggregatesInputSchema),z.lazy(() => CreditsScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  userId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  credits: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+}).strict();
+
 export const UserWhereInputSchema: z.ZodType<Prisma.UserWhereInput> = z.object({
   AND: z.union([ z.lazy(() => UserWhereInputSchema),z.lazy(() => UserWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => UserWhereInputSchema).array().optional(),
@@ -852,7 +956,8 @@ export const UserWhereInputSchema: z.ZodType<Prisma.UserWhereInput> = z.object({
   address: z.union([ z.lazy(() => LocationNullableRelationFilterSchema),z.lazy(() => LocationWhereInputSchema) ]).optional().nullable(),
   postedJobs: z.lazy(() => JobPostListRelationFilterSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantListRelationFilterSchema).optional(),
-  sessions: z.lazy(() => SessionListRelationFilterSchema).optional()
+  sessions: z.lazy(() => SessionListRelationFilterSchema).optional(),
+  credits: z.union([ z.lazy(() => CreditsNullableRelationFilterSchema),z.lazy(() => CreditsWhereInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWithRelationInput> = z.object({
@@ -875,7 +980,8 @@ export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWit
   address: z.lazy(() => LocationOrderByWithRelationInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostOrderByRelationAggregateInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantOrderByRelationAggregateInputSchema).optional(),
-  sessions: z.lazy(() => SessionOrderByRelationAggregateInputSchema).optional()
+  sessions: z.lazy(() => SessionOrderByRelationAggregateInputSchema).optional(),
+  credits: z.lazy(() => CreditsOrderByWithRelationInputSchema).optional()
 }).strict();
 
 export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> = z.union([
@@ -929,7 +1035,8 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   address: z.union([ z.lazy(() => LocationNullableRelationFilterSchema),z.lazy(() => LocationWhereInputSchema) ]).optional().nullable(),
   postedJobs: z.lazy(() => JobPostListRelationFilterSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantListRelationFilterSchema).optional(),
-  sessions: z.lazy(() => SessionListRelationFilterSchema).optional()
+  sessions: z.lazy(() => SessionListRelationFilterSchema).optional(),
+  credits: z.union([ z.lazy(() => CreditsNullableRelationFilterSchema),z.lazy(() => CreditsWhereInputSchema) ]).optional().nullable(),
 }).strict());
 
 export const UserOrderByWithAggregationInputSchema: z.ZodType<Prisma.UserOrderByWithAggregationInput> = z.object({
@@ -1613,6 +1720,47 @@ export const ApplicantUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Applicant
   jobId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const CreditsCreateInputSchema: z.ZodType<Prisma.CreditsCreateInput> = z.object({
+  id: z.string().cuid().optional(),
+  credits: z.number().int().optional(),
+  user: z.lazy(() => UserCreateNestedOneWithoutCreditsInputSchema)
+}).strict();
+
+export const CreditsUncheckedCreateInputSchema: z.ZodType<Prisma.CreditsUncheckedCreateInput> = z.object({
+  id: z.string().cuid().optional(),
+  userId: z.string(),
+  credits: z.number().int().optional()
+}).strict();
+
+export const CreditsUpdateInputSchema: z.ZodType<Prisma.CreditsUpdateInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  credits: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutCreditsNestedInputSchema).optional()
+}).strict();
+
+export const CreditsUncheckedUpdateInputSchema: z.ZodType<Prisma.CreditsUncheckedUpdateInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  credits: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CreditsCreateManyInputSchema: z.ZodType<Prisma.CreditsCreateManyInput> = z.object({
+  id: z.string().cuid().optional(),
+  userId: z.string(),
+  credits: z.number().int().optional()
+}).strict();
+
+export const CreditsUpdateManyMutationInputSchema: z.ZodType<Prisma.CreditsUpdateManyMutationInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  credits: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CreditsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.CreditsUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  credits: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object({
   id: z.string().cuid().optional(),
   username: z.string(),
@@ -1632,7 +1780,8 @@ export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreateInput> = z.object({
@@ -1654,7 +1803,8 @@ export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreat
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object({
@@ -1676,7 +1826,8 @@ export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdateInput> = z.object({
@@ -1698,7 +1849,8 @@ export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdat
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateManyInputSchema: z.ZodType<Prisma.UserCreateManyInput> = z.object({
@@ -2411,6 +2563,32 @@ export const EnumApprovalStatusWithAggregatesFilterSchema: z.ZodType<Prisma.Enum
   _max: z.lazy(() => NestedEnumApprovalStatusFilterSchema).optional()
 }).strict();
 
+export const CreditsCountOrderByAggregateInputSchema: z.ZodType<Prisma.CreditsCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  credits: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CreditsAvgOrderByAggregateInputSchema: z.ZodType<Prisma.CreditsAvgOrderByAggregateInput> = z.object({
+  credits: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CreditsMaxOrderByAggregateInputSchema: z.ZodType<Prisma.CreditsMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  credits: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CreditsMinOrderByAggregateInputSchema: z.ZodType<Prisma.CreditsMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  credits: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CreditsSumOrderByAggregateInputSchema: z.ZodType<Prisma.CreditsSumOrderByAggregateInput> = z.object({
+  credits: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
 export const StringNullableFilterSchema: z.ZodType<Prisma.StringNullableFilter> = z.object({
   equals: z.string().optional().nullable(),
   in: z.string().array().optional().nullable(),
@@ -2465,6 +2643,11 @@ export const SessionListRelationFilterSchema: z.ZodType<Prisma.SessionListRelati
   every: z.lazy(() => SessionWhereInputSchema).optional(),
   some: z.lazy(() => SessionWhereInputSchema).optional(),
   none: z.lazy(() => SessionWhereInputSchema).optional()
+}).strict();
+
+export const CreditsNullableRelationFilterSchema: z.ZodType<Prisma.CreditsNullableRelationFilter> = z.object({
+  is: z.lazy(() => CreditsWhereInputSchema).optional().nullable(),
+  isNot: z.lazy(() => CreditsWhereInputSchema).optional().nullable()
 }).strict();
 
 export const UserSkillOrderByRelationAggregateInputSchema: z.ZodType<Prisma.UserSkillOrderByRelationAggregateInput> = z.object({
@@ -3011,6 +3194,20 @@ export const MediaUncheckedUpdateOneWithoutApplicantNestedInputSchema: z.ZodType
   update: z.union([ z.lazy(() => MediaUpdateToOneWithWhereWithoutApplicantInputSchema),z.lazy(() => MediaUpdateWithoutApplicantInputSchema),z.lazy(() => MediaUncheckedUpdateWithoutApplicantInputSchema) ]).optional(),
 }).strict();
 
+export const UserCreateNestedOneWithoutCreditsInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutCreditsInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutCreditsInputSchema),z.lazy(() => UserUncheckedCreateWithoutCreditsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutCreditsInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
+}).strict();
+
+export const UserUpdateOneRequiredWithoutCreditsNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutCreditsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutCreditsInputSchema),z.lazy(() => UserUncheckedCreateWithoutCreditsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutCreditsInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutCreditsInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutCreditsInputSchema),z.lazy(() => UserUpdateWithoutCreditsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutCreditsInputSchema) ]).optional(),
+}).strict();
+
 export const UserSkillCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.UserSkillCreateNestedManyWithoutUserInput> = z.object({
   create: z.union([ z.lazy(() => UserSkillCreateWithoutUserInputSchema),z.lazy(() => UserSkillCreateWithoutUserInputSchema).array(),z.lazy(() => UserSkillUncheckedCreateWithoutUserInputSchema),z.lazy(() => UserSkillUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => UserSkillCreateOrConnectWithoutUserInputSchema),z.lazy(() => UserSkillCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -3052,6 +3249,12 @@ export const SessionCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.Ses
   connect: z.union([ z.lazy(() => SessionWhereUniqueInputSchema),z.lazy(() => SessionWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const CreditsCreateNestedOneWithoutUserInputSchema: z.ZodType<Prisma.CreditsCreateNestedOneWithoutUserInput> = z.object({
+  create: z.union([ z.lazy(() => CreditsCreateWithoutUserInputSchema),z.lazy(() => CreditsUncheckedCreateWithoutUserInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => CreditsCreateOrConnectWithoutUserInputSchema).optional(),
+  connect: z.lazy(() => CreditsWhereUniqueInputSchema).optional()
+}).strict();
+
 export const UserSkillUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.UserSkillUncheckedCreateNestedManyWithoutUserInput> = z.object({
   create: z.union([ z.lazy(() => UserSkillCreateWithoutUserInputSchema),z.lazy(() => UserSkillCreateWithoutUserInputSchema).array(),z.lazy(() => UserSkillUncheckedCreateWithoutUserInputSchema),z.lazy(() => UserSkillUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => UserSkillCreateOrConnectWithoutUserInputSchema),z.lazy(() => UserSkillCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -3085,6 +3288,12 @@ export const SessionUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<P
   connectOrCreate: z.union([ z.lazy(() => SessionCreateOrConnectWithoutUserInputSchema),z.lazy(() => SessionCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
   createMany: z.lazy(() => SessionCreateManyUserInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => SessionWhereUniqueInputSchema),z.lazy(() => SessionWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const CreditsUncheckedCreateNestedOneWithoutUserInputSchema: z.ZodType<Prisma.CreditsUncheckedCreateNestedOneWithoutUserInput> = z.object({
+  create: z.union([ z.lazy(() => CreditsCreateWithoutUserInputSchema),z.lazy(() => CreditsUncheckedCreateWithoutUserInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => CreditsCreateOrConnectWithoutUserInputSchema).optional(),
+  connect: z.lazy(() => CreditsWhereUniqueInputSchema).optional()
 }).strict();
 
 export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = z.object({
@@ -3179,6 +3388,16 @@ export const SessionUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.Ses
   deleteMany: z.union([ z.lazy(() => SessionScalarWhereInputSchema),z.lazy(() => SessionScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const CreditsUpdateOneWithoutUserNestedInputSchema: z.ZodType<Prisma.CreditsUpdateOneWithoutUserNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CreditsCreateWithoutUserInputSchema),z.lazy(() => CreditsUncheckedCreateWithoutUserInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => CreditsCreateOrConnectWithoutUserInputSchema).optional(),
+  upsert: z.lazy(() => CreditsUpsertWithoutUserInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => CreditsWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => CreditsWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => CreditsWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => CreditsUpdateToOneWithWhereWithoutUserInputSchema),z.lazy(() => CreditsUpdateWithoutUserInputSchema),z.lazy(() => CreditsUncheckedUpdateWithoutUserInputSchema) ]).optional(),
+}).strict();
+
 export const UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.UserSkillUncheckedUpdateManyWithoutUserNestedInput> = z.object({
   create: z.union([ z.lazy(() => UserSkillCreateWithoutUserInputSchema),z.lazy(() => UserSkillCreateWithoutUserInputSchema).array(),z.lazy(() => UserSkillUncheckedCreateWithoutUserInputSchema),z.lazy(() => UserSkillUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => UserSkillCreateOrConnectWithoutUserInputSchema),z.lazy(() => UserSkillCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -3247,6 +3466,16 @@ export const SessionUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<P
   update: z.union([ z.lazy(() => SessionUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => SessionUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => SessionUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => SessionUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => SessionScalarWhereInputSchema),z.lazy(() => SessionScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const CreditsUncheckedUpdateOneWithoutUserNestedInputSchema: z.ZodType<Prisma.CreditsUncheckedUpdateOneWithoutUserNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CreditsCreateWithoutUserInputSchema),z.lazy(() => CreditsUncheckedCreateWithoutUserInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => CreditsCreateOrConnectWithoutUserInputSchema).optional(),
+  upsert: z.lazy(() => CreditsUpsertWithoutUserInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => CreditsWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => CreditsWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => CreditsWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => CreditsUpdateToOneWithWhereWithoutUserInputSchema),z.lazy(() => CreditsUpdateWithoutUserInputSchema),z.lazy(() => CreditsUncheckedUpdateWithoutUserInputSchema) ]).optional(),
 }).strict();
 
 export const UserSkillCreateNestedManyWithoutSkillInputSchema: z.ZodType<Prisma.UserSkillCreateNestedManyWithoutSkillInput> = z.object({
@@ -3815,7 +4044,8 @@ export const UserCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserCreate
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutPostedJobsInput> = z.object({
@@ -3836,7 +4066,8 @@ export const UserUncheckedCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.U
   skills: z.lazy(() => UserSkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutPostedJobsInput> = z.object({
@@ -3951,7 +4182,8 @@ export const UserUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUpdate
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutPostedJobsInput> = z.object({
@@ -3972,7 +4204,8 @@ export const UserUncheckedUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.U
   skills: z.lazy(() => UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const MediaCreateWithoutApplicantInputSchema: z.ZodType<Prisma.MediaCreateWithoutApplicantInput> = z.object({
@@ -4014,7 +4247,8 @@ export const UserCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserCreat
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutAppliedJobsInput> = z.object({
@@ -4035,7 +4269,8 @@ export const UserUncheckedCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.
   skills: z.lazy(() => UserSkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutAppliedJobsInput> = z.object({
@@ -4140,7 +4375,8 @@ export const UserUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUpdat
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutAppliedJobsInput> = z.object({
@@ -4161,7 +4397,8 @@ export const UserUncheckedUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.
   skills: z.lazy(() => UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const JobPostUpsertWithoutApplicantsInputSchema: z.ZodType<Prisma.JobPostUpsertWithoutApplicantsInput> = z.object({
@@ -4209,6 +4446,110 @@ export const JobPostUncheckedUpdateWithoutApplicantsInputSchema: z.ZodType<Prism
   userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   skills: z.lazy(() => JobSkillUncheckedUpdateManyWithoutJobPostNestedInputSchema).optional(),
   perks: z.lazy(() => PerkUncheckedUpdateManyWithoutJobPostNestedInputSchema).optional()
+}).strict();
+
+export const UserCreateWithoutCreditsInputSchema: z.ZodType<Prisma.UserCreateWithoutCreditsInput> = z.object({
+  id: z.string().cuid().optional(),
+  username: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
+  email: z.string(),
+  hashedPassword: z.string(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  role: z.lazy(() => RoleSchema).optional(),
+  about: z.string().optional(),
+  profileCompleted: z.boolean().optional().nullable(),
+  onboardingCompleted: z.boolean().optional().nullable(),
+  roleSet: z.boolean().optional().nullable(),
+  skills: z.lazy(() => UserSkillCreateNestedManyWithoutUserInputSchema).optional(),
+  media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
+  address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
+  postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
+  appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateWithoutCreditsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutCreditsInput> = z.object({
+  id: z.string().cuid().optional(),
+  username: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
+  email: z.string(),
+  hashedPassword: z.string(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  role: z.lazy(() => RoleSchema).optional(),
+  about: z.string().optional(),
+  locationId: z.string().optional().nullable(),
+  profileCompleted: z.boolean().optional().nullable(),
+  onboardingCompleted: z.boolean().optional().nullable(),
+  roleSet: z.boolean().optional().nullable(),
+  skills: z.lazy(() => UserSkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
+  appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserCreateOrConnectWithoutCreditsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutCreditsInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => UserCreateWithoutCreditsInputSchema),z.lazy(() => UserUncheckedCreateWithoutCreditsInputSchema) ]),
+}).strict();
+
+export const UserUpsertWithoutCreditsInputSchema: z.ZodType<Prisma.UserUpsertWithoutCreditsInput> = z.object({
+  update: z.union([ z.lazy(() => UserUpdateWithoutCreditsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutCreditsInputSchema) ]),
+  create: z.union([ z.lazy(() => UserCreateWithoutCreditsInputSchema),z.lazy(() => UserUncheckedCreateWithoutCreditsInputSchema) ]),
+  where: z.lazy(() => UserWhereInputSchema).optional()
+}).strict();
+
+export const UserUpdateToOneWithWhereWithoutCreditsInputSchema: z.ZodType<Prisma.UserUpdateToOneWithWhereWithoutCreditsInput> = z.object({
+  where: z.lazy(() => UserWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => UserUpdateWithoutCreditsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutCreditsInputSchema) ]),
+}).strict();
+
+export const UserUpdateWithoutCreditsInputSchema: z.ZodType<Prisma.UserUpdateWithoutCreditsInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
+  about: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  profileCompleted: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  onboardingCompleted: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  roleSet: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  skills: z.lazy(() => UserSkillUpdateManyWithoutUserNestedInputSchema).optional(),
+  media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
+  address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
+  postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
+  appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
+export const UserUncheckedUpdateWithoutCreditsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutCreditsInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
+  about: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  locationId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  profileCompleted: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  onboardingCompleted: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  roleSet: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  skills: z.lazy(() => UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
+  appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserSkillCreateWithoutUserInputSchema: z.ZodType<Prisma.UserSkillCreateWithoutUserInput> = z.object({
@@ -4374,6 +4715,21 @@ export const SessionCreateManyUserInputEnvelopeSchema: z.ZodType<Prisma.SessionC
   skipDuplicates: z.boolean().optional()
 }).strict();
 
+export const CreditsCreateWithoutUserInputSchema: z.ZodType<Prisma.CreditsCreateWithoutUserInput> = z.object({
+  id: z.string().cuid().optional(),
+  credits: z.number().int().optional()
+}).strict();
+
+export const CreditsUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.CreditsUncheckedCreateWithoutUserInput> = z.object({
+  id: z.string().cuid().optional(),
+  credits: z.number().int().optional()
+}).strict();
+
+export const CreditsCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.CreditsCreateOrConnectWithoutUserInput> = z.object({
+  where: z.lazy(() => CreditsWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => CreditsCreateWithoutUserInputSchema),z.lazy(() => CreditsUncheckedCreateWithoutUserInputSchema) ]),
+}).strict();
+
 export const UserSkillUpsertWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.UserSkillUpsertWithWhereUniqueWithoutUserInput> = z.object({
   where: z.lazy(() => UserSkillWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => UserSkillUpdateWithoutUserInputSchema),z.lazy(() => UserSkillUncheckedUpdateWithoutUserInputSchema) ]),
@@ -4532,6 +4888,27 @@ export const SessionScalarWhereInputSchema: z.ZodType<Prisma.SessionScalarWhereI
   expiresAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
+export const CreditsUpsertWithoutUserInputSchema: z.ZodType<Prisma.CreditsUpsertWithoutUserInput> = z.object({
+  update: z.union([ z.lazy(() => CreditsUpdateWithoutUserInputSchema),z.lazy(() => CreditsUncheckedUpdateWithoutUserInputSchema) ]),
+  create: z.union([ z.lazy(() => CreditsCreateWithoutUserInputSchema),z.lazy(() => CreditsUncheckedCreateWithoutUserInputSchema) ]),
+  where: z.lazy(() => CreditsWhereInputSchema).optional()
+}).strict();
+
+export const CreditsUpdateToOneWithWhereWithoutUserInputSchema: z.ZodType<Prisma.CreditsUpdateToOneWithWhereWithoutUserInput> = z.object({
+  where: z.lazy(() => CreditsWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => CreditsUpdateWithoutUserInputSchema),z.lazy(() => CreditsUncheckedUpdateWithoutUserInputSchema) ]),
+}).strict();
+
+export const CreditsUpdateWithoutUserInputSchema: z.ZodType<Prisma.CreditsUpdateWithoutUserInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  credits: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CreditsUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.CreditsUncheckedUpdateWithoutUserInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  credits: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const UserSkillCreateWithoutSkillInputSchema: z.ZodType<Prisma.UserSkillCreateWithoutSkillInput> = z.object({
   id: z.string().cuid().optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutSkillsInputSchema).optional()
@@ -4622,7 +4999,8 @@ export const UserCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserCreateWith
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutSkillsInput> = z.object({
@@ -4643,7 +5021,8 @@ export const UserUncheckedCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserU
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutSkillsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutSkillsInput> = z.object({
@@ -4697,7 +5076,8 @@ export const UserUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUpdateWith
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutSkillsInput> = z.object({
@@ -4718,7 +5098,8 @@ export const UserUncheckedUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserU
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const SkillUpsertWithoutUsersInputSchema: z.ZodType<Prisma.SkillUpsertWithoutUsersInput> = z.object({
@@ -4978,7 +5359,8 @@ export const UserCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserCreateWitho
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutMediaInput> = z.object({
@@ -4999,7 +5381,8 @@ export const UserUncheckedCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserUn
   skills: z.lazy(() => UserSkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutMediaInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutMediaInput> = z.object({
@@ -5059,7 +5442,8 @@ export const UserUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUpdateWitho
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutMediaInput> = z.object({
@@ -5080,7 +5464,8 @@ export const UserUncheckedUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUn
   skills: z.lazy(() => UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const ApplicantUpsertWithoutResumeInputSchema: z.ZodType<Prisma.ApplicantUpsertWithoutResumeInput> = z.object({
@@ -5130,7 +5515,8 @@ export const UserCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateWi
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
-  appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional()
+  appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutSessionsInput> = z.object({
@@ -5151,7 +5537,8 @@ export const UserUncheckedCreateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   skills: z.lazy(() => UserSkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
-  appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutSessionsInput> = z.object({
@@ -5188,7 +5575,8 @@ export const UserUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUpdateWi
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
-  appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional()
+  appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutSessionsInput> = z.object({
@@ -5209,7 +5597,8 @@ export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   skills: z.lazy(() => UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
-  appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateWithoutAddressInputSchema: z.ZodType<Prisma.UserCreateWithoutAddressInput> = z.object({
@@ -5230,7 +5619,8 @@ export const UserCreateWithoutAddressInputSchema: z.ZodType<Prisma.UserCreateWit
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutAddressInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutAddressInput> = z.object({
@@ -5251,7 +5641,8 @@ export const UserUncheckedCreateWithoutAddressInputSchema: z.ZodType<Prisma.User
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedCreateNestedOneWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutAddressInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutAddressInput> = z.object({
@@ -5620,7 +6011,8 @@ export const UserUpdateWithoutAddressInputSchema: z.ZodType<Prisma.UserUpdateWit
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutAddressInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutAddressInput> = z.object({
@@ -5641,7 +6033,8 @@ export const UserUncheckedUpdateWithoutAddressInputSchema: z.ZodType<Prisma.User
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  credits: z.lazy(() => CreditsUncheckedUpdateOneWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateManyWithoutAddressInputSchema: z.ZodType<Prisma.UserUncheckedUpdateManyWithoutAddressInput> = z.object({
@@ -5786,6 +6179,68 @@ export const ApplicantFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.ApplicantFin
   select: ApplicantSelectSchema.optional(),
   include: ApplicantIncludeSchema.optional(),
   where: ApplicantWhereUniqueInputSchema,
+}).strict() ;
+
+export const CreditsFindFirstArgsSchema: z.ZodType<Prisma.CreditsFindFirstArgs> = z.object({
+  select: CreditsSelectSchema.optional(),
+  include: CreditsIncludeSchema.optional(),
+  where: CreditsWhereInputSchema.optional(),
+  orderBy: z.union([ CreditsOrderByWithRelationInputSchema.array(),CreditsOrderByWithRelationInputSchema ]).optional(),
+  cursor: CreditsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ CreditsScalarFieldEnumSchema,CreditsScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const CreditsFindFirstOrThrowArgsSchema: z.ZodType<Prisma.CreditsFindFirstOrThrowArgs> = z.object({
+  select: CreditsSelectSchema.optional(),
+  include: CreditsIncludeSchema.optional(),
+  where: CreditsWhereInputSchema.optional(),
+  orderBy: z.union([ CreditsOrderByWithRelationInputSchema.array(),CreditsOrderByWithRelationInputSchema ]).optional(),
+  cursor: CreditsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ CreditsScalarFieldEnumSchema,CreditsScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const CreditsFindManyArgsSchema: z.ZodType<Prisma.CreditsFindManyArgs> = z.object({
+  select: CreditsSelectSchema.optional(),
+  include: CreditsIncludeSchema.optional(),
+  where: CreditsWhereInputSchema.optional(),
+  orderBy: z.union([ CreditsOrderByWithRelationInputSchema.array(),CreditsOrderByWithRelationInputSchema ]).optional(),
+  cursor: CreditsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ CreditsScalarFieldEnumSchema,CreditsScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const CreditsAggregateArgsSchema: z.ZodType<Prisma.CreditsAggregateArgs> = z.object({
+  where: CreditsWhereInputSchema.optional(),
+  orderBy: z.union([ CreditsOrderByWithRelationInputSchema.array(),CreditsOrderByWithRelationInputSchema ]).optional(),
+  cursor: CreditsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const CreditsGroupByArgsSchema: z.ZodType<Prisma.CreditsGroupByArgs> = z.object({
+  where: CreditsWhereInputSchema.optional(),
+  orderBy: z.union([ CreditsOrderByWithAggregationInputSchema.array(),CreditsOrderByWithAggregationInputSchema ]).optional(),
+  by: CreditsScalarFieldEnumSchema.array(),
+  having: CreditsScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const CreditsFindUniqueArgsSchema: z.ZodType<Prisma.CreditsFindUniqueArgs> = z.object({
+  select: CreditsSelectSchema.optional(),
+  include: CreditsIncludeSchema.optional(),
+  where: CreditsWhereUniqueInputSchema,
+}).strict() ;
+
+export const CreditsFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.CreditsFindUniqueOrThrowArgs> = z.object({
+  select: CreditsSelectSchema.optional(),
+  include: CreditsIncludeSchema.optional(),
+  where: CreditsWhereUniqueInputSchema,
 }).strict() ;
 
 export const UserFindFirstArgsSchema: z.ZodType<Prisma.UserFindFirstArgs> = z.object({
@@ -6431,6 +6886,52 @@ export const ApplicantUpdateManyArgsSchema: z.ZodType<Prisma.ApplicantUpdateMany
 
 export const ApplicantDeleteManyArgsSchema: z.ZodType<Prisma.ApplicantDeleteManyArgs> = z.object({
   where: ApplicantWhereInputSchema.optional(),
+}).strict() ;
+
+export const CreditsCreateArgsSchema: z.ZodType<Prisma.CreditsCreateArgs> = z.object({
+  select: CreditsSelectSchema.optional(),
+  include: CreditsIncludeSchema.optional(),
+  data: z.union([ CreditsCreateInputSchema,CreditsUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const CreditsUpsertArgsSchema: z.ZodType<Prisma.CreditsUpsertArgs> = z.object({
+  select: CreditsSelectSchema.optional(),
+  include: CreditsIncludeSchema.optional(),
+  where: CreditsWhereUniqueInputSchema,
+  create: z.union([ CreditsCreateInputSchema,CreditsUncheckedCreateInputSchema ]),
+  update: z.union([ CreditsUpdateInputSchema,CreditsUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const CreditsCreateManyArgsSchema: z.ZodType<Prisma.CreditsCreateManyArgs> = z.object({
+  data: z.union([ CreditsCreateManyInputSchema,CreditsCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const CreditsCreateManyAndReturnArgsSchema: z.ZodType<Prisma.CreditsCreateManyAndReturnArgs> = z.object({
+  data: z.union([ CreditsCreateManyInputSchema,CreditsCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const CreditsDeleteArgsSchema: z.ZodType<Prisma.CreditsDeleteArgs> = z.object({
+  select: CreditsSelectSchema.optional(),
+  include: CreditsIncludeSchema.optional(),
+  where: CreditsWhereUniqueInputSchema,
+}).strict() ;
+
+export const CreditsUpdateArgsSchema: z.ZodType<Prisma.CreditsUpdateArgs> = z.object({
+  select: CreditsSelectSchema.optional(),
+  include: CreditsIncludeSchema.optional(),
+  data: z.union([ CreditsUpdateInputSchema,CreditsUncheckedUpdateInputSchema ]),
+  where: CreditsWhereUniqueInputSchema,
+}).strict() ;
+
+export const CreditsUpdateManyArgsSchema: z.ZodType<Prisma.CreditsUpdateManyArgs> = z.object({
+  data: z.union([ CreditsUpdateManyMutationInputSchema,CreditsUncheckedUpdateManyInputSchema ]),
+  where: CreditsWhereInputSchema.optional(),
+}).strict() ;
+
+export const CreditsDeleteManyArgsSchema: z.ZodType<Prisma.CreditsDeleteManyArgs> = z.object({
+  where: CreditsWhereInputSchema.optional(),
 }).strict() ;
 
 export const UserCreateArgsSchema: z.ZodType<Prisma.UserCreateArgs> = z.object({

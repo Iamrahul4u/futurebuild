@@ -43,6 +43,9 @@ export function DashboardDropdownMenu() {
         <Link href={`/chats`}>
           <DropdownMenuItem>Messages</DropdownMenuItem>
         </Link>
+        <Link href={`/resume/template`}>
+          <DropdownMenuItem>Resume</DropdownMenuItem>
+        </Link>
         {(role === RoleSchema.options[2] || role === RoleSchema.options[0]) && (
           <Link href={"/create/job"}>
             <DropdownMenuItem>Post A Job</DropdownMenuItem>

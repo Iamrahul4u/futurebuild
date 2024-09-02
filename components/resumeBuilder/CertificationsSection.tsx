@@ -36,11 +36,17 @@ export default function CertificationsSection({
 
   const handleAddCertification = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleFormDataChange("certifications", [
-      ...formData.certifications,
-      certification,
-    ]);
-    setCertification({ name: "", issuer: "", year: "" });
+    if (
+      certification.name.trim() &&
+      certification.issuer.trim() &&
+      certification.year.trim()
+    ) {
+      handleFormDataChange("certifications", [
+        ...formData.certifications,
+        certification,
+      ]);
+      setCertification({ name: "", issuer: "", year: "" });
+    }
   };
 
   return (
@@ -55,6 +61,7 @@ export default function CertificationsSection({
           value={certification.name}
           onChange={handleCertificationChange}
           className={ResumeBuilderInputFieldsClassname}
+          required
         />
       </div>
       <div className="mb-4">
@@ -66,6 +73,7 @@ export default function CertificationsSection({
           value={certification.issuer}
           onChange={handleCertificationChange}
           className={ResumeBuilderInputFieldsClassname}
+          required
         />
       </div>
       <div className="mb-4">
@@ -77,11 +85,24 @@ export default function CertificationsSection({
           value={certification.year}
           onChange={handleCertificationChange}
           className={ResumeBuilderInputFieldsClassname}
+          required
         />
       </div>
       <button className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
         Add Certification
       </button>
+      {formData.certifications.length > 0 && (
+        <div className="mt-4">
+          <h3 className="mb-2 text-sm font-bold">Added Certifications:</h3>
+          <ul className="list-inside list-disc">
+            {formData.certifications.map((cert, index) => (
+              <li key={index} className="text-sm text-gray-700">
+                {cert.name} - {cert.issuer} ({cert.year})
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </form>
   );
 }

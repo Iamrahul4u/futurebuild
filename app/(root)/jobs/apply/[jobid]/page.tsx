@@ -8,35 +8,56 @@ import {
   // FormLabel,
   // FormMessage,
 } from "../../../../../components/ui/form";
-const FormControl=dynamic(()=>import("@/components/ui/form").then(mod=>mod.FormControl))
+const FormControl = dynamic(() =>
+  import("@/components/ui/form").then((mod) => mod.FormControl),
+);
 // const FormField=dynamic(()=>import("@/components/ui/form").then(mod=>mod.FormField))
-const FormItem=dynamic(()=>import("@/components/ui/form").then(mod=>mod.FormItem))
-const FormLabel=dynamic(()=>import("@/components/ui/form").then(mod=>mod.FormLabel))
-const FormMessage=dynamic(()=>import("@/components/ui/form").then(mod=>mod.FormMessage))
+const FormItem = dynamic(() =>
+  import("@/components/ui/form").then((mod) => mod.FormItem),
+);
+const FormLabel = dynamic(() =>
+  import("@/components/ui/form").then((mod) => mod.FormLabel),
+);
+const FormMessage = dynamic(() =>
+  import("@/components/ui/form").then((mod) => mod.FormMessage),
+);
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import dynamic from "next/dynamic";
-const ScrollArea=dynamic(()=>import("@/components/ui/scroll-area").then(mod=>mod.ScrollArea))
+const ScrollArea = dynamic(() =>
+  import("@/components/ui/scroll-area").then((mod) => mod.ScrollArea),
+);
 import { FormProvider, useForm } from "react-hook-form";
 
-const RadioGroup=dynamic(()=>import("@/components/ui/radio-group").then(mod=>mod.RadioGroup))
-const RadioGroupItem=dynamic(()=>import("@/components/ui/radio-group").then(mod=>mod.RadioGroupItem))
-const DatePicker=dynamic(()=>import("@/components/shared/DatePicker"))
+const RadioGroup = dynamic(() =>
+  import("@/components/ui/radio-group").then((mod) => mod.RadioGroup),
+);
+const RadioGroupItem = dynamic(() =>
+  import("@/components/ui/radio-group").then((mod) => mod.RadioGroupItem),
+);
+const DatePicker = dynamic(() => import("@/components/shared/DatePicker"));
 import InputText from "@/components/shared/InputText";
-const InputTextArea=dynamic(()=>import("@/components/shared/InputTextArea").then(mod=>mod.InputTextArea));
-const UploadResume=dynamic(()=>import("@/components/shared/UploadResume"));
-const StateButton=dynamic(()=>import("@/components/shared/StateButton"));
+const InputTextArea = dynamic(() =>
+  import("@/components/shared/InputTextArea").then((mod) => mod.InputTextArea),
+);
+const UploadResume = dynamic(() => import("@/components/shared/UploadResume"));
+const StateButton = dynamic(() => import("@/components/shared/StateButton"));
 import { toast } from "sonner";
-import { checkUser, clientCheckUser, getUserId } from "@/app/actions/auth.action";
-import { MediaNameSchema } from "@/prisma/generated/zod";
-import {  useRouter } from "next/navigation";
-import { applyToJob, getJobTitle, getUrl } from "@/app/actions/jobs.action";
 import {
-  ACCEPTED_FILE_TYPES,
-  MAX_RESUME_SIZE,
-} from "@/_constants/constants";
+  checkUser,
+  clientCheckUser,
+  getUserId,
+} from "@/app/actions/auth.action";
+import { MediaNameSchema } from "@/prisma/generated/zod";
+import { useRouter } from "next/navigation";
+import { applyToJob, getJobDetails, getUrl } from "@/app/actions/jobs.action";
+import { ACCEPTED_FILE_TYPES, MAX_RESUME_SIZE } from "@/_constants/constants";
 import { getResume } from "@/app/actions/user.action";
 import { prismaMedia } from "@/app/actions/prisma.action";
+import { Button } from "@/components/ui/button";
+import { SparklesIcon } from "lucide-react";
+import { generateCoverLetter } from "@/app/actions/openAi.action";
+import { AiModal } from "@/components/resumeBuilder/AiModal";
 
 const applyJob = z.object({
   coverLetter: z
@@ -68,18 +89,19 @@ const applyJob = z.object({
     .refine(
       (file) => ACCEPTED_FILE_TYPES.includes(file.type),
       "File Type isn't Allowed",
-    ).optional(),
+    )
+    .optional(),
 });
-
 
 export default function Page({ params }: { params: { jobid: string } }) {
   const [pending, setPending] = useState<boolean>(false);
   const [availability, setAvailability] = useState<string>("");
   const [jobTitle, setJobTitle] = useState<string>("");
-  const [user,setUser] = useState<string | null>(null);
+  const [jobDescription, setJobDescription] = useState<string>("");
+  const [user, setUser] = useState<string | null>(null);
   const router = useRouter();
-  const [resume, setResume] = useState<string| null>(null);
-  const [resumeType, setResumeType] = useState<string| null>(null);
+  const [resume, setResume] = useState<string | null>(null);
+  const [resumeType, setResumeType] = useState<string | null>(null);
 
   useEffect(() => {
     async function getUser() {
@@ -93,12 +115,19 @@ export default function Page({ params }: { params: { jobid: string } }) {
         router.push("/authenticate/signin");
       }
       setUser(res.user?.id || "");
-      const jobTitle = await getJobTitle(params.jobid);
-      const resumeRes  = await getResume();
-      if (resumeRes && typeof resumeRes === 'object' && 'error' in resumeRes) {
+      const jobDetails = await getJobDetails(params.jobid);
+      const jobTitle = jobDetails?.jobTitle;
+      const jobDescription = jobDetails?.jobDescription;
+      const resumeRes = await getResume();
+      if (resumeRes && typeof resumeRes === "object" && "error" in resumeRes) {
         setResume(null);
         setResumeType(null);
-      } else if (resumeRes && typeof resumeRes === 'object' && 'url' in resumeRes && 'mediaType' in resumeRes) {
+      } else if (
+        resumeRes &&
+        typeof resumeRes === "object" &&
+        "url" in resumeRes &&
+        "mediaType" in resumeRes
+      ) {
         setResume(resumeRes.url);
         setResumeType(resumeRes.mediaType);
       } else {
@@ -107,6 +136,9 @@ export default function Page({ params }: { params: { jobid: string } }) {
       }
       if (jobTitle) {
         setJobTitle(jobTitle);
+      }
+      if (jobDescription) {
+        setJobDescription(jobDescription);
       }
     }
     getUser();
@@ -145,20 +177,19 @@ export default function Page({ params }: { params: { jobid: string } }) {
         throw new Error(applicant.error);
       }
       const applicantId = applicant.success?.applicantId.id;
-      if(resume && !values.resume){
+      if (resume && !values.resume) {
         const mediaRes = await prismaMedia({
           mediaType: resumeType || "",
           mediaName: MediaNameSchema.options[0],
           url: resume || "",
           userId: user || "",
           applicantId: applicantId || "",
-        })
+        });
         if ("error" in mediaRes) {
           toast.error(mediaRes.error);
           throw new Error(mediaRes.error);
-        } 
-      }
-      else if (values.resume) {
+        }
+      } else if (values.resume) {
         const signedUrl = await getUrl(
           values.resume.size,
           values.resume.type,
@@ -188,6 +219,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
     }
     setPending(false);
   }
+
   return (
     <ScrollArea className="mx-auto h-full w-4/5 px-12 py-8">
       <h1 className="mb-6 text-6xl text-black dark:text-white">
@@ -196,7 +228,13 @@ export default function Page({ params }: { params: { jobid: string } }) {
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-2">
           <h3 className="text-black dark:text-white">Cover Letter</h3>
-
+          <AiModal
+            type="coverLetter"
+            form={form}
+            jobDescription={jobDescription}
+            text={"Generate Cover Letter By AI"}
+            description={"Generate a cover letter based on your profile."}
+          />
           <InputTextArea
             placeholder="Most of the Recruiters Read your coverLetter before Reading Resume."
             name="coverLetter"
@@ -280,7 +318,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
               </FormItem>
             )}
           />
-          
+
           <UploadResume name="resume" resume={resume} />
           <StateButton
             content="Submit"

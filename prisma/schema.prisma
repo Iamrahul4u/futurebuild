@@ -59,6 +59,12 @@
     @@index(fields: [jobId])
   }
 
+  model Credits {
+    id      String   @id @unique @default(cuid())
+    userId  String   @unique
+    credits Int      @default(5)
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  }
   enum ApprovalStatus {
     Pending
     Rejected
@@ -87,6 +93,7 @@
     postedJobs          JobPost[]   @relation("PostedJobs")
     appliedJobs         Applicant[]
     sessions            Session[]
+    credits             Credits?
     @@index(fields: [email], type:Hash)
     @@index(fields: [role])
   }

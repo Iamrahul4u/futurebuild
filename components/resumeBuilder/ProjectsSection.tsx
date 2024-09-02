@@ -38,8 +38,15 @@ export default function ProjectsSection({
 
   const handleAddProject = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleFormDataChange("projects", [...formData.projects, project]);
-    setProject({ name: "", description: "", role: "", year: "" });
+    if (
+      project.name.trim() &&
+      project.description.trim() &&
+      project.role.trim() &&
+      project.year.trim()
+    ) {
+      handleFormDataChange("projects", [...formData.projects, project]);
+      setProject({ name: "", description: "", role: "", year: "" });
+    }
   };
 
   return (
@@ -54,6 +61,7 @@ export default function ProjectsSection({
           value={project.name}
           onChange={handleProjectChange}
           className={ResumeBuilderInputFieldsClassname}
+          required
         />
       </div>
       <div className="mb-4">
@@ -66,6 +74,7 @@ export default function ProjectsSection({
           value={project.description}
           onChange={handleProjectChange}
           className={ResumeBuilderInputFieldsClassname}
+          required
         />
       </div>
       <div className="mb-4">
@@ -77,6 +86,7 @@ export default function ProjectsSection({
           value={project.role}
           onChange={handleProjectChange}
           className={ResumeBuilderInputFieldsClassname}
+          required
         />
       </div>
       <div className="mb-4">
@@ -88,11 +98,24 @@ export default function ProjectsSection({
           value={project.year}
           onChange={handleProjectChange}
           className={ResumeBuilderInputFieldsClassname}
+          required
         />
       </div>
       <button className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
         Add Project
       </button>
+      {formData.projects.length > 0 && (
+        <div className="mt-4">
+          <h3 className="mb-2 text-sm font-bold">Added Projects:</h3>
+          <ul className="list-inside list-disc">
+            {formData.projects.map((proj, index) => (
+              <li key={index} className="text-sm text-gray-700">
+                {proj.name} - {proj.role} ({proj.year})<p>{proj.description}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </form>
   );
 }

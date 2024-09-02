@@ -1,34 +1,22 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-
 const PDFViewer = dynamic(
   () => import("@react-pdf/renderer").then((mod) => mod.PDFViewer),
   { ssr: false },
 );
-
-import ProfileSection from "@/components/resumeBuilder/ProfileSection";
 import {
   ResumeProfileSectionDummyData,
   ResumeProfileSectionEmptyData,
 } from "@/_constants/constants";
-import { Button } from "@/components/ui/button";
 import NavigationButton from "@/components/resumeBuilder/NavigationButton";
-import NormalTemplate from "@/resumeTemplates/NormalTemplate";
-import MyDocument from "@/resumeTemplates/Document";
 import {
   templateConfigurations,
   Templates,
 } from "@/_constants/TemplateConfigurations";
 import { DownloadIcon } from "lucide-react";
-import { BlobProvider } from "@react-pdf/renderer";
 import { usePathname } from "next/navigation";
-
-interface ProfileSection {
-  name: string;
-  quickSummary1: string;
-  quickSummary2: string;
-}
+import { AiModal } from "@/components/resumeBuilder/AiModal";
 
 type FormData = typeof ResumeProfileSectionDummyData;
 export default function Page() {
@@ -51,7 +39,6 @@ export default function Page() {
       ...formData,
       [key]: value,
     };
-    console.log(value);
     setFormData(newFormData);
 
     if (timeoutRef.current) {
@@ -72,11 +59,12 @@ export default function Page() {
       templateConfigurations[template as keyof typeof templateConfigurations],
     [template],
   );
+
   return (
-    <div className="flex w-full overflow-hidden">
+    <section className="flex w-full overflow-hidden">
       <div className="w-1/2 overflow-hidden overflow-y-scroll p-4">
         {step === steps.length && (
-          <div className="mb-0 flex h-8 items-center justify-center gap-2 rounded-sm bg-gradient-to-tr from-blue-500 to-blue-300">
+          <div className="mb-4 flex h-8 items-center justify-center gap-2 rounded-sm bg-gradient-to-tr from-blue-500 to-blue-300">
             <p className="mb-0">Hurray Resume is Completed. Click on </p>
             <DownloadIcon height={20} width={20} className="" />
             <p className="mb-0">to Download the pdf.</p>
@@ -84,11 +72,17 @@ export default function Page() {
         )}
         <div className="flex h-10 items-center justify-between">
           <h1 className="text-2xl font-bold">Step {step}</h1>
-          <NavigationButton
-            setStep={setStep}
-            step={step}
-            totalSteps={steps.length}
-          />
+          <div className="flex items-center gap-2">
+            <AiModal
+              setFormData={setFormData}
+              setDebouncedFormData={setDebouncedFormData}
+            />
+            <NavigationButton
+              setStep={setStep}
+              step={step}
+              totalSteps={steps.length}
+            />
+          </div>
         </div>
         {steps.map(
           ({ step: s, component: Component, key }) =>
@@ -108,6 +102,6 @@ export default function Page() {
           <Template formData={debouncedFormData} />
         </PDFViewer>
       </div>
-    </div>
+    </section>
   );
 }

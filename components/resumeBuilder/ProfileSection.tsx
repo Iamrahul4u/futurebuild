@@ -12,7 +12,7 @@ export default function ProfileSection({
   ) => void;
 }) {
   return (
-    <div className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4">
       <h2>Profile Section</h2>
       <div className="mb-4">
         <label className="mb-2 block text-sm font-bold">Name:</label>
@@ -95,6 +95,6 @@ export default function ProfileSection({
           className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight shadow focus:outline-none"
         />
       </div>
-    </div>
+    </section>
   );
 }

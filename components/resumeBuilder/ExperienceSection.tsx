@@ -3,6 +3,7 @@ import {
   ResumeBuilderInputFieldsClassname,
   ResumeProfileSectionDummyData,
 } from "@/_constants/constants";
+import { DeleteIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 
 interface experience {
@@ -25,12 +26,18 @@ export default function ExperienceSection({
   ) => void;
 }) {
   const [experience, setExperience] = useState<experience>({
-    company: "",
-    jobTitle: "",
-    startDate: "",
-    location: "",
-    endDate: "",
-    description: "",
+    company:
+      formData.experience?.[formData.experience?.length - 1]?.company ?? "",
+    jobTitle:
+      formData.experience?.[formData.experience?.length - 1]?.jobTitle ?? "",
+    startDate:
+      formData.experience?.[formData.experience?.length - 1]?.startDate ?? "",
+    location:
+      formData.experience?.[formData.experience?.length - 1]?.location ?? "",
+    endDate:
+      formData.experience?.[formData.experience?.length - 1]?.endDate ?? "",
+    description:
+      formData.experience?.[formData.experience?.length - 1]?.description ?? "",
   });
   const handleExperienceChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -41,8 +48,10 @@ export default function ExperienceSection({
   const handleAddExperience = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (formData.experience.length === 1) {
+      handleFormDataChange("experience", [experience]);
+    } else {
+      handleFormDataChange("experience", [...formData.experience, experience]);
     }
-    handleFormDataChange("experience", [...formData.experience, experience]);
     setExperience({
       company: "",
       jobTitle: "",
@@ -54,7 +63,28 @@ export default function ExperienceSection({
   };
   return (
     <form className="flex flex-col gap-2" onSubmit={handleAddExperience}>
-      <h2>Experience</h2>
+      <div className="flex items-center justify-between">
+        <h2>Experience</h2>
+        {formData.experience.length >= 1 && (
+          <span className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">
+              Delete Last Experience
+            </span>
+            <Trash2Icon
+              color="red"
+              height={20}
+              width={20}
+              className="h-5 w-5 cursor-pointer duration-300 hover:scale-110 hover:rounded-full hover:text-red-500 hover:transition-transform"
+              onClick={() => {
+                handleFormDataChange(
+                  "experience",
+                  formData.experience.slice(0, -1),
+                );
+              }}
+            />
+          </span>
+        )}
+      </div>
       <div className="mb-4">
         <label className="mb-2 block text-sm font-bold">Company Name:</label>
         <input

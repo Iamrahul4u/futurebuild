@@ -86,3 +86,56 @@ export type OrganisationOnboardingSchemaTypes = z.infer<
   typeof OrganisationOnboardingSchema
 >;
 export type UserOnboardingSchemaTypes = z.infer<typeof UserOnboardingSchema>;
+
+export const ResumeProfileSectionSchema = z.object({
+  name: z.string(),
+  quickSummary1: z.string(),
+  quickSummary2: z.string(),
+  address: z.string(),
+  phoneNumber: z.string(),
+  email: z.string(),
+  linkedIn: z.string(),
+  education: z.array(
+    z.object({
+      degree: z.string(),
+      institution: z.string(),
+      location: z.string(),
+      year: z.string(),
+      cgpa: z.string(),
+    }),
+  ),
+
+  experience: z.array(
+    z.object({
+      company: z.string(),
+      jobTitle: z.string(),
+      startDate: z.string(),
+      location: z.string(),
+      endDate: z.string(),
+      description: z.string(),
+    }),
+  ),
+
+  skills: z.array(z.string()),
+
+  certifications: z.array(
+    z.object({
+      name: z.string(),
+      issuer: z.string(),
+      year: z.string(),
+    }),
+  ),
+
+  projects: z.array(
+    z.object({
+      name: z.string(),
+      description: z.string(),
+      role: z.string(),
+      year: z.string(),
+    }),
+  ),
+});
+
+export const CoverLetterSchema = z.object({
+  coverLetter: z.string(),
+});

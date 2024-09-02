@@ -16,6 +16,7 @@ interface buttonProps {
     | undefined;
   content: string;
   className?: string;
+  onClick?: () => void;
 }
 const StateButton: React.FC<buttonProps> = ({
   content,
@@ -23,6 +24,7 @@ const StateButton: React.FC<buttonProps> = ({
   processingWord,
   pending,
   className,
+  onClick,
 }) => {
   return (
     <Button
@@ -33,6 +35,7 @@ const StateButton: React.FC<buttonProps> = ({
         className,
         `${pending ? "!disabled:text-gray-400 cursor-not-allowed !bg-gray-600" : ""}`,
       )}
+      onClick={onClick}
     >
       {pending ? (
         <span className="flex items-center gap-2">
