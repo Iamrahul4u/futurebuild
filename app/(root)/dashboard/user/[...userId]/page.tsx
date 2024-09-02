@@ -97,13 +97,11 @@ export default async function Page({ params }: { params: { userId: string } }) {
     <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
       <Card className="col-span-full">
         <CardContent className="flex flex-col gap-4 p-2 sm:flex-row">
-          <Avatar className="h-18 w-18 overflow-hidden object-contain sm:h-32 sm:w-32">
+          <Avatar className="h-20 w-20 self-center overflow-hidden object-contain sm:h-32 sm:w-32">
             <AvatarImage
               src={userDetails?.media[userDetails.media.length - 1]?.url || ""}
               alt="@profileImg"
-              className="object-cover"
-              width={300}
-              height={300}
+              className="h-20 w-20 self-center object-cover md:h-32 md:w-32"
             />
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
@@ -116,7 +114,7 @@ export default async function Page({ params }: { params: { userId: string } }) {
               <span>{userDetails.about}</span>
             </CardDescription>
             <CardDescription className="mt-2">
-              {userDetails.role === "USER" && (
+              {userDetails.role === "USER" && userDetails.skills.length > 0 && (
                 <>
                   <span className="font-semibold">Skills:</span>
                   {userDetails.skills.map((skill, index) => (

@@ -16,7 +16,7 @@ export default function CreateLayout({
     <section className="relative flex h-full w-full gap-10 overflow-hidden bg-background">
       <div className="flex flex-1 flex-col">
         <DashboardNav />
-        <main className="w-[80%] flex-1 self-end overflow-y-scroll p-4 sm:p-6">
+        <main className="flex-1 self-end overflow-y-scroll p-4 sm:w-[90%] sm:p-6 md:w-[80%]">
           {children}
         </main>
       </div>
