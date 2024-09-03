@@ -19,6 +19,9 @@ import {
 import { useState } from "react";
 import { SparklesIcon } from "lucide-react";
 import { Textarea } from "../ui/textarea";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import CreditsButton from "./CreditsButton";
 
 export function AiModal({
   setFormData,
@@ -28,6 +31,7 @@ export function AiModal({
   jobDescription,
   text = "Generate AI Resume",
   description = "Generate a resume based on your profile.",
+  user,
 }: {
   setFormData?: (formData: any) => void;
   setDebouncedFormData?: (debouncedFormData: any) => void;
@@ -36,15 +40,25 @@ export function AiModal({
   jobDescription?: string;
   text?: string;
   description?: string;
+  user: string | null;
 }) {
   const [shortParagraph, setShortParagraph] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-
+  const router = useRouter();
   function handleGenerate() {
+    if (!user) {
+      router.push("/authenticate/signin");
+      return;
+    }
     setIsGenerating(true);
     if (type === "resume") {
       generateResume(shortParagraph).then((data) => {
+        if (data === null || (typeof data === "object" && "error" in data)) {
+          setIsDialogOpen(false);
+          toast.error("No Credits Left");
+          return;
+        }
         const parsedData = JSON.parse(data || "{}");
         setIsDialogOpen(false);
         setIsGenerating(false);
@@ -62,6 +76,11 @@ export function AiModal({
     } else if (type === "coverLetter") {
       generateCoverLetter(jobDescription || "", shortParagraph || "")
         .then((data) => {
+          if (data === null || (typeof data === "object" && "error" in data)) {
+            setIsDialogOpen(false);
+            toast.error("No Credits Left");
+            return;
+          }
           const parsedData = JSON.parse(data || "{}");
           setIsDialogOpen(false);
           form && form.setValue("coverLetter", parsedData?.coverLetter || "");
@@ -105,13 +124,24 @@ export function AiModal({
             />
           </div>
         </div>
+        {user && <CreditsButton userId={user} />}
         <DialogFooter>
           <StateButton
             pending={isGenerating}
             content="Generate"
+            hidden={user ? false : true}
             className="bg-blue-500 bg-gradient-to-tr from-blue-500 to-blue-600 text-white hover:bg-blue-600"
             processingWord="Generating..."
             onClick={handleGenerate}
+          />
+          <StateButton
+            content="Login to Generate"
+            hidden={user ? true : false}
+            className="bg-blue-500 bg-gradient-to-tr from-blue-500 to-blue-600 text-white hover:bg-blue-600"
+            processingWord="Generating..."
+            onClick={() => {
+              router.push("/authenticate/signin");
+            }}
           />
         </DialogFooter>
       </DialogContent>

@@ -25,7 +25,6 @@ export async function getUserDetailsOnboarding(userId: string) {
     const userDetails = await prisma.user.findFirst({
       where: { id: userId },
       include: {
-        // Include related data if necessary
         skills: {
           include: {
             skill: {
@@ -321,4 +320,51 @@ export const getUserChatRoomsDetails = async ({
     },
   });
   return userDetails;
+};
+export const getUserCredits = async ({ userId }: { userId?: string }) => {
+  if (!userId) {
+    const user: any = await getUserId();
+    if (!user || "error" in user) {
+      return { error: "User Not Authenticated" };
+    }
+    userId = user.user.id;
+  }
+  const userDetails = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      credits: true,
+    },
+  });
+  if (!userDetails) {
+    return { error: "User Not Found" };
+  }
+  return userDetails?.credits || 0;
+};
+
+export const reduceUserAIpoints = async () => {
+  const user: any = await getUserId();
+  if (!user || "error" in user) {
+    return { error: "User Not Authenticated" };
+  }
+  const userCredits = await getUserCredits({ userId: user.user.id });
+  if (typeof userCredits === "object" && "error" in userCredits) {
+    return { error: "Unable To Fetch User Credits" };
+  }
+  if (userCredits <= 0) {
+    return { error: "No Credits Left" };
+  }
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: user.user.id,
+    },
+    data: {
+      credits: userCredits - 1,
+    },
+  });
+  if (!updatedUser) {
+    return { error: "Unable To Reduce Credits" };
+  }
+  return { success: "Successfully Reduced Credits" };
 };

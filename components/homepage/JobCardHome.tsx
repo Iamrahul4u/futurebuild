@@ -36,7 +36,9 @@ export default function JobCardHome({
             </svg>
           </div>
         </header>
-        <p className="my-8 pr-8 text-2xl font-semibold">{title}</p>
+        <p className="my-8 max-w-sm text-wrap pr-8 text-2xl font-semibold">
+          {title}
+        </p>
       </section>
 
       <footer className="flex flex-col gap-4 p-3 text-sm font-bold dark:bg-black dark:text-white md:flex-row md:items-center md:justify-between">

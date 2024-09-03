@@ -15,8 +15,10 @@ import {
   Templates,
 } from "@/_constants/TemplateConfigurations";
 import { DownloadIcon } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { AiModal } from "@/components/resumeBuilder/AiModal";
+import { getUserId } from "@/app/actions/auth.action";
+import ElegantButton from "@/components/homepage/ELegantButton";
 
 type FormData = typeof ResumeProfileSectionDummyData;
 export default function Page() {
@@ -25,6 +27,7 @@ export default function Page() {
   const [template, setTemplate] = useState(
     templateName as keyof typeof Templates,
   );
+  const [user, setUser] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>(
     ResumeProfileSectionEmptyData,
   );
@@ -34,6 +37,16 @@ export default function Page() {
   const [step, setStep] = useState(1);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  useEffect(() => {
+    async function getUser() {
+      const user = await getUserId();
+      if (!user || !user.user?.id) {
+        return redirect("/authenticate/sign-in");
+      }
+      setUser(user.user.id);
+    }
+    getUser();
+  }, []);
   const handleFormDataChange = (key: keyof FormData, value: string) => {
     const newFormData = {
       ...formData,
@@ -74,6 +87,7 @@ export default function Page() {
           <h1 className="text-2xl font-bold">Step {step}</h1>
           <div className="flex items-center gap-2">
             <AiModal
+              user={user}
               setFormData={setFormData}
               setDebouncedFormData={setDebouncedFormData}
             />
@@ -81,9 +95,11 @@ export default function Page() {
               setStep={setStep}
               step={step}
               totalSteps={steps.length}
+              user={user}
             />
           </div>
         </div>
+
         {steps.map(
           ({ step: s, component: Component, key }) =>
             s === step && (
@@ -94,11 +110,21 @@ export default function Page() {
               />
             ),
         )}
+        {!user && (
+          <div className="absolute bottom-0 left-0 flex h-[90vh] w-[50%] items-center justify-center bg-gray-600/60">
+            <ElegantButton text="Login to Edit" link="/authenticate/sign-in" />
+          </div>
+        )}
       </div>
 
       <div className="h-[90vh] w-1/2 overflow-hidden p-4">
         <h2>Resume Preview</h2>
-        <PDFViewer width="100%" height="100%" key={step}>
+        <PDFViewer
+          width="100%"
+          height="100%"
+          key={step}
+          showToolbar={user ? true : false}
+        >
           <Template formData={debouncedFormData} />
         </PDFViewer>
       </div>

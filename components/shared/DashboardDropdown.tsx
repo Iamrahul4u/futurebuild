@@ -36,7 +36,7 @@ export function DashboardDropdownMenu() {
           <AvatarFallback>U</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-32">
+      <DropdownMenuContent className="w-36">
         <Link href={`/dashboard/user/${userId}`}>
           <DropdownMenuItem>Dashboard</DropdownMenuItem>
         </Link>

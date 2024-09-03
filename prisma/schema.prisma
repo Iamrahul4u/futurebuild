@@ -59,12 +59,7 @@
     @@index(fields: [jobId])
   }
 
-  model Credits {
-    id      String   @id @unique @default(cuid())
-    userId  String   @unique
-    credits Int      @default(5)
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  }
+  
   enum ApprovalStatus {
     Pending
     Rejected
@@ -88,12 +83,11 @@
     profileCompleted    Boolean?    @default(false)
     onboardingCompleted Boolean?    @default(false)
     roleSet             Boolean?    @default(false)
-    
     address             Location?   @relation(fields: [locationId], references: [id])
     postedJobs          JobPost[]   @relation("PostedJobs")
     appliedJobs         Applicant[]
     sessions            Session[]
-    credits             Credits?
+    credits             Int         @default(10)
     @@index(fields: [email], type:Hash)
     @@index(fields: [role])
   }

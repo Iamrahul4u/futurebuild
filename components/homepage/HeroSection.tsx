@@ -20,7 +20,7 @@ export default function HeroSection() {
   return (
     <HeroHighlight className="flex w-full items-start justify-start md:h-[90vh] md:items-center md:justify-center">
       <div className="container grid h-full items-center gap-8 px-4 lg:grid-cols-2">
-        <div className="mt-4 flex h-full flex-col items-center justify-center space-y-4 pl-4 md:items-center md:justify-center">
+        <div className="mt-4 flex h-full flex-col items-start justify-items-start space-y-4 pl-4 md:items-start md:justify-center">
           <motion.h1
             initial={{
               opacity: 0,

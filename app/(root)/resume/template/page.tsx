@@ -1,10 +1,13 @@
 import { Templates } from "@/_constants/TemplateConfigurations";
+import { getUser } from "@/app/[...authenticate]/lucia";
+import { checkUser } from "@/app/actions/auth.action";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-export default function Page() {
+export default async function Page() {
   return (
     <div className="flex h-screen flex-col items-center p-4">
       <div>

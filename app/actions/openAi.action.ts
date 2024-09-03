@@ -5,12 +5,17 @@ import {
 } from "@/types/zodValidations";
 import { OpenAI } from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
+import { getUserCredits, reduceUserAIpoints } from "./user.action";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function generateResume(resume: string) {
+  const getCredits = await reduceUserAIpoints();
+  if (getCredits.error) {
+    return { error: getCredits.error };
+  }
   const response = await openai.chat.completions.create({
     model: "gpt-4o-2024-08-06",
     messages: [
@@ -26,6 +31,7 @@ export async function generateResume(resume: string) {
       "Resume_Profile_Section",
     ),
   });
+
   return response.choices[0].message.content;
 }
 
@@ -33,6 +39,10 @@ export async function generateCoverLetter(
   coverLetter: string,
   userInfo: string,
 ) {
+  const getCredits = await reduceUserAIpoints();
+  if (getCredits.error) {
+    return { error: getCredits.error };
+  }
   const response = await openai.chat.completions.create({
     model: "gpt-4o-2024-08-06",
     messages: [

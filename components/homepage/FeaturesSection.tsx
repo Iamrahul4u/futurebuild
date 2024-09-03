@@ -28,7 +28,7 @@ export default function FeaturesSection() {
           companyLogo="/homepage/google.svg"
         />
         <JobCardHome
-          title="Software Engineer"
+          title="Software &nbsp;&nbsp;&nbsp; Engineer"
           company="Myntra"
           location="Hybrid"
           salary="$70,000"

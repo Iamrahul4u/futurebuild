@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { signInSchema } from "../[...authenticate]/SignIn";
 import { revalidatePath } from "next/cache";
+import { cache } from "react";
 
 export async function signup({
   values,
@@ -107,7 +108,7 @@ export const clientCheckUser = async () => {
   return !!user;
 };
 
-export const getUserId = async () => {
+export const getUserId = cache(async () => {
   const user = await getUser();
   if (!user) {
     return { error: null };
@@ -116,9 +117,9 @@ export const getUserId = async () => {
     return { error: "error" };
   }
   return { user };
-};
+});
 
-export const checkUserRole = async ({ userId }: { userId?: string }) => {
+export const checkUserRole = cache(async ({ userId }: { userId?: string }) => {
   let user: any;
   if (!userId) {
     user = await getUser();
@@ -139,4 +140,4 @@ export const checkUserRole = async ({ userId }: { userId?: string }) => {
     },
   });
   return role;
-};
+});
