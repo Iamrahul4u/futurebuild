@@ -231,6 +231,7 @@ export default function Page({ params }: { params: { jobid: string } }) {
           <AiModal
             type="coverLetter"
             form={form}
+            user={user}
             jobDescription={jobDescription}
             text={"Generate Cover Letter By AI"}
             description={"Generate a cover letter based on your profile."}
