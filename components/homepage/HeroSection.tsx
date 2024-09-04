@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { HeroHighlight, Highlight } from "../ui/hero-highlight";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { cache, memo, useEffect, useMemo, useState } from "react";
 import WordPullUp from "../magicui/word-pull-up";
 import Image from "next/image";
 
