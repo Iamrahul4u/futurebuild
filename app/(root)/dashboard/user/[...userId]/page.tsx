@@ -129,6 +129,7 @@ export default async function Page({ params }: { params: { userId: string } }) {
           </div>
         </CardContent>
       </Card>
+
       <Card className="col-span-full sm:col-span-1">
         <CardHeader>
           <CardTitle>Account Details</CardTitle>

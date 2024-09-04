@@ -15,5 +15,19 @@
       "tabTitle": "DevCloud"
     }
   ],
-  "cursor.cpp.enablePartialAccepts": true
+  "cursor.cpp.enablePartialAccepts": true,
+  "Codegeex.Chat.LanguagePreference": "English",
+  "Codegeex.Comment.LanguagePreference": "English",
+  "Codegeex.SidebarUI.LanguagePreference": "English",
+  "Codegeex.CompletionDelay": 0.3,
+  "Codegeex.CompletionModel": "CodeGeeX Pro[Beta]",
+  "Codegeex.GenerationPreference": "block",
+  "Codegeex.RepoIndex": true,
+  "Codegeex.Privacy": true,
+  "editor.inlineSuggest.enabled": true,
+  "terminal.integrated.suggest.builtinCompletions": {
+    "pwshCode": true,
+    "pwshGit": true
+  },
+  "continue.telemetryEnabled": false
 }
