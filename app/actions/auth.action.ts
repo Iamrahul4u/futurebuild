@@ -108,7 +108,7 @@ export const clientCheckUser = async () => {
   return !!user;
 };
 
-export const getUserId = cache(async () => {
+export const getUserId = async () => {
   const user = await getUser();
   if (!user) {
     return { error: null };
@@ -117,7 +117,7 @@ export const getUserId = cache(async () => {
     return { error: "error" };
   }
   return { user };
-});
+};
 
 export const checkUserRole = cache(async ({ userId }: { userId?: string }) => {
   let user: any;
