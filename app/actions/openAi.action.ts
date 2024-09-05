@@ -43,15 +43,16 @@ export async function generateCoverLetter(
   if (getCredits.error) {
     return { error: getCredits.error };
   }
+  const content = { jobDescription: coverLetter, userInfo: userInfo };
   const response = await openai.chat.completions.create({
     model: "gpt-4o-2024-08-06",
     messages: [
       {
         role: "system",
         content:
-          "You are an expert at generating Cover Letter Data Based on Job's Description and User's short paragraph about themselves.",
+          "You are an expert at generating Cover Letter Data Based on Job's Description and User's short information paragraph  about themselves.",
       },
-      { role: "user", content: coverLetter },
+      { role: "user", content: JSON.stringify(content) },
     ],
     response_format: zodResponseFormat(CoverLetterSchema, "Cover_Letter"),
   });

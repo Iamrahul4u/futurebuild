@@ -137,5 +137,5 @@ export const ResumeProfileSectionSchema = z.object({
 });
 
 export const CoverLetterSchema = z.object({
-  coverLetter: z.string(),
+  coverLetter: z.string().min(100).max(250),
 });
