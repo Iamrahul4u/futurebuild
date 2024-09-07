@@ -119,7 +119,7 @@ export const getUserId = async () => {
   return { user };
 };
 
-export const checkUserRole = cache(async ({ userId }: { userId?: string }) => {
+export const checkUserRole = async ({ userId }: { userId?: string }) => {
   let user: any;
   if (!userId) {
     user = await getUser();
@@ -140,4 +140,4 @@ export const checkUserRole = cache(async ({ userId }: { userId?: string }) => {
     },
   });
   return role;
-});
+};

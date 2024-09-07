@@ -50,7 +50,7 @@ export async function generateCoverLetter(
       {
         role: "system",
         content:
-          "You are an expert at generating Cover Letter Data Based on Job's Description and User's short information paragraph  about themselves.",
+          "You are an expert at generating Cover Letter Data Based on Job's Description and User's short information paragraph  about themselves.In 200 Words",
       },
       { role: "user", content: JSON.stringify(content) },
     ],
