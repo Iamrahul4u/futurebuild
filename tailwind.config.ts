@@ -14,15 +14,7 @@ const config = {
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
-  purge: {
-    enabled: process.env.NODE_ENV === 'production',
-    content: [
-      "./pages/**/*.{ts,tsx}",
-      "./components/**/*.{ts,tsx}",
-      "./app/**/*.{ts,tsx}",
-      "./src/**/*.{ts,tsx}",
-    ],
-  },
+
   prefix: "",
   theme: {
     container: {

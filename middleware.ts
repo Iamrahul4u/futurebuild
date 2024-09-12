@@ -20,15 +20,7 @@ export default async function middleware(
   const ip = request.ip ?? "127.0.0.1";
   const { success, pending, limit, reset, remaining } =
     await ratelimit.limit(ip);
-  if (
-    request.nextUrl.pathname.startsWith("/api") ||
-    request.nextUrl.pathname.startsWith("/_next") ||
-    request.nextUrl.pathname === "/favicon.ico" ||
-    request.nextUrl.pathname === "/robots.txt" ||
-    request.nextUrl.pathname === "/sitemap.xml"
-  ) {
-    return NextResponse.next();
-  }
+
   return success
     ? NextResponse.next()
     : NextResponse.redirect(new URL("/rate-limit", request.url));

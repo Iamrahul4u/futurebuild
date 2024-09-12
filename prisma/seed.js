@@ -182,7 +182,7 @@ const userData = [
     createdAt: new Date("2024-07-25T03:07:07.062Z"),
     updatedAt: new Date("2024-07-27T09:42:59.297Z"),
     role: ROLE.ADMIN,
-    locationId: null, // Assuming locationId is optional
+    locationId: null,
     hashedPassword:
       "$argon2id$v=19$m=19456,t=2,p=1$bnm0WyEoyItE/CurHSdlqw$mDyLwgqGDA0ZOtTQiNT2XzbZ/+Kz12zpBwfF+j7q5PI",
   },
@@ -195,7 +195,7 @@ const userData = [
     createdAt: new Date("2024-07-25T03:14:08.119Z"),
     updatedAt: new Date("2024-07-25T03:14:08.119Z"),
     role: ROLE.USER,
-    locationId: null, // Assuming locationId is optional
+    locationId: null,
     hashedPassword:
       "$argon2id$v=19$m=19456,t=2,p=1$1e1mus5xy6oGpCFLz6stAw$xUxRT8PzPh4RN+2LpkQQYkoT7+npsrhwUp21Fab4UYE",
   },

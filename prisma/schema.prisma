@@ -87,6 +87,7 @@
     postedJobs          JobPost[]   @relation("PostedJobs")
     appliedJobs         Applicant[]
     sessions            Session[]
+    RoadMap             RoadMap[]
     credits             Int         @default(10)
     @@index(fields: [email], type:Hash)
     @@index(fields: [role])
@@ -165,12 +166,17 @@
     User        User[]
     @@index(fields: [postalCode], type: Hash)
   }
+model RoadMap{
+  id String @id @default(cuid())
+  title String
+  mermaidSyntax String
+  userId String
+  createdAt DateTime @default(now())
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index(fields: [userId])
+  
+}
 
-  model JobProfile {
-    id             String @id @unique @default(cuid())
-    jobProfileName String
-
-  }
 
   enum mode {
     Remote

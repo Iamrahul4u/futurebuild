@@ -29,5 +29,7 @@
     "pwshCode": true,
     "pwshGit": true
   },
-  "continue.telemetryEnabled": false
+  "continue.telemetryEnabled": false,
+  "continue.pauseCodebaseIndexOnStart": false,
+  "continue.pauseTabAutocompleteOnBattery": true
 }

@@ -1,55 +1,30 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { z } from "zod";
-import { FormField } from "../../../../../components/ui/form";
-const FormControl = dynamic(() =>
-  import("@/components/ui/form").then((mod) => mod.FormControl),
-);
-const FormItem = dynamic(() =>
-  import("@/components/ui/form").then((mod) => mod.FormItem),
-);
-const FormLabel = dynamic(() =>
-  import("@/components/ui/form").then((mod) => mod.FormLabel),
-);
-const FormMessage = dynamic(() =>
-  import("@/components/ui/form").then((mod) => mod.FormMessage),
-);
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import dynamic from "next/dynamic";
-const ScrollArea = dynamic(() =>
-  import("@/components/ui/scroll-area").then((mod) => mod.ScrollArea),
-);
-import { FormProvider, useForm } from "react-hook-form";
-
-const RadioGroup = dynamic(() =>
-  import("@/components/ui/radio-group").then((mod) => mod.RadioGroup),
-);
-const RadioGroupItem = dynamic(() =>
-  import("@/components/ui/radio-group").then((mod) => mod.RadioGroupItem),
-);
-const DatePicker = dynamic(() => import("@/components/shared/DatePicker"));
-import InputText from "@/components/shared/InputText";
-const InputTextArea = dynamic(() =>
-  import("@/components/shared/InputTextArea").then((mod) => mod.InputTextArea),
-);
-const UploadResume = dynamic(() => import("@/components/shared/UploadResume"));
-const StateButton = dynamic(() => import("@/components/shared/StateButton"));
-import { toast } from "sonner";
 import {
-  checkUser,
-  clientCheckUser,
-  getUserId,
-} from "@/app/actions/auth.action";
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormField,
+} from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { FormProvider, useForm } from "react-hook-form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import DatePicker from "@/components/shared/DatePicker";
+import InputText from "@/components/shared/InputText";
+import { InputTextArea } from "@/components/shared/InputTextArea";
+import UploadResume from "@/components/shared/UploadResume";
+import StateButton from "@/components/shared/StateButton";
+import { toast } from "sonner";
+import { getUserId } from "@/app/actions/auth.action";
 import { MediaNameSchema } from "@/prisma/generated/zod";
 import { useRouter } from "next/navigation";
 import { applyToJob, getJobDetails, getUrl } from "@/app/actions/jobs.action";
 import { ACCEPTED_FILE_TYPES, MAX_RESUME_SIZE } from "@/_constants/constants";
 import { getResume } from "@/app/actions/user.action";
 import { prismaMedia } from "@/app/actions/prisma.action";
-import { Button } from "@/components/ui/button";
-import { SparklesIcon } from "lucide-react";
-import { generateCoverLetter } from "@/app/actions/openAi.action";
 import { AiModal } from "@/components/resumeBuilder/AiModal";
 
 const applyJob = z.object({
@@ -101,11 +76,11 @@ export default function Page({ params }: { params: { jobid: string } }) {
       const res = await getUserId();
       if ("error" in res) {
         toast.error("User Not Logged In");
-        router.push("/authenticate/signin");
+        return router.push("/authenticate/signin");
       }
       if (!res.user?.id) {
         toast.error("User Not Logged In");
-        router.push("/authenticate/signin");
+        return router.push("/authenticate/signin");
       }
       setUser(res.user?.id || "");
       const jobDetails = await getJobDetails(params.jobid);
@@ -146,17 +121,17 @@ export default function Page({ params }: { params: { jobid: string } }) {
   });
   async function onSubmit(values: z.infer<typeof applyJob>) {
     setPending(true);
-    if (availability === "Yes") {
+    // Conditional logic for availability options can be simplified
+    if (availability !== "Yes") {
+      values.joiningDate =
+        availability === "currentlyServing" ? values.joiningDate : undefined;
+      values.servingPeriod =
+        availability === "haveToServe" ? values.servingPeriod : undefined;
+      values.other = availability === "other" ? values.other : undefined;
+    } else {
       values.servingPeriod = undefined;
       values.joiningDate = undefined;
       values.other = undefined;
-    } else if (availability === "currentlyServing") {
-      values.servingPeriod = undefined;
-    } else if (availability === "haveToServe") {
-      values.joiningDate = undefined;
-    } else if (availability === "other") {
-      values.joiningDate = undefined;
-      values.servingPeriod = undefined;
     }
 
     try {

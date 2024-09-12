@@ -7,6 +7,15 @@ body {
   margin: 0;
 }
 
+pre.mermaid {
+  font-family: "trebuchet ms", verdana, arial;
+}
+.mermaid text {
+  font-size: 24px !important; /* Adjust the font size */
+}
+.mermaid .label text {
+  font-size: 20px !important; /* Font size for labels */
+}
 /* Specific class for custom scrollbar (if needed) */
 /* width */
 ::-webkit-scrollbar {

@@ -139,3 +139,7 @@ export const ResumeProfileSectionSchema = z.object({
 export const CoverLetterSchema = z.object({
   coverLetter: z.string(),
 });
+
+export const RoadMapSchema = z.object({
+  mermaidSyntax: z.string(),
+});

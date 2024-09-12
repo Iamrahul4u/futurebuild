@@ -32,7 +32,7 @@ export const SessionScalarFieldEnumSchema = z.enum(['id','userId','expiresAt']);
 
 export const LocationScalarFieldEnumSchema = z.enum(['id','address','postalCode','state','city','phoneNumber']);
 
-export const JobProfileScalarFieldEnumSchema = z.enum(['id','jobProfileName']);
+export const RoadMapScalarFieldEnumSchema = z.enum(['id','title','mermaidSyntax','userId','createdAt']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -323,24 +323,28 @@ export const LocationOptionalDefaultsSchema = LocationSchema.merge(z.object({
 export type LocationOptionalDefaults = z.infer<typeof LocationOptionalDefaultsSchema>
 
 /////////////////////////////////////////
-// JOB PROFILE SCHEMA
+// ROAD MAP SCHEMA
 /////////////////////////////////////////
 
-export const JobProfileSchema = z.object({
+export const RoadMapSchema = z.object({
   id: z.string().cuid(),
-  jobProfileName: z.string(),
+  title: z.string(),
+  mermaidSyntax: z.string(),
+  userId: z.string(),
+  createdAt: z.coerce.date(),
 })
 
-export type JobProfile = z.infer<typeof JobProfileSchema>
+export type RoadMap = z.infer<typeof RoadMapSchema>
 
-// JOB PROFILE OPTIONAL DEFAULTS SCHEMA
+// ROAD MAP OPTIONAL DEFAULTS SCHEMA
 //------------------------------------------------------
 
-export const JobProfileOptionalDefaultsSchema = JobProfileSchema.merge(z.object({
+export const RoadMapOptionalDefaultsSchema = RoadMapSchema.merge(z.object({
   id: z.string().cuid().optional(),
+  createdAt: z.coerce.date().optional(),
 }))
 
-export type JobProfileOptionalDefaults = z.infer<typeof JobProfileOptionalDefaultsSchema>
+export type RoadMapOptionalDefaults = z.infer<typeof RoadMapOptionalDefaultsSchema>
 
 /////////////////////////////////////////
 // SELECT & INCLUDE
@@ -429,6 +433,7 @@ export const UserIncludeSchema: z.ZodType<Prisma.UserInclude> = z.object({
   postedJobs: z.union([z.boolean(),z.lazy(() => JobPostFindManyArgsSchema)]).optional(),
   appliedJobs: z.union([z.boolean(),z.lazy(() => ApplicantFindManyArgsSchema)]).optional(),
   sessions: z.union([z.boolean(),z.lazy(() => SessionFindManyArgsSchema)]).optional(),
+  RoadMap: z.union([z.boolean(),z.lazy(() => RoadMapFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -447,6 +452,7 @@ export const UserCountOutputTypeSelectSchema: z.ZodType<Prisma.UserCountOutputTy
   postedJobs: z.boolean().optional(),
   appliedJobs: z.boolean().optional(),
   sessions: z.boolean().optional(),
+  RoadMap: z.boolean().optional(),
 }).strict();
 
 export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
@@ -471,6 +477,7 @@ export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
   postedJobs: z.union([z.boolean(),z.lazy(() => JobPostFindManyArgsSchema)]).optional(),
   appliedJobs: z.union([z.boolean(),z.lazy(() => ApplicantFindManyArgsSchema)]).optional(),
   sessions: z.union([z.boolean(),z.lazy(() => SessionFindManyArgsSchema)]).optional(),
+  RoadMap: z.union([z.boolean(),z.lazy(() => RoadMapFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -641,12 +648,25 @@ export const LocationSelectSchema: z.ZodType<Prisma.LocationSelect> = z.object({
   _count: z.union([z.boolean(),z.lazy(() => LocationCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
-// JOB PROFILE
+// ROAD MAP
 //------------------------------------------------------
 
-export const JobProfileSelectSchema: z.ZodType<Prisma.JobProfileSelect> = z.object({
+export const RoadMapIncludeSchema: z.ZodType<Prisma.RoadMapInclude> = z.object({
+  User: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+}).strict()
+
+export const RoadMapArgsSchema: z.ZodType<Prisma.RoadMapDefaultArgs> = z.object({
+  select: z.lazy(() => RoadMapSelectSchema).optional(),
+  include: z.lazy(() => RoadMapIncludeSchema).optional(),
+}).strict();
+
+export const RoadMapSelectSchema: z.ZodType<Prisma.RoadMapSelect> = z.object({
   id: z.boolean().optional(),
-  jobProfileName: z.boolean().optional(),
+  title: z.boolean().optional(),
+  mermaidSyntax: z.boolean().optional(),
+  userId: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  User: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
 }).strict()
 
 
@@ -856,7 +876,8 @@ export const UserWhereInputSchema: z.ZodType<Prisma.UserWhereInput> = z.object({
   address: z.union([ z.lazy(() => LocationNullableRelationFilterSchema),z.lazy(() => LocationWhereInputSchema) ]).optional().nullable(),
   postedJobs: z.lazy(() => JobPostListRelationFilterSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantListRelationFilterSchema).optional(),
-  sessions: z.lazy(() => SessionListRelationFilterSchema).optional()
+  sessions: z.lazy(() => SessionListRelationFilterSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapListRelationFilterSchema).optional()
 }).strict();
 
 export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWithRelationInput> = z.object({
@@ -880,7 +901,8 @@ export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWit
   address: z.lazy(() => LocationOrderByWithRelationInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostOrderByRelationAggregateInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantOrderByRelationAggregateInputSchema).optional(),
-  sessions: z.lazy(() => SessionOrderByRelationAggregateInputSchema).optional()
+  sessions: z.lazy(() => SessionOrderByRelationAggregateInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> = z.union([
@@ -935,7 +957,8 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   address: z.union([ z.lazy(() => LocationNullableRelationFilterSchema),z.lazy(() => LocationWhereInputSchema) ]).optional().nullable(),
   postedJobs: z.lazy(() => JobPostListRelationFilterSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantListRelationFilterSchema).optional(),
-  sessions: z.lazy(() => SessionListRelationFilterSchema).optional()
+  sessions: z.lazy(() => SessionListRelationFilterSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapListRelationFilterSchema).optional()
 }).strict());
 
 export const UserOrderByWithAggregationInputSchema: z.ZodType<Prisma.UserOrderByWithAggregationInput> = z.object({
@@ -1395,44 +1418,62 @@ export const LocationScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Loca
   phoneNumber: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
-export const JobProfileWhereInputSchema: z.ZodType<Prisma.JobProfileWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => JobProfileWhereInputSchema),z.lazy(() => JobProfileWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => JobProfileWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => JobProfileWhereInputSchema),z.lazy(() => JobProfileWhereInputSchema).array() ]).optional(),
+export const RoadMapWhereInputSchema: z.ZodType<Prisma.RoadMapWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => RoadMapWhereInputSchema),z.lazy(() => RoadMapWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RoadMapWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RoadMapWhereInputSchema),z.lazy(() => RoadMapWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  jobProfileName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  title: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  mermaidSyntax: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  User: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
 }).strict();
 
-export const JobProfileOrderByWithRelationInputSchema: z.ZodType<Prisma.JobProfileOrderByWithRelationInput> = z.object({
+export const RoadMapOrderByWithRelationInputSchema: z.ZodType<Prisma.RoadMapOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  jobProfileName: z.lazy(() => SortOrderSchema).optional()
+  title: z.lazy(() => SortOrderSchema).optional(),
+  mermaidSyntax: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  User: z.lazy(() => UserOrderByWithRelationInputSchema).optional()
 }).strict();
 
-export const JobProfileWhereUniqueInputSchema: z.ZodType<Prisma.JobProfileWhereUniqueInput> = z.object({
+export const RoadMapWhereUniqueInputSchema: z.ZodType<Prisma.RoadMapWhereUniqueInput> = z.object({
   id: z.string().cuid()
 })
 .and(z.object({
   id: z.string().cuid().optional(),
-  AND: z.union([ z.lazy(() => JobProfileWhereInputSchema),z.lazy(() => JobProfileWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => JobProfileWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => JobProfileWhereInputSchema),z.lazy(() => JobProfileWhereInputSchema).array() ]).optional(),
-  jobProfileName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  AND: z.union([ z.lazy(() => RoadMapWhereInputSchema),z.lazy(() => RoadMapWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RoadMapWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RoadMapWhereInputSchema),z.lazy(() => RoadMapWhereInputSchema).array() ]).optional(),
+  title: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  mermaidSyntax: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  User: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
 }).strict());
 
-export const JobProfileOrderByWithAggregationInputSchema: z.ZodType<Prisma.JobProfileOrderByWithAggregationInput> = z.object({
+export const RoadMapOrderByWithAggregationInputSchema: z.ZodType<Prisma.RoadMapOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  jobProfileName: z.lazy(() => SortOrderSchema).optional(),
-  _count: z.lazy(() => JobProfileCountOrderByAggregateInputSchema).optional(),
-  _max: z.lazy(() => JobProfileMaxOrderByAggregateInputSchema).optional(),
-  _min: z.lazy(() => JobProfileMinOrderByAggregateInputSchema).optional()
+  title: z.lazy(() => SortOrderSchema).optional(),
+  mermaidSyntax: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => RoadMapCountOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => RoadMapMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => RoadMapMinOrderByAggregateInputSchema).optional()
 }).strict();
 
-export const JobProfileScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.JobProfileScalarWhereWithAggregatesInput> = z.object({
-  AND: z.union([ z.lazy(() => JobProfileScalarWhereWithAggregatesInputSchema),z.lazy(() => JobProfileScalarWhereWithAggregatesInputSchema).array() ]).optional(),
-  OR: z.lazy(() => JobProfileScalarWhereWithAggregatesInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => JobProfileScalarWhereWithAggregatesInputSchema),z.lazy(() => JobProfileScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+export const RoadMapScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.RoadMapScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => RoadMapScalarWhereWithAggregatesInputSchema),z.lazy(() => RoadMapScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RoadMapScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RoadMapScalarWhereWithAggregatesInputSchema),z.lazy(() => RoadMapScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  jobProfileName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  title: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  mermaidSyntax: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  userId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
 export const JobPostCreateInputSchema: z.ZodType<Prisma.JobPostCreateInput> = z.object({
@@ -1643,7 +1684,8 @@ export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreateInput> = z.object({
@@ -1666,7 +1708,8 @@ export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreat
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object({
@@ -1689,7 +1732,8 @@ export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdateInput> = z.object({
@@ -1712,7 +1756,8 @@ export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdat
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateManyInputSchema: z.ZodType<Prisma.UserCreateManyInput> = z.object({
@@ -2101,39 +2146,59 @@ export const LocationUncheckedUpdateManyInputSchema: z.ZodType<Prisma.LocationUn
   phoneNumber: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const JobProfileCreateInputSchema: z.ZodType<Prisma.JobProfileCreateInput> = z.object({
+export const RoadMapCreateInputSchema: z.ZodType<Prisma.RoadMapCreateInput> = z.object({
   id: z.string().cuid().optional(),
-  jobProfileName: z.string()
+  title: z.string(),
+  mermaidSyntax: z.string(),
+  createdAt: z.coerce.date().optional(),
+  User: z.lazy(() => UserCreateNestedOneWithoutRoadMapInputSchema)
 }).strict();
 
-export const JobProfileUncheckedCreateInputSchema: z.ZodType<Prisma.JobProfileUncheckedCreateInput> = z.object({
+export const RoadMapUncheckedCreateInputSchema: z.ZodType<Prisma.RoadMapUncheckedCreateInput> = z.object({
   id: z.string().cuid().optional(),
-  jobProfileName: z.string()
+  title: z.string(),
+  mermaidSyntax: z.string(),
+  userId: z.string(),
+  createdAt: z.coerce.date().optional()
 }).strict();
 
-export const JobProfileUpdateInputSchema: z.ZodType<Prisma.JobProfileUpdateInput> = z.object({
+export const RoadMapUpdateInputSchema: z.ZodType<Prisma.RoadMapUpdateInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  jobProfileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  mermaidSyntax: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  User: z.lazy(() => UserUpdateOneRequiredWithoutRoadMapNestedInputSchema).optional()
 }).strict();
 
-export const JobProfileUncheckedUpdateInputSchema: z.ZodType<Prisma.JobProfileUncheckedUpdateInput> = z.object({
+export const RoadMapUncheckedUpdateInputSchema: z.ZodType<Prisma.RoadMapUncheckedUpdateInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  jobProfileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  mermaidSyntax: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const JobProfileCreateManyInputSchema: z.ZodType<Prisma.JobProfileCreateManyInput> = z.object({
+export const RoadMapCreateManyInputSchema: z.ZodType<Prisma.RoadMapCreateManyInput> = z.object({
   id: z.string().cuid().optional(),
-  jobProfileName: z.string()
+  title: z.string(),
+  mermaidSyntax: z.string(),
+  userId: z.string(),
+  createdAt: z.coerce.date().optional()
 }).strict();
 
-export const JobProfileUpdateManyMutationInputSchema: z.ZodType<Prisma.JobProfileUpdateManyMutationInput> = z.object({
+export const RoadMapUpdateManyMutationInputSchema: z.ZodType<Prisma.RoadMapUpdateManyMutationInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  jobProfileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  mermaidSyntax: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const JobProfileUncheckedUpdateManyInputSchema: z.ZodType<Prisma.JobProfileUncheckedUpdateManyInput> = z.object({
+export const RoadMapUncheckedUpdateManyInputSchema: z.ZodType<Prisma.RoadMapUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  jobProfileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  mermaidSyntax: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const StringFilterSchema: z.ZodType<Prisma.StringFilter> = z.object({
@@ -2484,6 +2549,12 @@ export const SessionListRelationFilterSchema: z.ZodType<Prisma.SessionListRelati
   none: z.lazy(() => SessionWhereInputSchema).optional()
 }).strict();
 
+export const RoadMapListRelationFilterSchema: z.ZodType<Prisma.RoadMapListRelationFilter> = z.object({
+  every: z.lazy(() => RoadMapWhereInputSchema).optional(),
+  some: z.lazy(() => RoadMapWhereInputSchema).optional(),
+  none: z.lazy(() => RoadMapWhereInputSchema).optional()
+}).strict();
+
 export const UserSkillOrderByRelationAggregateInputSchema: z.ZodType<Prisma.UserSkillOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
@@ -2497,6 +2568,10 @@ export const JobPostOrderByRelationAggregateInputSchema: z.ZodType<Prisma.JobPos
 }).strict();
 
 export const SessionOrderByRelationAggregateInputSchema: z.ZodType<Prisma.SessionOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const RoadMapOrderByRelationAggregateInputSchema: z.ZodType<Prisma.RoadMapOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -2792,19 +2867,28 @@ export const LocationSumOrderByAggregateInputSchema: z.ZodType<Prisma.LocationSu
   postalCode: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const JobProfileCountOrderByAggregateInputSchema: z.ZodType<Prisma.JobProfileCountOrderByAggregateInput> = z.object({
+export const RoadMapCountOrderByAggregateInputSchema: z.ZodType<Prisma.RoadMapCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  jobProfileName: z.lazy(() => SortOrderSchema).optional()
+  title: z.lazy(() => SortOrderSchema).optional(),
+  mermaidSyntax: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const JobProfileMaxOrderByAggregateInputSchema: z.ZodType<Prisma.JobProfileMaxOrderByAggregateInput> = z.object({
+export const RoadMapMaxOrderByAggregateInputSchema: z.ZodType<Prisma.RoadMapMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  jobProfileName: z.lazy(() => SortOrderSchema).optional()
+  title: z.lazy(() => SortOrderSchema).optional(),
+  mermaidSyntax: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const JobProfileMinOrderByAggregateInputSchema: z.ZodType<Prisma.JobProfileMinOrderByAggregateInput> = z.object({
+export const RoadMapMinOrderByAggregateInputSchema: z.ZodType<Prisma.RoadMapMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  jobProfileName: z.lazy(() => SortOrderSchema).optional()
+  title: z.lazy(() => SortOrderSchema).optional(),
+  mermaidSyntax: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const JobSkillCreateNestedManyWithoutJobPostInputSchema: z.ZodType<Prisma.JobSkillCreateNestedManyWithoutJobPostInput> = z.object({
@@ -3080,6 +3164,13 @@ export const SessionCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.Ses
   connect: z.union([ z.lazy(() => SessionWhereUniqueInputSchema),z.lazy(() => SessionWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const RoadMapCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.RoadMapCreateNestedManyWithoutUserInput> = z.object({
+  create: z.union([ z.lazy(() => RoadMapCreateWithoutUserInputSchema),z.lazy(() => RoadMapCreateWithoutUserInputSchema).array(),z.lazy(() => RoadMapUncheckedCreateWithoutUserInputSchema),z.lazy(() => RoadMapUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RoadMapCreateOrConnectWithoutUserInputSchema),z.lazy(() => RoadMapCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RoadMapCreateManyUserInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => RoadMapWhereUniqueInputSchema),z.lazy(() => RoadMapWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const UserSkillUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.UserSkillUncheckedCreateNestedManyWithoutUserInput> = z.object({
   create: z.union([ z.lazy(() => UserSkillCreateWithoutUserInputSchema),z.lazy(() => UserSkillCreateWithoutUserInputSchema).array(),z.lazy(() => UserSkillUncheckedCreateWithoutUserInputSchema),z.lazy(() => UserSkillUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => UserSkillCreateOrConnectWithoutUserInputSchema),z.lazy(() => UserSkillCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -3113,6 +3204,13 @@ export const SessionUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<P
   connectOrCreate: z.union([ z.lazy(() => SessionCreateOrConnectWithoutUserInputSchema),z.lazy(() => SessionCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
   createMany: z.lazy(() => SessionCreateManyUserInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => SessionWhereUniqueInputSchema),z.lazy(() => SessionWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const RoadMapUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.RoadMapUncheckedCreateNestedManyWithoutUserInput> = z.object({
+  create: z.union([ z.lazy(() => RoadMapCreateWithoutUserInputSchema),z.lazy(() => RoadMapCreateWithoutUserInputSchema).array(),z.lazy(() => RoadMapUncheckedCreateWithoutUserInputSchema),z.lazy(() => RoadMapUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RoadMapCreateOrConnectWithoutUserInputSchema),z.lazy(() => RoadMapCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RoadMapCreateManyUserInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => RoadMapWhereUniqueInputSchema),z.lazy(() => RoadMapWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = z.object({
@@ -3207,6 +3305,20 @@ export const SessionUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.Ses
   deleteMany: z.union([ z.lazy(() => SessionScalarWhereInputSchema),z.lazy(() => SessionScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const RoadMapUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.RoadMapUpdateManyWithoutUserNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RoadMapCreateWithoutUserInputSchema),z.lazy(() => RoadMapCreateWithoutUserInputSchema).array(),z.lazy(() => RoadMapUncheckedCreateWithoutUserInputSchema),z.lazy(() => RoadMapUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RoadMapCreateOrConnectWithoutUserInputSchema),z.lazy(() => RoadMapCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => RoadMapUpsertWithWhereUniqueWithoutUserInputSchema),z.lazy(() => RoadMapUpsertWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RoadMapCreateManyUserInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => RoadMapWhereUniqueInputSchema),z.lazy(() => RoadMapWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => RoadMapWhereUniqueInputSchema),z.lazy(() => RoadMapWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => RoadMapWhereUniqueInputSchema),z.lazy(() => RoadMapWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => RoadMapWhereUniqueInputSchema),z.lazy(() => RoadMapWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => RoadMapUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => RoadMapUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => RoadMapUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => RoadMapUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => RoadMapScalarWhereInputSchema),z.lazy(() => RoadMapScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.UserSkillUncheckedUpdateManyWithoutUserNestedInput> = z.object({
   create: z.union([ z.lazy(() => UserSkillCreateWithoutUserInputSchema),z.lazy(() => UserSkillCreateWithoutUserInputSchema).array(),z.lazy(() => UserSkillUncheckedCreateWithoutUserInputSchema),z.lazy(() => UserSkillUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => UserSkillCreateOrConnectWithoutUserInputSchema),z.lazy(() => UserSkillCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -3275,6 +3387,20 @@ export const SessionUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<P
   update: z.union([ z.lazy(() => SessionUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => SessionUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => SessionUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => SessionUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => SessionScalarWhereInputSchema),z.lazy(() => SessionScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const RoadMapUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.RoadMapUncheckedUpdateManyWithoutUserNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RoadMapCreateWithoutUserInputSchema),z.lazy(() => RoadMapCreateWithoutUserInputSchema).array(),z.lazy(() => RoadMapUncheckedCreateWithoutUserInputSchema),z.lazy(() => RoadMapUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RoadMapCreateOrConnectWithoutUserInputSchema),z.lazy(() => RoadMapCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => RoadMapUpsertWithWhereUniqueWithoutUserInputSchema),z.lazy(() => RoadMapUpsertWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RoadMapCreateManyUserInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => RoadMapWhereUniqueInputSchema),z.lazy(() => RoadMapWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => RoadMapWhereUniqueInputSchema),z.lazy(() => RoadMapWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => RoadMapWhereUniqueInputSchema),z.lazy(() => RoadMapWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => RoadMapWhereUniqueInputSchema),z.lazy(() => RoadMapWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => RoadMapUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => RoadMapUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => RoadMapUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => RoadMapUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => RoadMapScalarWhereInputSchema),z.lazy(() => RoadMapScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const UserSkillCreateNestedManyWithoutSkillInputSchema: z.ZodType<Prisma.UserSkillCreateNestedManyWithoutSkillInput> = z.object({
@@ -3521,6 +3647,20 @@ export const UserUncheckedUpdateManyWithoutAddressNestedInputSchema: z.ZodType<P
   update: z.union([ z.lazy(() => UserUpdateWithWhereUniqueWithoutAddressInputSchema),z.lazy(() => UserUpdateWithWhereUniqueWithoutAddressInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => UserUpdateManyWithWhereWithoutAddressInputSchema),z.lazy(() => UserUpdateManyWithWhereWithoutAddressInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => UserScalarWhereInputSchema),z.lazy(() => UserScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const UserCreateNestedOneWithoutRoadMapInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutRoadMapInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutRoadMapInputSchema),z.lazy(() => UserUncheckedCreateWithoutRoadMapInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutRoadMapInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
+}).strict();
+
+export const UserUpdateOneRequiredWithoutRoadMapNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutRoadMapNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutRoadMapInputSchema),z.lazy(() => UserUncheckedCreateWithoutRoadMapInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutRoadMapInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutRoadMapInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutRoadMapInputSchema),z.lazy(() => UserUpdateWithoutRoadMapInputSchema),z.lazy(() => UserUncheckedUpdateWithoutRoadMapInputSchema) ]).optional(),
 }).strict();
 
 export const NestedStringFilterSchema: z.ZodType<Prisma.NestedStringFilter> = z.object({
@@ -3844,7 +3984,8 @@ export const UserCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserCreate
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutPostedJobsInput> = z.object({
@@ -3866,7 +4007,8 @@ export const UserUncheckedCreateWithoutPostedJobsInputSchema: z.ZodType<Prisma.U
   skills: z.lazy(() => UserSkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutPostedJobsInput> = z.object({
@@ -3982,7 +4124,8 @@ export const UserUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUpdate
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutPostedJobsInput> = z.object({
@@ -4004,7 +4147,8 @@ export const UserUncheckedUpdateWithoutPostedJobsInputSchema: z.ZodType<Prisma.U
   skills: z.lazy(() => UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const MediaCreateWithoutApplicantInputSchema: z.ZodType<Prisma.MediaCreateWithoutApplicantInput> = z.object({
@@ -4047,7 +4191,8 @@ export const UserCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserCreat
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutAppliedJobsInput> = z.object({
@@ -4069,7 +4214,8 @@ export const UserUncheckedCreateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.
   skills: z.lazy(() => UserSkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutAppliedJobsInput> = z.object({
@@ -4175,7 +4321,8 @@ export const UserUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUpdat
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutAppliedJobsInput> = z.object({
@@ -4197,7 +4344,8 @@ export const UserUncheckedUpdateWithoutAppliedJobsInputSchema: z.ZodType<Prisma.
   skills: z.lazy(() => UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const JobPostUpsertWithoutApplicantsInputSchema: z.ZodType<Prisma.JobPostUpsertWithoutApplicantsInput> = z.object({
@@ -4410,6 +4558,30 @@ export const SessionCreateManyUserInputEnvelopeSchema: z.ZodType<Prisma.SessionC
   skipDuplicates: z.boolean().optional()
 }).strict();
 
+export const RoadMapCreateWithoutUserInputSchema: z.ZodType<Prisma.RoadMapCreateWithoutUserInput> = z.object({
+  id: z.string().cuid().optional(),
+  title: z.string(),
+  mermaidSyntax: z.string(),
+  createdAt: z.coerce.date().optional()
+}).strict();
+
+export const RoadMapUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.RoadMapUncheckedCreateWithoutUserInput> = z.object({
+  id: z.string().cuid().optional(),
+  title: z.string(),
+  mermaidSyntax: z.string(),
+  createdAt: z.coerce.date().optional()
+}).strict();
+
+export const RoadMapCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.RoadMapCreateOrConnectWithoutUserInput> = z.object({
+  where: z.lazy(() => RoadMapWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => RoadMapCreateWithoutUserInputSchema),z.lazy(() => RoadMapUncheckedCreateWithoutUserInputSchema) ]),
+}).strict();
+
+export const RoadMapCreateManyUserInputEnvelopeSchema: z.ZodType<Prisma.RoadMapCreateManyUserInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => RoadMapCreateManyUserInputSchema),z.lazy(() => RoadMapCreateManyUserInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
 export const UserSkillUpsertWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.UserSkillUpsertWithWhereUniqueWithoutUserInput> = z.object({
   where: z.lazy(() => UserSkillWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => UserSkillUpdateWithoutUserInputSchema),z.lazy(() => UserSkillUncheckedUpdateWithoutUserInputSchema) ]),
@@ -4568,6 +4740,33 @@ export const SessionScalarWhereInputSchema: z.ZodType<Prisma.SessionScalarWhereI
   expiresAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
+export const RoadMapUpsertWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.RoadMapUpsertWithWhereUniqueWithoutUserInput> = z.object({
+  where: z.lazy(() => RoadMapWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => RoadMapUpdateWithoutUserInputSchema),z.lazy(() => RoadMapUncheckedUpdateWithoutUserInputSchema) ]),
+  create: z.union([ z.lazy(() => RoadMapCreateWithoutUserInputSchema),z.lazy(() => RoadMapUncheckedCreateWithoutUserInputSchema) ]),
+}).strict();
+
+export const RoadMapUpdateWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.RoadMapUpdateWithWhereUniqueWithoutUserInput> = z.object({
+  where: z.lazy(() => RoadMapWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => RoadMapUpdateWithoutUserInputSchema),z.lazy(() => RoadMapUncheckedUpdateWithoutUserInputSchema) ]),
+}).strict();
+
+export const RoadMapUpdateManyWithWhereWithoutUserInputSchema: z.ZodType<Prisma.RoadMapUpdateManyWithWhereWithoutUserInput> = z.object({
+  where: z.lazy(() => RoadMapScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => RoadMapUpdateManyMutationInputSchema),z.lazy(() => RoadMapUncheckedUpdateManyWithoutUserInputSchema) ]),
+}).strict();
+
+export const RoadMapScalarWhereInputSchema: z.ZodType<Prisma.RoadMapScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => RoadMapScalarWhereInputSchema),z.lazy(() => RoadMapScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RoadMapScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RoadMapScalarWhereInputSchema),z.lazy(() => RoadMapScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  title: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  mermaidSyntax: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+}).strict();
+
 export const UserSkillCreateWithoutSkillInputSchema: z.ZodType<Prisma.UserSkillCreateWithoutSkillInput> = z.object({
   id: z.string().cuid().optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutSkillsInputSchema).optional()
@@ -4659,7 +4858,8 @@ export const UserCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserCreateWith
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutSkillsInput> = z.object({
@@ -4681,7 +4881,8 @@ export const UserUncheckedCreateWithoutSkillsInputSchema: z.ZodType<Prisma.UserU
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutSkillsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutSkillsInput> = z.object({
@@ -4736,7 +4937,8 @@ export const UserUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUpdateWith
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutSkillsInput> = z.object({
@@ -4758,7 +4960,8 @@ export const UserUncheckedUpdateWithoutSkillsInputSchema: z.ZodType<Prisma.UserU
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const SkillUpsertWithoutUsersInputSchema: z.ZodType<Prisma.SkillUpsertWithoutUsersInput> = z.object({
@@ -5019,7 +5222,8 @@ export const UserCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserCreateWitho
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutMediaInput> = z.object({
@@ -5041,7 +5245,8 @@ export const UserUncheckedCreateWithoutMediaInputSchema: z.ZodType<Prisma.UserUn
   skills: z.lazy(() => UserSkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutMediaInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutMediaInput> = z.object({
@@ -5102,7 +5307,8 @@ export const UserUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUpdateWitho
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutMediaInput> = z.object({
@@ -5124,7 +5330,8 @@ export const UserUncheckedUpdateWithoutMediaInputSchema: z.ZodType<Prisma.UserUn
   skills: z.lazy(() => UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const ApplicantUpsertWithoutResumeInputSchema: z.ZodType<Prisma.ApplicantUpsertWithoutResumeInput> = z.object({
@@ -5175,7 +5382,8 @@ export const UserCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateWi
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
-  appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional()
+  appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutSessionsInput> = z.object({
@@ -5197,7 +5405,8 @@ export const UserUncheckedCreateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   skills: z.lazy(() => UserSkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
-  appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutSessionsInput> = z.object({
@@ -5235,7 +5444,8 @@ export const UserUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUpdateWi
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
-  appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional()
+  appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutSessionsInput> = z.object({
@@ -5257,7 +5467,8 @@ export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   skills: z.lazy(() => UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
-  appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateWithoutAddressInputSchema: z.ZodType<Prisma.UserCreateWithoutAddressInput> = z.object({
@@ -5279,7 +5490,8 @@ export const UserCreateWithoutAddressInputSchema: z.ZodType<Prisma.UserCreateWit
   media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutAddressInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutAddressInput> = z.object({
@@ -5301,7 +5513,8 @@ export const UserUncheckedCreateWithoutAddressInputSchema: z.ZodType<Prisma.User
   media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutAddressInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutAddressInput> = z.object({
@@ -5349,6 +5562,114 @@ export const UserScalarWhereInputSchema: z.ZodType<Prisma.UserScalarWhereInput> 
   onboardingCompleted: z.union([ z.lazy(() => BoolNullableFilterSchema),z.boolean() ]).optional().nullable(),
   roleSet: z.union([ z.lazy(() => BoolNullableFilterSchema),z.boolean() ]).optional().nullable(),
   credits: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+}).strict();
+
+export const UserCreateWithoutRoadMapInputSchema: z.ZodType<Prisma.UserCreateWithoutRoadMapInput> = z.object({
+  id: z.string().cuid().optional(),
+  username: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
+  email: z.string(),
+  hashedPassword: z.string(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  role: z.lazy(() => RoleSchema).optional(),
+  about: z.string().optional(),
+  profileCompleted: z.boolean().optional().nullable(),
+  onboardingCompleted: z.boolean().optional().nullable(),
+  roleSet: z.boolean().optional().nullable(),
+  credits: z.number().int().optional(),
+  skills: z.lazy(() => UserSkillCreateNestedManyWithoutUserInputSchema).optional(),
+  media: z.lazy(() => MediaCreateNestedManyWithoutUserInputSchema).optional(),
+  address: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
+  postedJobs: z.lazy(() => JobPostCreateNestedManyWithoutPostedByInputSchema).optional(),
+  appliedJobs: z.lazy(() => ApplicantCreateNestedManyWithoutUserInputSchema).optional(),
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateWithoutRoadMapInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutRoadMapInput> = z.object({
+  id: z.string().cuid().optional(),
+  username: z.string(),
+  firstName: z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),
+  secondName: z.string().optional().nullable(),
+  email: z.string(),
+  hashedPassword: z.string(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  role: z.lazy(() => RoleSchema).optional(),
+  about: z.string().optional(),
+  locationId: z.string().optional().nullable(),
+  profileCompleted: z.boolean().optional().nullable(),
+  onboardingCompleted: z.boolean().optional().nullable(),
+  roleSet: z.boolean().optional().nullable(),
+  credits: z.number().int().optional(),
+  skills: z.lazy(() => UserSkillUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  postedJobs: z.lazy(() => JobPostUncheckedCreateNestedManyWithoutPostedByInputSchema).optional(),
+  appliedJobs: z.lazy(() => ApplicantUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserCreateOrConnectWithoutRoadMapInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutRoadMapInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => UserCreateWithoutRoadMapInputSchema),z.lazy(() => UserUncheckedCreateWithoutRoadMapInputSchema) ]),
+}).strict();
+
+export const UserUpsertWithoutRoadMapInputSchema: z.ZodType<Prisma.UserUpsertWithoutRoadMapInput> = z.object({
+  update: z.union([ z.lazy(() => UserUpdateWithoutRoadMapInputSchema),z.lazy(() => UserUncheckedUpdateWithoutRoadMapInputSchema) ]),
+  create: z.union([ z.lazy(() => UserCreateWithoutRoadMapInputSchema),z.lazy(() => UserUncheckedCreateWithoutRoadMapInputSchema) ]),
+  where: z.lazy(() => UserWhereInputSchema).optional()
+}).strict();
+
+export const UserUpdateToOneWithWhereWithoutRoadMapInputSchema: z.ZodType<Prisma.UserUpdateToOneWithWhereWithoutRoadMapInput> = z.object({
+  where: z.lazy(() => UserWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => UserUpdateWithoutRoadMapInputSchema),z.lazy(() => UserUncheckedUpdateWithoutRoadMapInputSchema) ]),
+}).strict();
+
+export const UserUpdateWithoutRoadMapInputSchema: z.ZodType<Prisma.UserUpdateWithoutRoadMapInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
+  about: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  profileCompleted: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  onboardingCompleted: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  roleSet: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  credits: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  skills: z.lazy(() => UserSkillUpdateManyWithoutUserNestedInputSchema).optional(),
+  media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
+  address: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
+  postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
+  appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
+export const UserUncheckedUpdateWithoutRoadMapInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutRoadMapInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  firstName: z.union([ z.string().min(3, { message: "Enter more than 3 characters" }).max(15, { message: "Enter Less than 15 characters" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  secondName: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  email: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  hashedPassword: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  role: z.union([ z.lazy(() => RoleSchema),z.lazy(() => EnumRoleFieldUpdateOperationsInputSchema) ]).optional(),
+  about: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  locationId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  profileCompleted: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  onboardingCompleted: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  roleSet: z.union([ z.boolean(),z.lazy(() => NullableBoolFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  credits: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  skills: z.lazy(() => UserSkillUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
+  appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const JobSkillCreateManyJobPostInputSchema: z.ZodType<Prisma.JobSkillCreateManyJobPostInput> = z.object({
@@ -5464,6 +5785,13 @@ export const ApplicantCreateManyUserInputSchema: z.ZodType<Prisma.ApplicantCreat
 export const SessionCreateManyUserInputSchema: z.ZodType<Prisma.SessionCreateManyUserInput> = z.object({
   id: z.string().cuid().optional(),
   expiresAt: z.coerce.date()
+}).strict();
+
+export const RoadMapCreateManyUserInputSchema: z.ZodType<Prisma.RoadMapCreateManyUserInput> = z.object({
+  id: z.string().cuid().optional(),
+  title: z.string(),
+  mermaidSyntax: z.string(),
+  createdAt: z.coerce.date().optional()
 }).strict();
 
 export const UserSkillUpdateWithoutUserInputSchema: z.ZodType<Prisma.UserSkillUpdateWithoutUserInput> = z.object({
@@ -5597,6 +5925,27 @@ export const SessionUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.
   expiresAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const RoadMapUpdateWithoutUserInputSchema: z.ZodType<Prisma.RoadMapUpdateWithoutUserInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  mermaidSyntax: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RoadMapUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.RoadMapUncheckedUpdateWithoutUserInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  mermaidSyntax: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RoadMapUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.RoadMapUncheckedUpdateManyWithoutUserInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  mermaidSyntax: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const UserSkillCreateManySkillInputSchema: z.ZodType<Prisma.UserSkillCreateManySkillInput> = z.object({
   id: z.string().cuid().optional(),
   userId: z.string().optional().nullable()
@@ -5673,7 +6022,8 @@ export const UserUpdateWithoutAddressInputSchema: z.ZodType<Prisma.UserUpdateWit
   media: z.lazy(() => MediaUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutAddressInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutAddressInput> = z.object({
@@ -5695,7 +6045,8 @@ export const UserUncheckedUpdateWithoutAddressInputSchema: z.ZodType<Prisma.User
   media: z.lazy(() => MediaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   postedJobs: z.lazy(() => JobPostUncheckedUpdateManyWithoutPostedByNestedInputSchema).optional(),
   appliedJobs: z.lazy(() => ApplicantUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  RoadMap: z.lazy(() => RoadMapUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateManyWithoutAddressInputSchema: z.ZodType<Prisma.UserUncheckedUpdateManyWithoutAddressInput> = z.object({
@@ -6339,61 +6690,66 @@ export const LocationFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.LocationFindU
   where: LocationWhereUniqueInputSchema,
 }).strict() ;
 
-export const JobProfileFindFirstArgsSchema: z.ZodType<Prisma.JobProfileFindFirstArgs> = z.object({
-  select: JobProfileSelectSchema.optional(),
-  where: JobProfileWhereInputSchema.optional(),
-  orderBy: z.union([ JobProfileOrderByWithRelationInputSchema.array(),JobProfileOrderByWithRelationInputSchema ]).optional(),
-  cursor: JobProfileWhereUniqueInputSchema.optional(),
+export const RoadMapFindFirstArgsSchema: z.ZodType<Prisma.RoadMapFindFirstArgs> = z.object({
+  select: RoadMapSelectSchema.optional(),
+  include: RoadMapIncludeSchema.optional(),
+  where: RoadMapWhereInputSchema.optional(),
+  orderBy: z.union([ RoadMapOrderByWithRelationInputSchema.array(),RoadMapOrderByWithRelationInputSchema ]).optional(),
+  cursor: RoadMapWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
-  distinct: z.union([ JobProfileScalarFieldEnumSchema,JobProfileScalarFieldEnumSchema.array() ]).optional(),
+  distinct: z.union([ RoadMapScalarFieldEnumSchema,RoadMapScalarFieldEnumSchema.array() ]).optional(),
 }).strict() ;
 
-export const JobProfileFindFirstOrThrowArgsSchema: z.ZodType<Prisma.JobProfileFindFirstOrThrowArgs> = z.object({
-  select: JobProfileSelectSchema.optional(),
-  where: JobProfileWhereInputSchema.optional(),
-  orderBy: z.union([ JobProfileOrderByWithRelationInputSchema.array(),JobProfileOrderByWithRelationInputSchema ]).optional(),
-  cursor: JobProfileWhereUniqueInputSchema.optional(),
+export const RoadMapFindFirstOrThrowArgsSchema: z.ZodType<Prisma.RoadMapFindFirstOrThrowArgs> = z.object({
+  select: RoadMapSelectSchema.optional(),
+  include: RoadMapIncludeSchema.optional(),
+  where: RoadMapWhereInputSchema.optional(),
+  orderBy: z.union([ RoadMapOrderByWithRelationInputSchema.array(),RoadMapOrderByWithRelationInputSchema ]).optional(),
+  cursor: RoadMapWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
-  distinct: z.union([ JobProfileScalarFieldEnumSchema,JobProfileScalarFieldEnumSchema.array() ]).optional(),
+  distinct: z.union([ RoadMapScalarFieldEnumSchema,RoadMapScalarFieldEnumSchema.array() ]).optional(),
 }).strict() ;
 
-export const JobProfileFindManyArgsSchema: z.ZodType<Prisma.JobProfileFindManyArgs> = z.object({
-  select: JobProfileSelectSchema.optional(),
-  where: JobProfileWhereInputSchema.optional(),
-  orderBy: z.union([ JobProfileOrderByWithRelationInputSchema.array(),JobProfileOrderByWithRelationInputSchema ]).optional(),
-  cursor: JobProfileWhereUniqueInputSchema.optional(),
+export const RoadMapFindManyArgsSchema: z.ZodType<Prisma.RoadMapFindManyArgs> = z.object({
+  select: RoadMapSelectSchema.optional(),
+  include: RoadMapIncludeSchema.optional(),
+  where: RoadMapWhereInputSchema.optional(),
+  orderBy: z.union([ RoadMapOrderByWithRelationInputSchema.array(),RoadMapOrderByWithRelationInputSchema ]).optional(),
+  cursor: RoadMapWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
-  distinct: z.union([ JobProfileScalarFieldEnumSchema,JobProfileScalarFieldEnumSchema.array() ]).optional(),
+  distinct: z.union([ RoadMapScalarFieldEnumSchema,RoadMapScalarFieldEnumSchema.array() ]).optional(),
 }).strict() ;
 
-export const JobProfileAggregateArgsSchema: z.ZodType<Prisma.JobProfileAggregateArgs> = z.object({
-  where: JobProfileWhereInputSchema.optional(),
-  orderBy: z.union([ JobProfileOrderByWithRelationInputSchema.array(),JobProfileOrderByWithRelationInputSchema ]).optional(),
-  cursor: JobProfileWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-}).strict() ;
-
-export const JobProfileGroupByArgsSchema: z.ZodType<Prisma.JobProfileGroupByArgs> = z.object({
-  where: JobProfileWhereInputSchema.optional(),
-  orderBy: z.union([ JobProfileOrderByWithAggregationInputSchema.array(),JobProfileOrderByWithAggregationInputSchema ]).optional(),
-  by: JobProfileScalarFieldEnumSchema.array(),
-  having: JobProfileScalarWhereWithAggregatesInputSchema.optional(),
+export const RoadMapAggregateArgsSchema: z.ZodType<Prisma.RoadMapAggregateArgs> = z.object({
+  where: RoadMapWhereInputSchema.optional(),
+  orderBy: z.union([ RoadMapOrderByWithRelationInputSchema.array(),RoadMapOrderByWithRelationInputSchema ]).optional(),
+  cursor: RoadMapWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
 }).strict() ;
 
-export const JobProfileFindUniqueArgsSchema: z.ZodType<Prisma.JobProfileFindUniqueArgs> = z.object({
-  select: JobProfileSelectSchema.optional(),
-  where: JobProfileWhereUniqueInputSchema,
+export const RoadMapGroupByArgsSchema: z.ZodType<Prisma.RoadMapGroupByArgs> = z.object({
+  where: RoadMapWhereInputSchema.optional(),
+  orderBy: z.union([ RoadMapOrderByWithAggregationInputSchema.array(),RoadMapOrderByWithAggregationInputSchema ]).optional(),
+  by: RoadMapScalarFieldEnumSchema.array(),
+  having: RoadMapScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
 }).strict() ;
 
-export const JobProfileFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.JobProfileFindUniqueOrThrowArgs> = z.object({
-  select: JobProfileSelectSchema.optional(),
-  where: JobProfileWhereUniqueInputSchema,
+export const RoadMapFindUniqueArgsSchema: z.ZodType<Prisma.RoadMapFindUniqueArgs> = z.object({
+  select: RoadMapSelectSchema.optional(),
+  include: RoadMapIncludeSchema.optional(),
+  where: RoadMapWhereUniqueInputSchema,
+}).strict() ;
+
+export const RoadMapFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.RoadMapFindUniqueOrThrowArgs> = z.object({
+  select: RoadMapSelectSchema.optional(),
+  include: RoadMapIncludeSchema.optional(),
+  where: RoadMapWhereUniqueInputSchema,
 }).strict() ;
 
 export const JobPostCreateArgsSchema: z.ZodType<Prisma.JobPostCreateArgs> = z.object({
@@ -6856,44 +7212,48 @@ export const LocationDeleteManyArgsSchema: z.ZodType<Prisma.LocationDeleteManyAr
   where: LocationWhereInputSchema.optional(),
 }).strict() ;
 
-export const JobProfileCreateArgsSchema: z.ZodType<Prisma.JobProfileCreateArgs> = z.object({
-  select: JobProfileSelectSchema.optional(),
-  data: z.union([ JobProfileCreateInputSchema,JobProfileUncheckedCreateInputSchema ]),
+export const RoadMapCreateArgsSchema: z.ZodType<Prisma.RoadMapCreateArgs> = z.object({
+  select: RoadMapSelectSchema.optional(),
+  include: RoadMapIncludeSchema.optional(),
+  data: z.union([ RoadMapCreateInputSchema,RoadMapUncheckedCreateInputSchema ]),
 }).strict() ;
 
-export const JobProfileUpsertArgsSchema: z.ZodType<Prisma.JobProfileUpsertArgs> = z.object({
-  select: JobProfileSelectSchema.optional(),
-  where: JobProfileWhereUniqueInputSchema,
-  create: z.union([ JobProfileCreateInputSchema,JobProfileUncheckedCreateInputSchema ]),
-  update: z.union([ JobProfileUpdateInputSchema,JobProfileUncheckedUpdateInputSchema ]),
+export const RoadMapUpsertArgsSchema: z.ZodType<Prisma.RoadMapUpsertArgs> = z.object({
+  select: RoadMapSelectSchema.optional(),
+  include: RoadMapIncludeSchema.optional(),
+  where: RoadMapWhereUniqueInputSchema,
+  create: z.union([ RoadMapCreateInputSchema,RoadMapUncheckedCreateInputSchema ]),
+  update: z.union([ RoadMapUpdateInputSchema,RoadMapUncheckedUpdateInputSchema ]),
 }).strict() ;
 
-export const JobProfileCreateManyArgsSchema: z.ZodType<Prisma.JobProfileCreateManyArgs> = z.object({
-  data: z.union([ JobProfileCreateManyInputSchema,JobProfileCreateManyInputSchema.array() ]),
+export const RoadMapCreateManyArgsSchema: z.ZodType<Prisma.RoadMapCreateManyArgs> = z.object({
+  data: z.union([ RoadMapCreateManyInputSchema,RoadMapCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
-export const JobProfileCreateManyAndReturnArgsSchema: z.ZodType<Prisma.JobProfileCreateManyAndReturnArgs> = z.object({
-  data: z.union([ JobProfileCreateManyInputSchema,JobProfileCreateManyInputSchema.array() ]),
+export const RoadMapCreateManyAndReturnArgsSchema: z.ZodType<Prisma.RoadMapCreateManyAndReturnArgs> = z.object({
+  data: z.union([ RoadMapCreateManyInputSchema,RoadMapCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
-export const JobProfileDeleteArgsSchema: z.ZodType<Prisma.JobProfileDeleteArgs> = z.object({
-  select: JobProfileSelectSchema.optional(),
-  where: JobProfileWhereUniqueInputSchema,
+export const RoadMapDeleteArgsSchema: z.ZodType<Prisma.RoadMapDeleteArgs> = z.object({
+  select: RoadMapSelectSchema.optional(),
+  include: RoadMapIncludeSchema.optional(),
+  where: RoadMapWhereUniqueInputSchema,
 }).strict() ;
 
-export const JobProfileUpdateArgsSchema: z.ZodType<Prisma.JobProfileUpdateArgs> = z.object({
-  select: JobProfileSelectSchema.optional(),
-  data: z.union([ JobProfileUpdateInputSchema,JobProfileUncheckedUpdateInputSchema ]),
-  where: JobProfileWhereUniqueInputSchema,
+export const RoadMapUpdateArgsSchema: z.ZodType<Prisma.RoadMapUpdateArgs> = z.object({
+  select: RoadMapSelectSchema.optional(),
+  include: RoadMapIncludeSchema.optional(),
+  data: z.union([ RoadMapUpdateInputSchema,RoadMapUncheckedUpdateInputSchema ]),
+  where: RoadMapWhereUniqueInputSchema,
 }).strict() ;
 
-export const JobProfileUpdateManyArgsSchema: z.ZodType<Prisma.JobProfileUpdateManyArgs> = z.object({
-  data: z.union([ JobProfileUpdateManyMutationInputSchema,JobProfileUncheckedUpdateManyInputSchema ]),
-  where: JobProfileWhereInputSchema.optional(),
+export const RoadMapUpdateManyArgsSchema: z.ZodType<Prisma.RoadMapUpdateManyArgs> = z.object({
+  data: z.union([ RoadMapUpdateManyMutationInputSchema,RoadMapUncheckedUpdateManyInputSchema ]),
+  where: RoadMapWhereInputSchema.optional(),
 }).strict() ;
 
-export const JobProfileDeleteManyArgsSchema: z.ZodType<Prisma.JobProfileDeleteManyArgs> = z.object({
-  where: JobProfileWhereInputSchema.optional(),
+export const RoadMapDeleteManyArgsSchema: z.ZodType<Prisma.RoadMapDeleteManyArgs> = z.object({
+  where: RoadMapWhereInputSchema.optional(),
 }).strict() ;

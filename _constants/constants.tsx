@@ -22,11 +22,11 @@ export const sidebarLinks: SidebarLink[] = [
     route: "/jobs",
     label: "Jobs",
   },
-  // {
-  //   imgURL: "/assets/icons/users.svg",
-  //   route: "/roadmap",
-  //   label: "RoadMaps",
-  // },
+  {
+    imgURL: "/assets/icons/users.svg",
+    route: "/roadmap",
+    label: "RoadMaps",
+  },
   {
     imgURL: "/assets/icons/users.svg",
     route: "/practice",
@@ -69,6 +69,22 @@ export const DashboardNavLinks: SidebarLink[] = [
     imgURL: "/assets/icons/users.svg",
     route: "/settings",
     label: "Settings",
+  },
+];
+
+export const loadingStatesRoadmap = [
+  {
+    text: "Got The Topic",
+  },
+  {
+    text: "Requesting the AI",
+  },
+  {
+    text: "Generating...",
+  },
+
+  {
+    text: "Roadmap Generated 🎉",
   },
 ];
 export const BADGE_CRITERIA = {

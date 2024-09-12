@@ -2,6 +2,7 @@
 import {
   CoverLetterSchema,
   ResumeProfileSectionSchema,
+  RoadMapSchema,
 } from "@/types/zodValidations";
 import { OpenAI } from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
@@ -17,7 +18,7 @@ export async function generateResume(resume: string) {
     return { error: getCredits.error };
   }
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-2024-08-06",
+    model: "gpt-4o-mini-2024-07-18",
     messages: [
       {
         role: "system",
@@ -45,7 +46,8 @@ export async function generateCoverLetter(
   }
   const content = { jobDescription: coverLetter, userInfo: userInfo };
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-2024-08-06",
+    model: "gpt-4o-mini-2024-07-18",
+
     messages: [
       {
         role: "system",
@@ -56,5 +58,42 @@ export async function generateCoverLetter(
     ],
     response_format: zodResponseFormat(CoverLetterSchema, "Cover_Letter"),
   });
+  return response.choices[0].message.content;
+}
+
+export async function generateRoadmaps({
+  prompt,
+  error = false,
+}: {
+  prompt: string;
+  error?: boolean;
+}) {
+  if (!error) {
+    const getCredits = await reduceUserAIpoints();
+    if (getCredits.error) {
+      return { error: getCredits.error };
+    }
+  }
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini-2024-07-18",
+    messages: [
+      {
+        role: "system",
+        content: `You are a Professional Mermaid diagram generator. When given a user prompt, generate a valid Mermaid diagram for a roadmap flowchart  that follows these strict guidelines:
+1. **Main Title**: Include a main title node at the top of the diagram.
+2. **Subtopics**: Each main topic should be connected horizontally to its subtopics. Ensure the flow is from top to bottom.
+Align the topics in order and sequentially from top to bottom to main tha flow and understandability.
+Make Large Diagrams easily take full height and width of the screen.
+3. **Optional Subtopics**: Use dashed arrows \(\`-.->\`\) to represent optional subtopics. Clearly label optional subtopics  without parentheses or special characters.
+5. **No Special Characters**: Avoid using special characters like \`\[\]\`, \`\(\)\`, or \`\<\>\` within labels. Use plain text only.
+7. **Validation**: Ensure that labels and structure adhere to Mermaid syntax to prevent errors.
+`,
+      },
+      { role: "user", content: prompt },
+    ],
+    response_format: zodResponseFormat(RoadMapSchema, "Roadmap"),
+  });
+
   return response.choices[0].message.content;
 }
