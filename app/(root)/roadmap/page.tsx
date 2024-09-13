@@ -28,7 +28,7 @@ export default async function Page() {
             AI Roadmap Generator
           </span>
         </h1>
-        <span className="absolute right-0 z-[1000] pb-4">
+        <span className="absolute right-0 pb-4">
           {user && "id" in user && <CreditsButton userId={user.id} />}
         </span>
       </header>
