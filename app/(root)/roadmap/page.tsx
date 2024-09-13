@@ -21,7 +21,7 @@ export default async function Page() {
   });
   return (
     <div className="flex flex-1 flex-col overflow-y-scroll bg-gradient-to-br from-blue-50 to-indigo-100 transition-colors duration-300 dark:from-gray-900 dark:to-gray-800">
-      <header className="flex items-center justify-center bg-inherit pt-10 shadow-sm">
+      <header className="relative flex items-center justify-center bg-inherit pt-10 shadow-sm">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           <span className="text-white dark:text-black">✨</span>
           <span className="font-bold text-primary underline">
