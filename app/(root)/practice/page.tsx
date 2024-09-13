@@ -1,41 +1,10 @@
+import { questionsData } from "@/_constants/constants";
 import { Badge } from "@/components/ui/badge";
 import { TriangleAlertIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function Component() {
-  const questions = [
-    {
-      id: 1,
-      title: "Two Sum",
-      difficulty: "Easy",
-      tags: ["Array", "Hash Table"],
-    },
-    {
-      id: 2,
-      title: "Add Two Numbers",
-      difficulty: "Medium",
-      tags: ["Linked List", "Math"],
-    },
-    {
-      id: 3,
-      title: "Longest Substring Without Repeating Characters",
-      difficulty: "Medium",
-      tags: ["String", "Sliding Window"],
-    },
-    {
-      id: 4,
-      title: "Median of Two Sorted Arrays",
-      difficulty: "Hard",
-      tags: ["Array", "Binary Search"],
-    },
-    {
-      id: 5,
-      title: "Longest Palindromic Substring",
-      difficulty: "Medium",
-      tags: ["String", "Dynamic Programming"],
-    },
-  ];
-
+  const questions = Object.values(questionsData);
   const difficultyColors: Record<string, string> = {
     Easy: "bg-green-100 text-green-800",
     Medium: "bg-yellow-100 text-yellow-800",
@@ -44,12 +13,6 @@ export default function Component() {
 
   return (
     <div className="max-h-screen overflow-y-scroll bg-background">
-      <div className="flex h-10 w-full animate-pulse items-center justify-center gap-2 bg-red-500 from-red-300 to-red-500 pb-0 transition-colors delay-200 duration-1000 ease-in-out">
-        <TriangleAlertIcon />
-        <p className="mb-0 text-white">
-          This Part of the Website is under Development.{" "}
-        </p>
-      </div>
       <div className="container mx-auto px-4 py-8">
         <header className="sticky top-0 z-10 border-b bg-background">
           <h1>Practice Questions</h1>

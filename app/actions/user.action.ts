@@ -346,7 +346,7 @@ export const getUserCredits = async ({ userId }: { userId?: string }) => {
 export const reduceUserAIpoints = async () => {
   const user: any = await getUserId();
   if (!user || "error" in user) {
-    return { error: "User Not Authenticated" };
+    return { error: "Login To Access the Feature" };
   }
   const userCredits = await getUserCredits({ userId: user.user.id });
   if (typeof userCredits === "object" && "error" in userCredits) {

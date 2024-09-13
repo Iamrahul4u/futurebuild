@@ -6,6 +6,7 @@ import ResumeBuilderSection from "@/components/homepage/ResumeBuilderSection";
 import ChatSection from "@/components/homepage/ChatSection";
 import LeetCodeSection from "@/components/homepage/LeetcodeSection";
 import Footer from "@/components/homepage/Footer";
+import RoadmapSection from "@/components/homepage/RoadmapSection";
 export default function Page() {
   return (
     <div className="flex max-h-[90dvh] flex-col overflow-hidden overflow-y-scroll bg-background dark:bg-black">
@@ -15,6 +16,7 @@ export default function Page() {
         <ResumeBuilderSection />
         <ChatSection />
         <LeetCodeSection />
+        <RoadmapSection />
         <Footer />
       </main>
     </div>

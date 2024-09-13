@@ -6,7 +6,6 @@ export default async function sendCode(
   version: string,
   fileName: string,
 ) {
-  console.log("got the request");
   try {
     const response = await fetch("https://emkc.org/api/v2/piston/execute", {
       method: "POST",
@@ -17,7 +16,6 @@ export default async function sendCode(
         language: language,
         version: version,
         files: [{ name: fileName, content: code }],
-        stdin: "1 2",
       }),
     });
 
@@ -26,7 +24,7 @@ export default async function sendCode(
     }
 
     const data = await response.json();
-    console.log(data);
+
     return data;
   } catch (error) {
     console.error("Error executing code:", error);

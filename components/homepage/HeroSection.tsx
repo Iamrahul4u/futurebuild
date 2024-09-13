@@ -56,7 +56,11 @@ export default function HeroSection() {
               <span className="font-bold text-primary underline">
                 <Link href="/resume/template">resume</Link>
               </span>{" "}
-              with our comprehensive platform and{" "}
+              with our comprehensive platform,Get personalized{" "}
+              <span className="font-bold text-primary underline">
+                <Link href="/roadmap">Roadmaps</Link>
+              </span>{" "}
+              powered by our
               <span className="text-white dark:text-black">✨</span>
               <span className="font-bold text-primary underline">
                 <Link href="/resume/template">AI Assistant</Link>
@@ -94,7 +98,11 @@ const CarouselImages = [
   },
   {
     src: "/homepage/build.webp",
-    alt: "Build Resume ",
+    alt: "Build Resume With AI",
+  },
+  {
+    src: "/homepage/roadmaps.webp",
+    alt: "Roadmaps With AI",
   },
   {
     src: "/homepage/ask-question.webp",

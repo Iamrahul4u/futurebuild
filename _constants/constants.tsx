@@ -25,7 +25,7 @@ export const sidebarLinks: SidebarLink[] = [
   {
     imgURL: "/assets/icons/users.svg",
     route: "/roadmap",
-    label: "RoadMaps",
+    label: "Roadmaps",
   },
   {
     imgURL: "/assets/icons/users.svg",
@@ -185,6 +185,122 @@ const solution = new Solution();
 // console.log(solution.yourFunctionName(params));
 
   `,
+};
+export const questionsData = {
+  twoSum: {
+    id: "twoSum",
+    title: "Two Sum",
+    description: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.`,
+    example: `Input: nums = [2,7,11,15], target = 9\nOutput: [0,1]\nExplanation: Because nums[0] + nums[1] == 9, we return [0, 1].`,
+    constraints: [
+      "2 ≤ nums.length ≤ 10^4",
+      "-10^9 ≤ nums[i] ≤ 10^9",
+      "Only one valid answer exists.",
+    ],
+    difficulty: "Easy",
+    tags: ["Array", "Hash Table"],
+    templateCode: {
+      python: `def two_sum(nums, target):\n    # Write your code here\n    pass`,
+      java: `public int[] twoSum(int[] nums, int target) {\n    // Write your code here\n    return new int[] {}; \n}`,
+      cpp: `vector<int> twoSum(vector<int>& nums, int target) {\n    // Write your code here\n    return {}; \n}`,
+      javascript: `function twoSum(nums, target) {\n    // Write your code here\n}`,
+    },
+    testCases: [
+      { input: [[2, 7, 11, 15], 9], expected: [0, 1] },
+      { input: [[-1, -2, -3, -4, -5], -8], expected: [2, 4] },
+      { input: [[0, 4, 3, 0], 0], expected: [0, 3] },
+      { input: [[3, 3], 6], expected: [0, 1] },
+      {
+        input: [[1000000000, 2000000000, 3000000000], 3000000000],
+        expected: [0, 1],
+      },
+    ],
+    results: `testCases.map(testCase => {\n  let result = twoSum(...testCase.input);\n  return {\n    input: testCase.input,\n    expected: testCase.expected,\n    output: result,\n    passed: JSON.stringify(result) === JSON.stringify(testCase.expected),\n  };\n});`,
+  },
+  reverseString: {
+    id: "reverseString",
+    title: "Reverse String",
+    description: `Write a function that reverses a string. The input string is given as an array of characters s.`,
+    example: `Input: s = ["h","e","l","l","o"]\nOutput: ["o","l","l","e","h"]`,
+    constraints: ["1 ≤ s.length ≤ 10^5"],
+    difficulty: "Medium",
+    tags: ["String", "Array"],
+    templateCode: {
+      python: `def reverse_string(s):\n    # Write your code here\n    pass`,
+      java: `public void reverseString(char[] s) {\n    // Write your code here\n}`,
+      cpp: `void reverseString(vector<char>& s) {\n    // Write your code here\n}`,
+      javascript: `function reverseString(s) {\n    // Write your code here\n}`,
+    },
+    testCases: [
+      {
+        input: [["h", "e", "l", "l", "o"]],
+        expected: ["o", "l", "l", "e", "h"],
+      },
+      {
+        input: [["H", "a", "n", "n", "a", "h"]],
+        expected: ["h", "a", "n", "n", "a", "H"],
+      },
+    ],
+    results: `testCases.map(testCase => {\n  let result = reverseString(testCase.input[0]);\n  return {\n    input: testCase.input,\n    expected: testCase.expected,\n    output: result,\n    passed: JSON.stringify(result) === JSON.stringify(testCase.expected),\n  };\n});`,
+  },
+  fizzBuzz: {
+    id: "fizzBuzz",
+    title: "Fizz Buzz",
+    description: `Given an integer n, return a string array answer (1-indexed) where:\n- answer[i] == "FizzBuzz" if i is divisible by 3 and 5.\n- answer[i] == "Fizz" if i is divisible by 3.\n- answer[i] == "Buzz" if i is divisible by 5.\n- answer[i] == i (as a string) if none of the above conditions are true.`,
+    example: `Input: n = 15\nOutput: ["1","2","Fizz","4","Buzz","Fizz","7","8","Fizz","Buzz","11","Fizz","13","14","FizzBuzz"]`,
+    constraints: ["1 ≤ n ≤ 10^4"],
+    difficulty: "Easy",
+    tags: ["String", "Array"],
+    templateCode: {
+      python: `def fizz_buzz(n):\n    # Write your code here\n    pass`,
+      java: `public List<String> fizzBuzz(int n) {\n    // Write your code here\n    return new ArrayList<>();\n}`,
+      cpp: `vector<string> fizzBuzz(int n) {\n    // Write your code here\n    return {}; \n}`,
+      javascript: `function fizzBuzz(n) {\n    // Write your code here\n}`,
+    },
+    testCases: [
+      {
+        input: [15],
+        expected: [
+          "1",
+          "2",
+          "Fizz",
+          "4",
+          "Buzz",
+          "Fizz",
+          "7",
+          "8",
+          "Fizz",
+          "Buzz",
+          "11",
+          "Fizz",
+          "13",
+          "14",
+          "FizzBuzz",
+        ],
+      },
+    ],
+    results: `testCases.map(testCase => {\n  let result = fizzBuzz(...testCase.input);\n  return {\n    input: testCase.input,\n    expected: testCase.expected,\n    output: result,\n    passed: JSON.stringify(result) === JSON.stringify(testCase.expected),\n  };\n});`,
+  },
+  palindromeNumber: {
+    id: "palindromeNumber",
+    title: "Palindrome Number",
+    description: `Given an integer x, return true if x is a palindrome, and false otherwise.`,
+    example: `Input: x = 121\nOutput: true\nExplanation: 121 reads as 121 from left to right and from right to left.`,
+    constraints: ["-2^31 ≤ x ≤ 2^31 - 1"],
+    difficulty: "Easy",
+    tags: ["Math", "String"],
+    templateCode: {
+      python: `def is_palindrome(x):\n    # Write your code here\n    pass`,
+      java: `public boolean isPalindrome(int x) {\n    // Write your code here\n    return false;\n}`,
+      cpp: `bool isPalindrome(int x) {\n    // Write your code here\n    return false;\n}`,
+      javascript: `function isPalindrome(x) {\n    // Write your code here\n}`,
+    },
+    testCases: [
+      { input: [121], expected: true },
+      { input: [-121], expected: false },
+    ],
+    results: `testCases.map(testCase => {\n  let result = isPalindrome(...testCase.input);\n  return {\n    input: testCase.input,\n    expected: testCase.expected,\n    output: result,\n    passed: result === testCase.expected,\n  };\n});`,
+  },
 };
 
 export const ResumeProfileSectionDummyData = {
