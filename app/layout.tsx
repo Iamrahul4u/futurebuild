@@ -11,6 +11,10 @@ const inter = Inter({
 export const metadata = {
   title: "Futurebuild",
   description: "For Students by Students",
+
+   other: {
+    "google-site-verification": "ZNu8kHAh2xXZNMdp7GhAjVsC4HcuzPtCbHTamFD6Re8",
+  },
 };
 
 export default function RootLayout({
