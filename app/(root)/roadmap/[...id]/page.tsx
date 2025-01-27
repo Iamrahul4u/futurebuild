@@ -1,9 +1,31 @@
 import prisma from "@/prisma";
+import { Metadata, ResolvingMetadata } from "next";
 import dynamic from "next/dynamic";
 const MermaidComponent = dynamic(
   () => import("@/components/roadmap/MermaidRender"),
   { ssr: false },
 );
+
+export async function generateMetadata(
+  { params }: { params: { id: string } },
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const id = (await params).id[0];
+
+  const res = await prisma.roadMap.findFirst({
+    where: {
+      id: params.id[0],
+    },
+  });
+  const previousImages = (await parent).openGraph?.images || [];
+
+  return {
+    title: res?.title,
+    openGraph: {
+      images: ["/some-specific-page-image.jpg", ...previousImages],
+    },
+  };
+}
 
 const demochart = `graph TD
     %% Vertical roadmap for Frontend Development

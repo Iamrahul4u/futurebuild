@@ -28,6 +28,7 @@ import {
 import prisma from "@/prisma";
 import CreateChat from "@/components/chats/CreateChat";
 import { getUser } from "@/app/[...authenticate]/lucia";
+
 export default async function Page({ params }: { params: { jobId: string } }) {
   const currentUser = await getUser();
   if (!currentUser || "error" in currentUser) {

@@ -2,10 +2,16 @@ import React, { Suspense } from "react";
 import Link from "next/link";
 
 import dynamic from "next/dynamic";
-const LoadingJobsCard=dynamic(()=>import("@/components/loaders/LoadingJobsCard"))
-const RecentJobs=dynamic(()=>import("@/components/shared/RecentJobs"))
-const Badge=dynamic(()=>import("@/components/ui/badge").then(mod=>mod.Badge))
-const Button=dynamic(()=>import("@/components/ui/button").then(mod=>mod.Button))
+const LoadingJobsCard = dynamic(
+  () => import("@/components/loaders/LoadingJobsCard"),
+);
+const RecentJobs = dynamic(() => import("@/components/shared/RecentJobs"));
+const Badge = dynamic(() =>
+  import("@/components/ui/badge").then((mod) => mod.Badge),
+);
+const Button = dynamic(() =>
+  import("@/components/ui/button").then((mod) => mod.Button),
+);
 
 import prisma from "@/prisma";
 import { getUser } from "@/app/[...authenticate]/lucia";
@@ -14,7 +20,31 @@ import { User } from "lucia";
 import { formatNumber } from "@/_utils/utils";
 import { checkUserRole } from "@/app/actions/auth.action";
 import { RoleSchema } from "@/prisma/generated/zod";
+import { Metadata, ResolvingMetadata } from "next";
 //
+
+export async function generateMetadata(
+  { params }: { params: { jobid: string } },
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const id = (await params).jobid;
+
+  const res = await prisma.jobPost.findFirst({
+    where: {
+      id: params.jobid,
+    },
+  });
+  const previousImages = (await parent).openGraph?.images || [];
+
+  return {
+    title: res?.jobTitle,
+    description: res?.jobDescription,
+    openGraph: {
+      images: ["/some-specific-page-image.jpg", ...previousImages],
+    },
+  };
+}
+
 export default async function Page({ params }: { params: { jobid: string } }) {
   const user: User | { error: string } | null = await getUser();
   const jobData = await prisma.jobPost.findFirst({
