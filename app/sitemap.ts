@@ -51,8 +51,8 @@ export default async function sitemap() {
       changeFrequency: "weekly",
       priority: 0.8,
     },
-    ...practiceRes,
-    ...jobs,
+    // ...practiceRes,
+    // ...jobs,
   ];
 }
 export const revalidate = 3600;
