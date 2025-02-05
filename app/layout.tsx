@@ -12,7 +12,7 @@ export const metadata = {
   title: "Futurebuild",
   description: "For Students by Students",
 
-   other: {
+  other: {
     "google-site-verification": "ZNu8kHAh2xXZNMdp7GhAjVsC4HcuzPtCbHTamFD6Re8",
   },
 };
@@ -25,6 +25,13 @@ export default function RootLayout({
   return (
     <>
       <html lang="en" className={inter.className} suppressHydrationWarning>
+        <head>
+          <script
+            src="https://analytics.ahrefs.com/analytics.js"
+            data-key={process.env.AHREF_ANALYTICS_KEY}
+            async
+          ></script>
+        </head>
         <body suppressHydrationWarning={true} className="bg-black">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ShowConnection />
