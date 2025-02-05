@@ -89,12 +89,12 @@ export default function HeroSection() {
 
 const CarouselImages = [
   {
-    src: "/homepage/practice.webp",
-    alt: "Practice Questions",
-  },
-  {
     src: "/homepage/Job offers-bro.svg",
     alt: "Find Job Offers",
+  },
+  {
+    src: "/homepage/practice.webp",
+    alt: "Practice Questions",
   },
   {
     src: "/homepage/build.webp",
