@@ -51,7 +51,7 @@ export default async function sitemap() {
       changeFrequency: "weekly",
       priority: 0.8,
     },
-    // ...practiceRes,
+    ...practiceRes,
     // ...jobs,
   ];
 }
