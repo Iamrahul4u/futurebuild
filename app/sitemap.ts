@@ -44,12 +44,7 @@ export default async function sitemap() {
       changeFrequency: "weekly",
       priority: 0.8,
     },
-    {
-      url: `https://futurbuildoverflow.vercel.app/`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
+
     {
       url: `${baseUrl}/resume/template`,
       lastModified: new Date(),

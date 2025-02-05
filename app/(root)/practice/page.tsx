@@ -26,7 +26,10 @@ export default function Component() {
                   className="rounded-lg p-4 transition-colors hover:bg-muted/50"
                 >
                   <div className="mb-2 flex items-center justify-between">
-                    <Link href={`/practice/question/${question.id}`}>
+                    <Link
+                      href={`/practice/question/${question.id}`}
+                      rel="canonical"
+                    >
                       <h3 className="text-lg font-semibold">
                         {question.title}
                       </h3>

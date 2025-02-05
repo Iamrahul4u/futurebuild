@@ -37,6 +37,7 @@ const DashboardNav = () => {
               <Link
                 key={item.route}
                 href={`/dashboard${item.route}/${userId}`}
+                rel="canonical"
                 className="w-full text-base font-medium"
                 prefetch={true}
               >

@@ -23,7 +23,10 @@ export default async function Page() {
                   alt={template}
                 />
               </Suspense>
-              <Link href={`/resume/edit/${Templates[template].name}`}>
+              <Link
+                href={`/resume/edit/${Templates[template].name}`}
+                rel="canonical"
+              >
                 <button className="mt-2 w-full rounded-md bg-blue-500 p-2 text-white">
                   Select
                 </button>

@@ -14,7 +14,6 @@ import prisma from "@/prisma";
 
 const RecentJobs = async () => {
   const res = await prisma.jobPost.findMany({
-    
     include: {
       _count: {
         select: {
@@ -29,7 +28,7 @@ const RecentJobs = async () => {
   return (
     <div className="mx-auto flex flex-col gap-4 overflow-y-scroll py-2 pr-4">
       {res.map((job) => (
-        <Link key={job.id} href={`/jobs/${job.id}`}>
+        <Link key={job.id} href={`/jobs/${job.id}`} rel="canonical">
           <Card className="cursor-pointer -space-y-2 border-[1px] border-solid border-black p-0 transition-all duration-300 hover:translate-x-[-4] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] active:translate-x-[0px] active:translate-y-[0px] dark:hover:shadow-[4px_4px_0px_gray]">
             <CardHeader className="flex flex-row items-center gap-2">
               <Image
