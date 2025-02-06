@@ -1,12 +1,21 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import HeroSection from "@/components/homepage/HeroSection";
-import FeaturesSection from "@/components/homepage/FeaturesSection";
-import ResumeBuilderSection from "@/components/homepage/ResumeBuilderSection";
-import ChatSection from "@/components/homepage/ChatSection";
-import LeetCodeSection from "@/components/homepage/LeetcodeSection";
-import Footer from "@/components/homepage/Footer";
-import RoadmapSection from "@/components/homepage/RoadmapSection";
+import dynamic from "next/dynamic";
+
+const HeroSection = dynamic(() => import("@/components/homepage/HeroSection"));
+const FeaturesSection = dynamic(
+  () => import("@/components/homepage/FeaturesSection"),
+);
+const ResumeBuilderSection = dynamic(
+  () => import("@/components/homepage/ResumeBuilderSection"),
+);
+const ChatSection = dynamic(() => import("@/components/homepage/ChatSection"));
+const LeetCodeSection = dynamic(
+  () => import("@/components/homepage/LeetcodeSection"),
+);
+const Footer = dynamic(() => import("@/components/homepage/Footer"));
+const RoadmapSection = dynamic(
+  () => import("@/components/homepage/RoadmapSection"),
+);
+
 export default function Page() {
   return (
     <div className="flex max-h-[90dvh] flex-col overflow-hidden overflow-y-scroll bg-background dark:bg-black">

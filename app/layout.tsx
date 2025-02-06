@@ -10,7 +10,7 @@ const inter = Inter({
 });
 export const metadata = {
   title: "Futurebuild",
-  description: "For Students by Students",
+  description: "For Students by Student",
 
   other: {
     "google-site-verification": "ZNu8kHAh2xXZNMdp7GhAjVsC4HcuzPtCbHTamFD6Re8",

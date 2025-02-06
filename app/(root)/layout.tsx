@@ -4,11 +4,11 @@ import { NavBar } from "../../components/shared/Navbar";
 import { Metadata } from "next";
 export const metadata: Metadata = {
   title: {
-    default: "Build your future with FUTUREBUILD",
-    template: "%s | FUTUREBUILD",
+    default: "Build your future with FUTUREBUILD || 2025",
+    template: "%s | FUTUREBUILD | 2025",
   },
   description:
-    "Discover your dream job, sharpen your skills, and build a standout resume with our comprehensive platform,Get personalized Roadmaps powered by our✨AI Assistant.",
+    "Discover your dream job, sharpen your skills, and build a standout resume with our comprehensive platform,Get personalized Roadmaps powered by our✨AI Assistant in 2025",
   metadataBase: new URL("https://futurebuildv1.vercel.app"),
 };
 export default function AppLayout({ children }: { children: React.ReactNode }) {
