@@ -19,8 +19,9 @@ import { redirect, usePathname } from "next/navigation";
 import { AiModal } from "@/components/resumeBuilder/AiModal";
 import { getUserId } from "@/app/actions/auth.action";
 import ElegantButton from "@/components/homepage/ELegantButton";
-
 type FormData = typeof ResumeProfileSectionDummyData;
+
+export const runtime = "edge";
 export default function Page() {
   const pathname = usePathname();
   const templateName = pathname.split("/").pop();

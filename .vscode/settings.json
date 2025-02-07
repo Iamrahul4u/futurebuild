@@ -31,5 +31,6 @@
   },
   "continue.telemetryEnabled": false,
   "continue.pauseCodebaseIndexOnStart": false,
-  "continue.pauseTabAutocompleteOnBattery": true
+  "continue.pauseTabAutocompleteOnBattery": true,
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

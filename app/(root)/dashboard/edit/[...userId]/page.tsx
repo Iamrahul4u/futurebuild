@@ -4,7 +4,7 @@ import prisma from "@/prisma";
 import { RoleSchema } from "@/prisma/generated/zod";
 import { OrganisationOnboardingSchema } from "@/types/zodValidations";
 import React from "react";
-
+export const runtime = "edge";
 const Page = async ({ params }: { params: { userId: string } }) => {
   const UserRole = await prisma.user.findUnique({
     where: { id: params.userId[0] },

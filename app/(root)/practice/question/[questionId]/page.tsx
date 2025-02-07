@@ -7,9 +7,8 @@ import {
 } from "@/components/ui/resizable";
 import EditorComponent from "@/components/practiceComponents/Editor";
 import { questionsData } from "@/_constants/constants";
-import { Metadata, ResolvingMetadata } from "next";
-import prisma from "@/prisma";
 
+export const runtime = "edge";
 export default function LeetCodeQuestionView({
   params,
 }: {

@@ -1,12 +1,19 @@
-
-
-import {  leftSidebarfilterPropsTypes } from "@/types/sharedTypes";
+import { leftSidebarfilterPropsTypes } from "@/types/sharedTypes";
 import dynamic from "next/dynamic";
-const JobLeftSideBar=dynamic(()=>import("@/components/shared/JobLeftSideBar"))
-const ResizablePanelGroup=dynamic(()=>import("@/components/ui/resizable").then(mod=>mod.ResizablePanelGroup))
-const ResizablePanel=dynamic(()=>import("@/components/ui/resizable").then(mod=>mod.ResizablePanel))
-const ResizableHandle=dynamic(()=>import("@/components/ui/resizable").then(mod=>mod.ResizableHandle))
+const JobLeftSideBar = dynamic(
+  () => import("@/components/shared/JobLeftSideBar"),
+);
+const ResizablePanelGroup = dynamic(() =>
+  import("@/components/ui/resizable").then((mod) => mod.ResizablePanelGroup),
+);
+const ResizablePanel = dynamic(() =>
+  import("@/components/ui/resizable").then((mod) => mod.ResizablePanel),
+);
+const ResizableHandle = dynamic(() =>
+  import("@/components/ui/resizable").then((mod) => mod.ResizableHandle),
+);
 import JobRightSideBar from "@/components/shared/JobRightSideBar";
+export const runtime = "edge";
 export default async function Page({
   searchParams,
 }: {

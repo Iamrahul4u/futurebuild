@@ -11,6 +11,8 @@ import { deleteUser } from "@/app/actions/prisma.action";
 import { toast } from "sonner";
 import { signout } from "@/app/actions/auth.action";
 import Link from "next/link";
+
+export const runtime = "edge";
 export default function Page({ params }: { params: { userId: string } }) {
   const user = useGetUser();
   async function deleteAcccount(id: string) {

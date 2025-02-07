@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 const SignIn = dynamic(() => import("./SignIn"));
 const SignUp = dynamic(() => import("./Signup"));
 import { clientCheckUser } from "../actions/auth.action";
-
+export const runtime = "edge";
 export default function Page() {
   const pathname = usePathname();
   const router = useRouter();

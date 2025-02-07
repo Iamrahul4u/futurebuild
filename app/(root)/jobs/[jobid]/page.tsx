@@ -12,7 +12,6 @@ const Badge = dynamic(() =>
 const Button = dynamic(() =>
   import("@/components/ui/button").then((mod) => mod.Button),
 );
-
 import prisma from "@/prisma";
 import { getUser } from "@/app/[...authenticate]/lucia";
 import { CircleCheck } from "lucide-react";
@@ -23,6 +22,7 @@ import { RoleSchema } from "@/prisma/generated/zod";
 import { Metadata, ResolvingMetadata } from "next";
 //
 
+export const runtime = "edge";
 export async function generateMetadata(
   { params }: { params: { jobid: string } },
   parent: ResolvingMetadata,

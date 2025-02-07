@@ -19,16 +19,11 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import SelectOptions from "@/components/shared/SelectOptions";
-import {
-  MessageCircleIcon,
-  MessageSquareDotIcon,
-  MessageSquareIcon,
-  MessagesSquareIcon,
-} from "lucide-react";
 import prisma from "@/prisma";
 import CreateChat from "@/components/chats/CreateChat";
 import { getUser } from "@/app/[...authenticate]/lucia";
 
+export const runtime = "edge";
 export default async function Page({ params }: { params: { jobId: string } }) {
   const currentUser = await getUser();
   if (!currentUser || "error" in currentUser) {

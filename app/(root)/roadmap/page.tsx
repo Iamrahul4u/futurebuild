@@ -7,6 +7,8 @@ import prisma from "@/prisma";
 
 // Demo roadmap titles
 
+export const runtime = "edge";
+
 export default async function Page() {
   const roadmaps = await prisma.roadMap.findMany({
     take: 12,

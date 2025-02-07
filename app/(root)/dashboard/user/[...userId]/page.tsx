@@ -23,7 +23,7 @@ const Button = dynamic(() =>
 );
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { MediaNameSchema } from "@/prisma/generated/zod";
-
+export const runtime = "edge";
 export default async function Page({ params }: { params: { userId: string } }) {
   const userDetails = await prisma.user.findFirst({
     where: {

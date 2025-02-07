@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import React from "react";
 import RoleLink from "@/components/shared/RoleLink";
 import { getUserOnboardingCompleted } from "@/app/actions/user.action";
+
+export const runtime = "edge";
 const Page = async () => {
   const userId = await getUserId();
   if ("error" in userId) {

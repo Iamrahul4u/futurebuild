@@ -5,7 +5,7 @@ const MermaidComponent = dynamic(
   () => import("@/components/roadmap/MermaidRender"),
   { ssr: false },
 );
-
+export const runtime = "edge";
 export async function generateMetadata(
   { params }: { params: { id: string } },
   parent: ResolvingMetadata,

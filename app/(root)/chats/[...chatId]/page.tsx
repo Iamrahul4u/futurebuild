@@ -3,6 +3,7 @@ import ChatWindow from "@/components/chats/ChatWindow";
 import { Id } from "@/convex/_generated/dataModel";
 import { User } from "lucia";
 import { redirect } from "next/navigation";
+export const runtime = "edge";
 export default async function Page({
   params,
 }: {

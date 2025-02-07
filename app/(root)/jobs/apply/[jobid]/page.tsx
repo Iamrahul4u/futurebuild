@@ -60,7 +60,7 @@ const applyJob = z.object({
     )
     .optional(),
 });
-
+export const runtime = "edge";
 export default function Page({ params }: { params: { jobid: string } }) {
   const [pending, setPending] = useState<boolean>(false);
   const [availability, setAvailability] = useState<string>("");

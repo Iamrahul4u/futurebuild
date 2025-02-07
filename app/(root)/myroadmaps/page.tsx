@@ -3,7 +3,7 @@ import { HoverEffect } from "@/components/ui/card-hover-effect";
 import prisma from "@/prisma";
 import { redirect } from "next/navigation";
 import ClientCards from "./clientCards";
-
+export const runtime = "edge";
 export default async function page() {
   const user = await getUser();
   if (user === null || "error" in user) {
