@@ -6,11 +6,9 @@ import cssnano from "cssnano";
 const isProduction = process.env.NODE_ENV === "production";
 
 const config = {
-  plugins: [
-    tailwindcss,
-    autoprefixer,
-    isProduction && cssnano({ preset: "default" }), // Minifies CSS only in production
-  ].filter(Boolean),
+  plugins: ["tailwindcss", "autoprefixer", isProduction && "cssnano"].filter(
+    Boolean,
+  ),
 };
 
 export default config;

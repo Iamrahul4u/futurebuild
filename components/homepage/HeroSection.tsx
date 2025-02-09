@@ -43,7 +43,7 @@ export default function HeroSection() {
             </Highlight>
           </motion.h1>
           <div>
-            <p className="mt-2 text-2xl font-semibold tracking-wide text-primary/70 sm:text-3xl md:text-balance lg:text-4xl">
+            <p className="mt-2 font-semibold tracking-wide text-primary/70 sm:text-2xl md:text-balance lg:text-4xl">
               Discover your dream{" "}
               <span className="font-bold text-primary underline">
                 <Link href="/jobs">job</Link>
