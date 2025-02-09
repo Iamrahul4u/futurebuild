@@ -32,8 +32,8 @@ export default function HeroSection() {
               y: [20, -5, 0],
             }}
             transition={{
-              duration: 0.5,
-              ease: [0.4, 0.0, 0.2, 1],
+              duration: 0.2,
+              ease: [0.4, 0.0, 0.2, 0.4],
             }}
             className="font-mono max-w-xl text-4xl font-bold sm:text-7xl lg:text-8xl"
           >

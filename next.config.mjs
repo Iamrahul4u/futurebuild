@@ -85,6 +85,10 @@ const nextConfig = {
       "react-resizable-panels",
     ],
   },
+  experimental: {
+    cssChunking: "strict", // default
+  },
+  compress: true,
 };
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
