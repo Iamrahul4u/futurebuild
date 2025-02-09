@@ -17,7 +17,6 @@ const config = {
             defaultExtractor: (content) =>
               content.match(/[\w-/:]+(?<!:)/g) || [],
           })]: {},
-          cssnano: { preset: "default" },
         }
       : {}),
   },
