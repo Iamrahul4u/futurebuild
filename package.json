@@ -103,6 +103,7 @@
     "zod-prisma-types": "^3.1.8"
   },
   "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^7.0.2",
     "@playwright/test": "^1.45.2",
     "@testing-library/jest-dom": "^6.4.6",
     "@testing-library/react": "^16.0.0",
@@ -111,6 +112,7 @@
     "@types/react-dom": "^18",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
+    "cssnano": "^7.0.6",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "postcss": "^8.4.39",
